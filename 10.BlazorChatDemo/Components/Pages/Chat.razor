@@ -1,0 +1,68 @@
+@page "/"
+@using Microsoft.Extensions.AI
+@inject IChatClient ChatClient
+
+<div class="chat-container">
+    <ChatHeader Title="@CopilotChatDefaults.HeaderText" />
+
+    @if (_messages.Count == 0 && !_isThinking)
+    {
+        <ChatSuggestions Suggestions="CopilotChatDefaults.PromptSuggestions"
+                         OnSuggestionClicked="HandleSuggestionClicked" />
+    }
+    else
+    {
+        <ChatMessageList Messages="_messages" IsThinking="_isThinking" />
+    }
+
+    <ChatInput OnMessageSent="HandleMessageSent" IsDisabled="_isThinking" />
+</div>
+
+@code {
+    private readonly List<ChatMessageViewModel> _messages = new();
+    private bool _isThinking;
+
+    private async Task HandleSuggestionClicked(string prompt)
+    {
+        await SendMessage(prompt);
+    }
+
+    private async Task HandleMessageSent(string message)
+    {
+        await SendMessage(message);
+    }
+
+    private async Task SendMessage(string prompt)
+    {
+        if (string.IsNullOrWhiteSpace(prompt) || _isThinking) return;
+
+        _messages.Add(new ChatMessageViewModel("user", prompt));
+        _isThinking = true;
+        StateHasChanged();
+
+        try
+        {
+            var chatMessages = new List<ChatMessage>
+            {
+                new(ChatRole.User, prompt)
+            };
+
+            var response = await ChatClient.GetResponseAsync(chatMessages);
+            var content = response.Messages.LastOrDefault()?.Text ?? "No response.";
+            var html = CopilotChatDefaults.ConvertMarkdownToHtml(content);
+
+            _messages.Add(new ChatMessageViewModel("assistant", content, html));
+        }
+        catch (Exception ex)
+        {
+            _messages.Add(new ChatMessageViewModel("assistant", $"Error: {ex.Message}"));
+        }
+        finally
+        {
+            _isThinking = false;
+            StateHasChanged();
+        }
+    }
+
+    public record ChatMessageViewModel(string Role, string Content, string? HtmlContent = null);
+}
