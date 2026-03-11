@@ -1,0 +1,620 @@
+================================================================================
+  09 - DEMO: Servidores MCP y agentes personalizados
+  GUION DE PRESENTACION — UN SOLO ARCHIVO (Program.cs)
+================================================================================
+
+Cada BLOQUE muestra codigo para AGREGAR al archivo Program.cs (no el archivo
+completo). El Bloque 1 es el esqueleto base. Los demas bloques agregan un
+paso nuevo antes de la seccion de cleanup. Usa top-level statements (sin Main,
+sin clase wrapper). Ejecuta con `dotnet run` despues de cada bloque.
+
+
+================================================================================
+  BLOQUE 1 — Esqueleto base: usings, logger, seleccion de idioma, titulo,
+  crear/iniciar cliente, cleanup
+  (dotnet run → imprime titulo, inicia cliente, lo detiene)
+================================================================================
+
+using GitHub.Copilot.SDK;
+using Microsoft.Extensions.Logging;
+
+// ============================================================================
+// 09 – MCP & AGENTS DEMO: MCP Servers & Custom Agents
+// ============================================================================
+
+using var loggerFactory = LoggerFactory.Create(b =>
+    b.AddConsole().SetMinimumLevel(LogLevel.Warning));
+var logger = loggerFactory.CreateLogger<CopilotClient>();
+
+// Language selection
+Console.WriteLine("================================================================");
+Console.WriteLine("  Select language / Seleccione idioma:");
+Console.WriteLine("  1. English");
+Console.WriteLine("  2. Español");
+Console.WriteLine("================================================================");
+Console.Write("  Choice (1 or 2): ");
+var langChoice = Console.ReadLine()?.Trim();
+bool isSpanish = langChoice == "2";
+Console.WriteLine();
+
+Console.WriteLine("================================================================");
+if (isSpanish)
+{
+    Console.WriteLine("  09 - DEMO: Servidores MCP y agentes personalizados");
+}
+else
+{
+    Console.WriteLine("  09 - MCP & AGENTS DEMO: MCP Servers & Custom Agents");
+}
+Console.WriteLine("================================================================");
+Console.WriteLine();
+
+var client = new CopilotClient(new CopilotClientOptions
+{
+    UseLoggedInUser = true,
+    Logger = logger
+});
+await client.StartAsync();
+Console.WriteLine(isSpanish ? "  Cliente iniciado.\n" : "  Client started.\n");
+
+// ── Cleanup / Limpieza ───────────────────────────────────────────────
+await client.StopAsync();
+await client.DisposeAsync();
+
+QUE DECIR:
+  - Top-level statements: todo el archivo es el Main, sin clase wrapper.
+  - Creamos un logger con nivel Warning para no saturar la consola.
+  - CopilotClient con UseLoggedInUser = true usa las credenciales de GitHub del usuario.
+  - StartAsync() conecta al servidor de Copilot. Al final, StopAsync()/DisposeAsync() liberan recursos.
+
+
+================================================================================
+  BLOQUE 2 — Paso 1: Configuracion de un servidor MCP
+  (dotnet run → titulo + paso 1 + cleanup)
+================================================================================
+
+AGREGAR antes de la seccion de cleanup:
+
+// ── 1. Single MCP Server Config / Configuración MCP simple ──────────
+Console.WriteLine(isSpanish
+    ? "=== 1. Configuración de un servidor MCP ==="
+    : "=== 1. Single MCP Server Configuration ===");
+{
+    var mcpServers = new Dictionary<string, object>
+    {
+        ["test-server"] = new McpLocalServerConfig
+        {
+            Type = "local",
+            Command = "echo",
+            Args = ["hello-mcp"],
+            Tools = ["*"]
+        }
+    };
+
+    Console.WriteLine("  McpServers config:");
+    Console.WriteLine("  {");
+    Console.WriteLine("    \"test-server\": {");
+    Console.WriteLine("      Type: \"local\",");
+    Console.WriteLine("      Command: \"echo\",");
+    Console.WriteLine("      Args: [\"hello-mcp\"],");
+    Console.WriteLine("      Tools: [\"*\"]   ← all tools from this server");
+    Console.WriteLine("    }");
+    Console.WriteLine("  }");
+    Console.WriteLine();
+
+    var session = await client.CreateSessionAsync(new SessionConfig
+    {
+        McpServers = mcpServers
+    });
+    Console.WriteLine(isSpanish
+        ? $"  Sesión creada: {session.SessionId}"
+        : $"  Session created: {session.SessionId}");
+
+    var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 2+2?" });
+    Console.WriteLine($"  Response: {answer?.Data.Content}");
+    Console.WriteLine(isSpanish
+        ? "  ✅ Sesión funciona con configuración MCP"
+        : "  ✅ Session works with MCP server configuration");
+    await session.DisposeAsync();
+}
+Console.WriteLine();
+
+QUE DECIR:
+  - McpLocalServerConfig define un servidor MCP local con Command, Args y Tools.
+  - Tools = ["*"] expone TODAS las herramientas del servidor a la sesion.
+  - Se pasa como Dictionary<string, object> en SessionConfig.McpServers al crear la sesion.
+
+
+================================================================================
+  BLOQUE 3 — Paso 2: Multiples servidores MCP
+  (dotnet run → titulo + pasos 1-2 + cleanup)
+================================================================================
+
+AGREGAR antes de la seccion de cleanup:
+
+// ── 2. Multiple MCP Servers / Múltiples servidores MCP ───────────────
+Console.WriteLine(isSpanish
+    ? "=== 2. Múltiples servidores MCP ==="
+    : "=== 2. Multiple MCP Servers ===");
+{
+    var mcpServers = new Dictionary<string, object>
+    {
+        ["filesystem-server"] = new McpLocalServerConfig
+        {
+            Type = "local",
+            Command = "echo",
+            Args = ["filesystem-server"],
+            Tools = ["*"]
+        },
+        ["database-server"] = new McpLocalServerConfig
+        {
+            Type = "local",
+            Command = "echo",
+            Args = ["database-server"],
+            Tools = ["*"]
+        }
+    };
+
+    Console.WriteLine(isSpanish
+        ? $"  Configurados {mcpServers.Count} servidores MCP: {string.Join(", ", mcpServers.Keys)}"
+        : $"  Configured {mcpServers.Count} MCP servers: {string.Join(", ", mcpServers.Keys)}");
+
+    var session = await client.CreateSessionAsync(new SessionConfig
+    {
+        McpServers = mcpServers
+    });
+    Console.WriteLine(isSpanish
+        ? $"  Sesión: {session.SessionId} ✅"
+        : $"  Session: {session.SessionId} ✅");
+    await session.DisposeAsync();
+}
+Console.WriteLine();
+
+QUE DECIR:
+  - Se pueden registrar multiples servidores MCP en un solo diccionario.
+  - Cada clave es el nombre logico del servidor (e.g., "filesystem-server", "database-server").
+  - Copilot puede usar herramientas de cualquiera de los servidores durante la sesion.
+
+
+================================================================================
+  BLOQUE 4 — Paso 3: Configuracion de agente personalizado
+  (dotnet run → titulo + pasos 1-3 + cleanup)
+================================================================================
+
+AGREGAR antes de la seccion de cleanup:
+
+// ── 3. Custom Agent Configuration / Agente personalizado ────────────
+Console.WriteLine(isSpanish
+    ? "=== 3. Configuración de agente personalizado ==="
+    : "=== 3. Custom Agent Configuration ===");
+{
+    var customAgents = new List<CustomAgentConfig>
+    {
+        new CustomAgentConfig
+        {
+            Name = "business-analyst",
+            DisplayName = "Business Analyst Agent",
+            Description = "An agent specialized in business analysis and reporting",
+            Prompt = "You are a business analyst. Focus on data-driven insights, KPIs, and actionable recommendations.",
+            Infer = true
+        }
+    };
+
+    Console.WriteLine("  CustomAgents config:");
+    Console.WriteLine("  [{");
+    Console.WriteLine("    Name: \"business-analyst\",");
+    Console.WriteLine("    DisplayName: \"Business Analyst Agent\",");
+    Console.WriteLine("    Description: \"An agent specialized in business analysis...\",");
+    Console.WriteLine("    Prompt: \"You are a business analyst...\",");
+    Console.WriteLine("    Infer: true   ← model decides when to use this agent");
+    Console.WriteLine("  }]");
+    Console.WriteLine();
+
+    var session = await client.CreateSessionAsync(new SessionConfig
+    {
+        CustomAgents = customAgents
+    });
+    Console.WriteLine(isSpanish
+        ? $"  Sesión: {session.SessionId}"
+        : $"  Session: {session.SessionId}");
+
+    var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 5+5?" });
+    Console.WriteLine($"  Response: {answer?.Data.Content}");
+    Console.WriteLine(isSpanish
+        ? "  ✅ Configuración de agente aceptada"
+        : "  ✅ Agent configuration accepted");
+    await session.DisposeAsync();
+}
+Console.WriteLine();
+
+QUE DECIR:
+  - CustomAgentConfig define un agente con Name, Prompt (instruccion de sistema) y Description.
+  - Infer = true permite que el modelo decida automaticamente cuando delegar al agente.
+  - Se pasa como List<CustomAgentConfig> en SessionConfig.CustomAgents.
+
+
+================================================================================
+  BLOQUE 5 — Paso 4: Agente con herramientas especificas
+  (dotnet run → titulo + pasos 1-4 + cleanup)
+================================================================================
+
+AGREGAR antes de la seccion de cleanup:
+
+// ── 4. Agent with Specific Tools / Agente con herramientas ──────────
+Console.WriteLine(isSpanish
+    ? "=== 4. Agente con herramientas específicas ==="
+    : "=== 4. Agent with Specific Tools ===");
+{
+    var customAgents = new List<CustomAgentConfig>
+    {
+        new CustomAgentConfig
+        {
+            Name = "devops-agent",
+            DisplayName = "DevOps Agent",
+            Description = "An agent for DevOps tasks with specific tool access",
+            Prompt = "You are a DevOps agent. You can use bash and edit tools.",
+            Tools = ["bash", "edit"],   // Only these tools available
+            Infer = true
+        }
+    };
+
+    Console.WriteLine(isSpanish
+        ? "  Agente: devops-agent"
+        : "  Agent: devops-agent");
+    Console.WriteLine(isSpanish
+        ? "  Herramientas: [\"bash\", \"edit\"] <- conjunto de herramientas restringido"
+        : "  Tools: [\"bash\", \"edit\"] <- restricted tool set");
+    Console.WriteLine();
+
+    var session = await client.CreateSessionAsync(new SessionConfig
+    {
+        CustomAgents = customAgents
+    });
+    Console.WriteLine(isSpanish
+        ? $"  Sesión: {session.SessionId} ✅"
+        : $"  Session: {session.SessionId} ✅");
+    await session.DisposeAsync();
+}
+Console.WriteLine();
+
+QUE DECIR:
+  - La propiedad Tools del agente restringe que herramientas puede usar.
+  - Aqui el agente DevOps solo tiene acceso a "bash" y "edit", no a todas las herramientas.
+  - Esto implementa el principio de minimo privilegio: cada agente solo accede a lo que necesita.
+
+
+================================================================================
+  BLOQUE 6 — Paso 5: Agente con sus propios servidores MCP
+  (dotnet run → titulo + pasos 1-5 + cleanup)
+================================================================================
+
+AGREGAR antes de la seccion de cleanup:
+
+// ── 5. Agent with its Own MCP Servers / Agente con sus propios MCP ──
+Console.WriteLine(isSpanish
+    ? "=== 5. Agente con sus propios servidores MCP ==="
+    : "=== 5. Agent with its Own MCP Servers ===");
+{
+    var customAgents = new List<CustomAgentConfig>
+    {
+        new CustomAgentConfig
+        {
+            Name = "data-agent",
+            DisplayName = "Data Agent",
+            Description = "An agent with its own MCP server for data access",
+            Prompt = "You are a data agent with access to a database MCP server.",
+            McpServers = new Dictionary<string, object>
+            {
+                ["agent-db-server"] = new McpLocalServerConfig
+                {
+                    Type = "local",
+                    Command = "echo",
+                    Args = ["agent-data"],
+                    Tools = ["*"]
+                }
+            }
+        }
+    };
+
+    Console.WriteLine(isSpanish
+        ? "  Agente: data-agent"
+        : "  Agent: data-agent");
+    Console.WriteLine("  Agent's McpServers: { \"agent-db-server\": { ... } }");
+    Console.WriteLine(isSpanish
+        ? "  (Cada agente puede tener sus propias conexiones MCP aisladas)"
+        : "  (Each agent can have its own isolated MCP server connections)");
+    Console.WriteLine();
+
+    var session = await client.CreateSessionAsync(new SessionConfig
+    {
+        CustomAgents = customAgents
+    });
+    Console.WriteLine(isSpanish
+        ? $"  Sesión: {session.SessionId} ✅"
+        : $"  Session: {session.SessionId} ✅");
+    await session.DisposeAsync();
+}
+Console.WriteLine();
+
+QUE DECIR:
+  - CustomAgentConfig tiene su propia propiedad McpServers — servidores MCP aislados por agente.
+  - Esto permite que cada agente tenga acceso a servicios diferentes sin compartir conexiones.
+  - Patron poderoso: el agente "data-agent" tiene su propio servidor de base de datos encapsulado.
+
+
+================================================================================
+  BLOQUE 7 — Paso 6: Multiples agentes personalizados
+  (dotnet run → titulo + pasos 1-6 + cleanup)
+================================================================================
+
+AGREGAR antes de la seccion de cleanup:
+
+// ── 6. Multiple Agents / Múltiples agentes ───────────────────────────
+Console.WriteLine(isSpanish
+    ? "=== 6. Múltiples agentes personalizados ==="
+    : "=== 6. Multiple Custom Agents ===");
+{
+    var customAgents = new List<CustomAgentConfig>
+    {
+        new CustomAgentConfig
+        {
+            Name = "frontend-agent",
+            DisplayName = "Frontend Agent",
+            Description = "Specializes in React, CSS, and UI development",
+            Prompt = "You are a frontend development expert."
+        },
+        new CustomAgentConfig
+        {
+            Name = "backend-agent",
+            DisplayName = "Backend Agent",
+            Description = "Specializes in C#, .NET, and API development",
+            Prompt = "You are a backend development expert.",
+            Infer = false  // Must be explicitly invoked
+        }
+    };
+
+    Console.WriteLine(isSpanish
+        ? $"  Configurados {customAgents.Count} agentes:"
+        : $"  Configured {customAgents.Count} agents:");
+    foreach (var agent in customAgents)
+        Console.WriteLine($"    • {agent.Name} (Infer: {agent.Infer}) - {agent.Description}");
+    Console.WriteLine();
+
+    var session = await client.CreateSessionAsync(new SessionConfig
+    {
+        CustomAgents = customAgents
+    });
+    Console.WriteLine(isSpanish
+        ? $"  Sesión: {session.SessionId} ✅"
+        : $"  Session: {session.SessionId} ✅");
+    await session.DisposeAsync();
+}
+Console.WriteLine();
+
+QUE DECIR:
+  - Se pueden registrar multiples agentes en una sola sesion.
+  - Infer = true: el modelo decide cuando usar el agente. Infer = false: debe invocarse explicitamente.
+  - Patron de equipo: frontend-agent y backend-agent con especialidades diferentes.
+
+
+================================================================================
+  BLOQUE 8 — Paso 7: Combinacion MCP + Agentes
+  (dotnet run → titulo + pasos 1-7 + cleanup)
+================================================================================
+
+AGREGAR antes de la seccion de cleanup:
+
+// ── 7. Combined MCP + Agents / Combinación MCP + Agentes ────────────
+Console.WriteLine(isSpanish
+    ? "=== 7. Combinación: Servidores MCP + Agentes personalizados ==="
+    : "=== 7. Combined: MCP Servers + Custom Agents ===");
+{
+    var mcpServers = new Dictionary<string, object>
+    {
+        ["shared-server"] = new McpLocalServerConfig
+        {
+            Type = "local",
+            Command = "echo",
+            Args = ["shared"],
+            Tools = ["*"]
+        }
+    };
+
+    var customAgents = new List<CustomAgentConfig>
+    {
+        new CustomAgentConfig
+        {
+            Name = "coordinator-agent",
+            DisplayName = "Coordinator Agent",
+            Description = "Coordinates tasks across MCP servers and other agents",
+            Prompt = "You are a coordinator that can access shared MCP servers."
+        }
+    };
+
+    Console.WriteLine("  McpServers: { \"shared-server\": { ... } }");
+    Console.WriteLine("  CustomAgents: [ { name: \"coordinator-agent\", ... } ]");
+    Console.WriteLine(isSpanish
+        ? "  (Tanto servidores MCP como agentes en la misma sesión)"
+        : "  (Both MCP servers and agents configured on the same session)");
+    Console.WriteLine();
+
+    var session = await client.CreateSessionAsync(new SessionConfig
+    {
+        McpServers = mcpServers,
+        CustomAgents = customAgents
+    });
+
+    var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 7+7?" });
+    Console.WriteLine($"  Response: {answer?.Data.Content}");
+    Console.WriteLine(isSpanish
+        ? "  ✅ Configuración combinada aceptada"
+        : "  ✅ Combined configuration accepted");
+    await session.DisposeAsync();
+}
+Console.WriteLine();
+
+QUE DECIR:
+  - SessionConfig acepta McpServers Y CustomAgents simultaneamente.
+  - Los servidores MCP a nivel de sesion son compartidos; los agentes pueden tener los suyos propios ademas.
+  - Este es el patron mas completo: infraestructura MCP compartida + agentes especializados.
+
+
+================================================================================
+  BLOQUE 9 — Paso 8: MCP y Agentes al reanudar sesion
+  (dotnet run → titulo + pasos 1-8 + cleanup)
+================================================================================
+
+AGREGAR antes de la seccion de cleanup:
+
+// ── 8. MCP on Session Resume / MCP al reanudar sesión ────────────────
+Console.WriteLine(isSpanish
+    ? "=== 8. MCP y Agentes al reanudar sesión ==="
+    : "=== 8. MCP & Agents on Session Resume ===");
+{
+    // Create session without MCP/agents
+    var session1 = await client.CreateSessionAsync();
+    var sessionId = session1.SessionId;
+    await session1.SendAndWaitAsync(new MessageOptions { Prompt = "What is 1+1?" });
+    Console.WriteLine(isSpanish
+        ? $"  Sesión creada sin MCP/agentes: {sessionId}"
+        : $"  Session created without MCP/agents: {sessionId}");
+
+    // Resume with MCP servers and agents
+    var session2 = await client.ResumeSessionAsync(sessionId, new ResumeSessionConfig
+    {
+        McpServers = new Dictionary<string, object>
+        {
+            ["resume-server"] = new McpLocalServerConfig
+            {
+                Type = "local",
+                Command = "echo",
+                Args = ["hello-resume"],
+                Tools = ["*"]
+            }
+        },
+        CustomAgents = new List<CustomAgentConfig>
+        {
+            new CustomAgentConfig
+            {
+                Name = "resume-agent",
+                DisplayName = "Resume Agent",
+                Description = "Added on resume",
+                Prompt = "You are a resume agent."
+            }
+        }
+    });
+
+    Console.WriteLine(isSpanish
+        ? $"  Sesión reanudada con MCP + Agentes: {session2.SessionId}"
+        : $"  Session resumed with MCP + Agents: {session2.SessionId}");
+    var answer = await session2.SendAndWaitAsync(new MessageOptions { Prompt = "What is 3+3?" });
+    Console.WriteLine($"  Response: {answer?.Data.Content}");
+    Console.WriteLine(isSpanish
+        ? "  ✅ MCP y agentes agregados exitosamente al reanudar"
+        : "  ✅ MCP and agents added successfully on resume");
+    await session2.DisposeAsync();
+}
+Console.WriteLine();
+
+QUE DECIR:
+  - ResumeSessionAsync permite reanudar una sesion existente Y agregar MCP/agentes al mismo tiempo.
+  - ResumeSessionConfig acepta McpServers y CustomAgents igual que SessionConfig.
+  - Caso de uso: sesion que empezo simple y se enriquece con herramientas/agentes segun las necesidades.
+
+
+================================================================================
+  BLOQUE 10 — Modo interactivo: el usuario crea su propio agente
+  (dotnet run → demo completo + modo interactivo)
+================================================================================
+
+AGREGAR despues de la seccion de cleanup (al final del archivo):
+
+// ── Interactive mode / Modo interactivo ──────────────────────────────
+Console.WriteLine("================================================================");
+if (isSpanish)
+{
+    Console.WriteLine("  Presiona Enter para modo interactivo con un agente personalizado, o Ctrl+C para salir.");
+}
+else
+{
+    Console.WriteLine("  Press Enter for interactive mode with a custom agent, or Ctrl+C to exit.");
+}
+Console.WriteLine("================================================================");
+Console.ReadLine();
+
+Console.Write(isSpanish ? "  Nombre del agente: " : "  Agent name: ");
+var agentName = Console.ReadLine()?.Trim() ?? "my-agent";
+Console.Write(isSpanish ? "  Instrucción del agente: " : "  Agent prompt (system instruction): ");
+var agentPrompt = Console.ReadLine()?.Trim() ?? "You are a helpful assistant.";
+
+var chatClient = new CopilotClient(new CopilotClientOptions
+{
+    UseLoggedInUser = true,
+    Logger = logger
+});
+await chatClient.StartAsync();
+
+await using var chatSession = await chatClient.CreateSessionAsync(new SessionConfig
+{
+    Streaming = true,
+    CustomAgents = new List<CustomAgentConfig>
+    {
+        new CustomAgentConfig
+        {
+            Name = agentName,
+            DisplayName = agentName,
+            Description = $"Custom agent: {agentName}",
+            Prompt = agentPrompt,
+            Infer = true
+        }
+    }
+});
+
+Console.WriteLine(isSpanish
+    ? $"\n  Agente '{agentName}' activo. Escribe mensajes (vacío para salir):\n"
+    : $"\n  Agent '{agentName}' active. Type messages (empty to quit):\n");
+while (true)
+{
+    Console.Write(isSpanish ? "  Tú: " : "  You: ");
+    var input = Console.ReadLine();
+    if (string.IsNullOrWhiteSpace(input)) break;
+
+    var done = new TaskCompletionSource<bool>();
+    chatSession.On(evt =>
+    {
+        if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
+        if (evt is SessionIdleEvent) done.TrySetResult(true);
+        if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
+    });
+
+    Console.Write("  AI: ");
+    await chatSession.SendAsync(new MessageOptions { Prompt = input });
+    await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
+    Console.WriteLine();
+}
+
+await chatClient.StopAsync();
+await chatClient.DisposeAsync();
+Console.WriteLine(isSpanish ? "\n  ¡Listo!" : "\n  Done!");
+
+QUE DECIR:
+  - El modo interactivo crea un NUEVO cliente con Streaming = true para respuestas en tiempo real.
+  - El usuario define nombre y prompt del agente, demostrando la flexibilidad de CustomAgentConfig.
+  - Se usa el patron de eventos: AssistantMessageDeltaEvent para tokens, SessionIdleEvent para fin de respuesta.
+
+
+================================================================================
+  FINAL: dotnet run (demo en vivo)
+================================================================================
+
+  Ya todos los pasos estan. Ejecutamos:
+
+    cd 09.McpAgentsDemo && dotnet run
+
+QUE DECIR:
+  - Vamos a ver los 8 pasos ejecutarse en orden, cada uno creando una sesion diferente.
+  - Al final podemos crear nuestro propio agente personalizado y chatear con el.
+  - Resumen: McpLocalServerConfig para herramientas externas, CustomAgentConfig para agentes
+    especializados, y ambos se combinan en SessionConfig o ResumeSessionConfig.
+
+================================================================================
