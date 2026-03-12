@@ -236,26 +236,25 @@ sealed class ToolsDemo(ILogger<CopilotClient> logger)
         await client.DisposeAsync();
         Console.WriteLine("\n  ¡Listo!");
     }
-}
 
-// ── Implementaciones de herramientas ────────────────────────────────────────
+    // ── Implementaciones de herramientas ────────────────────────────────
+    [Description("Encrypts a string by converting it to uppercase")]
+    static string EncryptString([Description("String to encrypt")] string input)
+        => input.ToUpperInvariant();
 
-[Description("Encrypts a string by converting it to uppercase")]
-static string EncryptString([Description("String to encrypt")] string input)
-    => input.ToUpperInvariant();
+    [Description("Gets the current weather for a city")]
+    static string GetWeather([Description("City name")] string city)
+    {
+        Console.WriteLine($"    [Tool:get_weather] city={city}");
+        return $"Weather in {city}: 22°C, partly cloudy, humidity 65%";
+    }
 
-[Description("Gets the current weather for a city")]
-static string GetWeather([Description("City name")] string city)
-{
-    Console.WriteLine($"    [Tool:get_weather] city={city}");
-    return $"Weather in {city}: 22°C, partly cloudy, humidity 65%";
-}
-
-[Description("Gets the current time for a city/timezone")]
-static string GetTime([Description("City name")] string city)
-{
-    Console.WriteLine($"    [Tool:get_time] city={city}");
-    return $"Current time in {city}: {DateTime.UtcNow:HH:mm} UTC";
+    [Description("Gets the current time for a city/timezone")]
+    static string GetTime([Description("City name")] string city)
+    {
+        Console.WriteLine($"    [Tool:get_time] city={city}");
+        return $"Current time in {city}: {DateTime.UtcNow:HH:mm} UTC";
+    }
 }
 
 // ── Tipos complejos para Demo 3 ─────────────────────────────────────────────

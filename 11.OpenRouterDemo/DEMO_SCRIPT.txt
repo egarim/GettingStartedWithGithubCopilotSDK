@@ -75,29 +75,28 @@ sealed class BYOKDemo(ILogger<CopilotClient> logger)
         await client.StopAsync();
         await client.DisposeAsync();
     }
-}
 
-// ── Implementaciones de herramientas ────────────────────────────────────────
+    // ── Implementaciones de herramientas ────────────────────────────────
+    [Description("Gets the current weather for a city")]
+    static string GetWeather([Description("City name")] string city)
+    {
+        Console.WriteLine($"  [Tool:get_weather] city={city}");
+        return $"Weather in {city}: 22°C, partly cloudy, humidity 55%";
+    }
 
-[Description("Gets the current weather for a city")]
-static string GetWeather([Description("City name")] string city)
-{
-    Console.WriteLine($"  [Tool:get_weather] city={city}");
-    return $"Weather in {city}: 22°C, partly cloudy, humidity 55%";
-}
-
-[Description("Gets the current time for a city")]
-static string GetTime([Description("City name")] string city)
-{
-    Console.WriteLine($"  [Tool:get_time] city={city}");
-    return $"Current time in {city}: {DateTime.UtcNow.AddHours(9):HH:mm} JST";
+    [Description("Gets the current time for a city")]
+    static string GetTime([Description("City name")] string city)
+    {
+        Console.WriteLine($"  [Tool:get_time] city={city}");
+        return $"Current time in {city}: {DateTime.UtcNow.AddHours(9):HH:mm} JST";
+    }
 }
 
 QUE DECIR:
   - Top-level statements: las primeras 4 lineas son el Main.
   - BYOKDemo es una clase sellada con primary constructor (C# 12).
   - CreateClient soporta GITHUB_TOKEN (PAT) o VS Code login.
-  - Las funciones GetWeather y GetTime son tools locales fuera de la clase.
+  - Las funciones GetWeather y GetTime son metodos static dentro de la clase.
   - RunAsync solo imprime titulo e inicia/detiene el cliente. Vamos a agregar pasos.
 
 

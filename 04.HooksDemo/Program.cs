@@ -256,22 +256,21 @@ sealed class HooksDemo(ILogger<CopilotClient> logger)
         await client.DisposeAsync();
         Console.WriteLine("\n  ¡Listo!");
     }
-}
 
-// ── Implementacion de herramienta ───────────────────────────────────────────
-
-[Description("Looks up the price of a product by name")]
-static string LookupPrice([Description("Product name to look up")] string productName)
-{
-    Console.WriteLine($"    [Tool:lookup_price] productName={productName}");
-    var catalog = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
+    // ── Implementacion de herramienta ───────────────────────────────────
+    [Description("Looks up the price of a product by name")]
+    static string LookupPrice([Description("Product name to look up")] string productName)
     {
-        ["Widget Pro"] = 29.99m,
-        ["Gadget X"] = 49.95m,
-        ["Super Deluxe Widget"] = 199.00m,
-        ["Basic Widget"] = 9.99m,
-    };
-    return catalog.TryGetValue(productName, out var price)
-        ? $"Product: {productName}, Price: ${price}"
-        : $"Product '{productName}' not found in catalog.";
+        Console.WriteLine($"    [Tool:lookup_price] productName={productName}");
+        var catalog = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Widget Pro"] = 29.99m,
+            ["Gadget X"] = 49.95m,
+            ["Super Deluxe Widget"] = 199.00m,
+            ["Basic Widget"] = 9.99m,
+        };
+        return catalog.TryGetValue(productName, out var price)
+            ? $"Product: {productName}, Price: ${price}"
+            : $"Product '{productName}' not found in catalog.";
+    }
 }
