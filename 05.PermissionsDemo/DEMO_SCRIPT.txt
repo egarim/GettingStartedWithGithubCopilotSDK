@@ -3,15 +3,13 @@
   GUION DE PRESENTACION — UN SOLO ARCHIVO (Program.cs)
 ================================================================================
 
-Cada BLOQUE muestra el codigo a AGREGAR al archivo Program.cs.
-El Bloque 1 es el esqueleto base. Cada bloque siguiente agrega un paso.
-Usa top-level statements (sin Main, sin clase).
-Ejecuta con `dotnet run` despues de cada bloque.
+Cada bloque es el archivo Program.cs COMPLETO. Pega, reemplaza todo,
+ejecuta con `dotnet run`. Cada paso agrega un metodo nuevo.
 
 
 ================================================================================
-  BLOQUE 1 — Esqueleto base: usings, logger, idioma, titulo, cliente, workDir
-  (dotnet run → imprime titulo, inicia cliente, lo detiene, limpia)
+  BLOQUE 1 — Esqueleto: Main + clase con constantes, helpers + workDir
+  (dotnet run → imprime titulo, inicia cliente, crea workDir, lo detiene)
 ================================================================================
 
 using GitHub.Copilot.SDK;
@@ -19,491 +17,480 @@ using Microsoft.Extensions.Logging;
 
 using var loggerFactory = LoggerFactory.Create(b =>
     b.AddConsole().SetMinimumLevel(LogLevel.Warning));
-var logger = loggerFactory.CreateLogger<CopilotClient>();
 
-// Language selection
-Console.WriteLine("================================================================");
-Console.WriteLine("  Select language / Seleccione idioma:");
-Console.WriteLine("  1. English");
-Console.WriteLine("  2. Espanol");
-Console.WriteLine("================================================================");
-Console.Write("  Choice (1 or 2): ");
-var langChoice = Console.ReadLine()?.Trim();
-bool isSpanish = langChoice == "2";
-Console.WriteLine();
+var demo = new PermissionsDemo(loggerFactory.CreateLogger<CopilotClient>());
+await demo.RunAsync();
 
-Console.WriteLine("================================================================");
-if (isSpanish)
+// ─────────────────────────────────────────────────────────────────────────────
+sealed class PermissionsDemo(ILogger<CopilotClient> logger)
 {
-    Console.WriteLine("  05 - DEMO: Manejo de solicitudes de permisos");
+    // ── Textos (cambiar aqui para otro idioma) ──────────────────────────
+    const string DemoTitle        = "05 - DEMO: Manejo de solicitudes de permisos";
+    const string Step1Text        = "Aprobar permiso - Operaciones de escritura";
+    const string Step2Text        = "Denegar permiso - Bloquear modificaciones";
+    const string Step3Text        = "Comportamiento por defecto (sin handler)";
+    const string Step4Text        = "Handler asincrono de permisos";
+    const string Step5Text        = "ToolCallId en solicitudes de permisos";
+    const string Step6Text        = "Error en handler - Degradacion elegante";
+    const string Step7Text        = "Handler de permisos al reanudar sesion";
+    const string InteractiveHint  = "Presiona Enter para modo interactivo (aprobar/denegar cada solicitud).";
+    const string InteractivePrompt = "Escribe mensajes (vacio para salir). Se te pedira aprobar/denegar cada solicitud.\n";
+
+    // ── Helpers ─────────────────────────────────────────────────────────
+    CopilotClient CreateClient() => new(new CopilotClientOptions
+    {
+        UseLoggedInUser = true,
+        Logger = logger
+    });
+
+    static void PrintTitle(string title)
+    {
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {title}");
+        Console.WriteLine("================================================================\n");
+    }
+
+    static void PrintStep(int n, string text)
+        => Console.WriteLine($"=== {n}. {text} ===");
+
+    static void PrintProp(string label, object? value)
+        => Console.WriteLine($"  {label,-22} {value}");
+
+    // ── Orquestador ─────────────────────────────────────────────────────
+    public async Task RunAsync()
+    {
+        PrintTitle(DemoTitle);
+
+        var client = CreateClient();
+        await client.StartAsync();
+        Console.WriteLine("  Cliente iniciado.\n");
+
+        var workDir = Path.Combine(Path.GetTempPath(), "copilot-permissions-demo");
+        Directory.CreateDirectory(workDir);
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+
+        try { Directory.Delete(workDir, true); } catch { /* ignore */ }
+    }
 }
-else
-{
-    Console.WriteLine("  05 - PERMISSIONS DEMO: Permission Request Handling");
-}
-Console.WriteLine("================================================================");
-Console.WriteLine();
-
-var client = new CopilotClient(new CopilotClientOptions
-{
-    UseLoggedInUser = true,
-    Logger = logger
-});
-await client.StartAsync();
-Console.WriteLine(isSpanish ? "  Cliente iniciado.\n" : "  Client started.\n");
-
-// Create a temp working directory for file operations
-var workDir = Path.Combine(Path.GetTempPath(), "copilot-permissions-demo");
-Directory.CreateDirectory(workDir);
-
-// ============================================================
-// AQUI VAN LOS PASOS (se agregan en bloques siguientes)
-// ============================================================
-
-// -- Cleanup / Limpieza ------------------------------------------------
-await client.StopAsync();
-await client.DisposeAsync();
-
-// Clean up temp directory
-try { Directory.Delete(workDir, true); } catch { /* ignore */ }
 
 QUE DECIR:
-  - Usamos top-level statements: no hay Main ni clase envolvente.
-  - Creamos un logger con nivel Warning para no saturar la consola.
-  - CopilotClient con UseLoggedInUser = true se conecta con tu sesion de GitHub.
-  - StartAsync() establece la conexion con el servidor de Copilot.
-  - Creamos un directorio temporal (workDir) para las operaciones de archivo.
-  - Al final, StopAsync + DisposeAsync cierran limpiamente, y borramos el directorio.
+  - Top-level statements: las primeras 4 lineas son el Main.
+  - PermissionsDemo es una clase sellada con primary constructor (C# 12).
+  - Creamos un directorio temporal (workDir) para operaciones de archivo.
+  - RunAsync solo imprime titulo, inicia/detiene cliente y limpia. Vamos a agregar pasos.
 
 
 ================================================================================
-  BLOQUE 2 — Paso 1: Aprobar permiso - Operaciones de escritura
-  (dotnet run → titulo + paso 1 + cleanup)
+  BLOQUE 2 — Agregar Step1_ApprovePermission
+  (dotnet run → titulo + paso 1)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR dentro de la clase, despues de RunAsync:
 
-// -- 1. Approve Permission / Aprobar permiso ---------------------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 1. Aprobar permiso - Operaciones de escritura ===");
-}
-else
-{
-    Console.WriteLine("=== 1. Approve Permission - Write Operations ===");
-}
-{
-    var permissionRequests = new List<PermissionRequest>();
-    CopilotSession? session = null;
-    session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 1: Aprobar permiso ────────────────────────────────────────
+    async Task Step1_ApprovePermission(CopilotClient client, string workDir)
     {
-        OnPermissionRequest = (request, invocation) =>
+        PrintStep(1, Step1Text);
+        var permissionRequests = new List<PermissionRequest>();
+        var session = await client.CreateSessionAsync(new SessionConfig
         {
-            permissionRequests.Add(request);
-            Console.WriteLine($"    [Permission] Kind: {request.Kind}, ToolCallId: {request.ToolCallId}");
-            Console.WriteLine($"    [Permission] Session: {invocation.SessionId}");
-            Console.WriteLine(isSpanish
-                ? "    [Permission] Decision: APROBADO"
-                : "    [Permission] Decision: APPROVED");
-            return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
-        }
-    });
+            OnPermissionRequest = (request, invocation) =>
+            {
+                permissionRequests.Add(request);
+                Console.WriteLine($"    [Permission] Kind: {request.Kind}, ToolCallId: {request.ToolCallId}");
+                Console.WriteLine($"    [Permission] Session: {invocation.SessionId}");
+                Console.WriteLine("    [Permission] Decision: APROBADO");
+                return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
+            }
+        });
 
-    // Create a test file
-    var testFile = Path.Combine(workDir, "test.txt");
-    await File.WriteAllTextAsync(testFile, "original content");
+        var testFile = Path.Combine(workDir, "test.txt");
+        await File.WriteAllTextAsync(testFile, "original content");
 
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = $"Edit the file at {testFile} and replace 'original' with 'modified'"
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
-    Console.WriteLine(isSpanish
-        ? $"  Solicitudes recibidas: {permissionRequests.Count}"
-        : $"  Permission requests received: {permissionRequests.Count}");
-    Console.WriteLine($"  Write permissions: {permissionRequests.Count(r => r.Kind == "write")}");
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = $"Edit the file at {testFile} and replace 'original' with 'modified'"
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
+        PrintProp("Solicitudes recibidas:", permissionRequests.Count);
+        Console.WriteLine($"  Permisos de escritura: {permissionRequests.Count(r => r.Kind == "write")}");
 
-    // Check if file was modified
-    var content = await File.ReadAllTextAsync(testFile);
-    Console.WriteLine(isSpanish
-        ? $"  Contenido despues: \"{content}\""
-        : $"  File content after: \"{content}\"");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        var content = await File.ReadAllTextAsync(testFile);
+        Console.WriteLine($"  Contenido despues: \"{content}\"");
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step1_ApprovePermission(client, workDir);
 
 QUE DECIR:
   - OnPermissionRequest es el callback que el SDK invoca cuando Copilot necesita
     permiso para una operacion (escritura, ejecucion, etc.).
-  - Retornamos Kind = "approved" para autorizar la operacion de escritura.
+  - Retornamos Kind = "approved" para autorizar la operacion.
   - El request incluye Kind (tipo de operacion) y ToolCallId (identificador unico).
-  - invocation.SessionId nos dice en que sesion ocurre la solicitud.
 
 
 ================================================================================
-  BLOQUE 3 — Paso 2: Denegar permiso - Bloquear modificaciones
-  (dotnet run → titulo + pasos 1-2 + cleanup)
+  BLOQUE 3 — Agregar Step2_DenyPermission
+  (dotnet run → titulo + pasos 1-2)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR despues de Step1_ApprovePermission:
 
-// -- 2. Deny Permission / Denegar permiso ------------------------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 2. Denegar permiso - Bloquear modificaciones ===");
-}
-else
-{
-    Console.WriteLine("=== 2. Deny Permission - Block Modifications ===");
-}
-{
-    var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 2: Denegar permiso ────────────────────────────────────────
+    async Task Step2_DenyPermission(CopilotClient client, string workDir)
     {
-        OnPermissionRequest = (request, invocation) =>
+        PrintStep(2, Step2Text);
+        var session = await client.CreateSessionAsync(new SessionConfig
         {
-            Console.WriteLine(isSpanish
-                ? $"    [Permission] Kind: {request.Kind} -> DENEGADO"
-                : $"    [Permission] Kind: {request.Kind} -> DENIED");
-            return Task.FromResult(new PermissionRequestResult
+            OnPermissionRequest = (request, invocation) =>
             {
-                Kind = "denied-interactively-by-user"
-            });
-        }
-    });
+                Console.WriteLine($"    [Permission] Kind: {request.Kind} -> DENEGADO");
+                return Task.FromResult(new PermissionRequestResult
+                {
+                    Kind = "denied-interactively-by-user"
+                });
+            }
+        });
 
-    var protectedFile = Path.Combine(workDir, "protected.txt");
-    await File.WriteAllTextAsync(protectedFile, "protected content");
+        var protectedFile = Path.Combine(workDir, "protected.txt");
+        await File.WriteAllTextAsync(protectedFile, "protected content");
 
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = $"Edit the file at {protectedFile} and replace 'protected' with 'hacked'"
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = $"Edit the file at {protectedFile} and replace 'protected' with 'hacked'"
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
 
-    var content = await File.ReadAllTextAsync(protectedFile);
-    Console.WriteLine($"  File content (should be unchanged): \"{content}\"");
-    Console.WriteLine($"  File protected: {content == "protected content"}");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        var content = await File.ReadAllTextAsync(protectedFile);
+        Console.WriteLine($"  Contenido (debe estar intacto): \"{content}\"");
+        Console.WriteLine($"  Archivo protegido: {content == "protected content"}");
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step2_DenyPermission(client, workDir);
 
 QUE DECIR:
   - Retornamos Kind = "denied-interactively-by-user" para bloquear la operacion.
-  - El SDK comunica a Copilot que el usuario denego el permiso.
-  - El archivo queda intacto: el contenido no cambia porque la escritura fue bloqueada.
-  - Esto es clave para implementar politicas de seguridad en tu aplicacion.
+  - El archivo queda intacto: la escritura fue bloqueada por el handler.
+  - Clave para implementar politicas de seguridad en tu aplicacion.
 
 
 ================================================================================
-  BLOQUE 4 — Paso 3: Comportamiento por defecto (sin handler)
-  (dotnet run → titulo + pasos 1-3 + cleanup)
+  BLOQUE 4 — Agregar Step3_DefaultBehavior
+  (dotnet run → titulo + pasos 1-3)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR despues de Step2_DenyPermission:
 
-// -- 3. Default Behavior (no handler) / Comportamiento por defecto -----
-if (isSpanish)
-{
-    Console.WriteLine("=== 3. Comportamiento por defecto (sin handler de permisos) ===");
-}
-else
-{
-    Console.WriteLine("=== 3. Default Behavior (no permission handler) ===");
-}
-{
-    var session = await client.CreateSessionAsync(new SessionConfig());
+    // ── Paso 3: Comportamiento por defecto ─────────────────────────────
+    async Task Step3_DefaultBehavior(CopilotClient client)
+    {
+        PrintStep(3, Step3Text);
+        var session = await client.CreateSessionAsync(new SessionConfig());
 
-    var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 2+2?" });
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-    Console.WriteLine(isSpanish
-        ? "  (Funciona sin handler - solo se activa para operaciones de escritura/ejecucion)"
-        : "  (Works fine without a permission handler - only triggered for write/run ops)");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 2+2?" });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+        Console.WriteLine("  (Funciona sin handler - solo se activa para operaciones de escritura/ejecucion)");
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step3_DefaultBehavior(client);
 
 QUE DECIR:
   - Si no registras OnPermissionRequest, el SDK funciona normalmente.
-  - El handler solo se invoca cuando Copilot quiere hacer algo que requiere permiso
-    (escribir archivos, ejecutar comandos, etc.).
-  - Consultas simples como "2+2" no disparan ninguna solicitud de permiso.
+  - El handler solo se invoca para operaciones que requieren permiso.
+  - Consultas simples como "2+2" no disparan solicitudes de permiso.
 
 
 ================================================================================
-  BLOQUE 5 — Paso 4: Handler asincrono de permisos
-  (dotnet run → titulo + pasos 1-4 + cleanup)
+  BLOQUE 5 — Agregar Step4_AsyncHandler
+  (dotnet run → titulo + pasos 1-4)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR despues de Step3_DefaultBehavior:
 
-// -- 4. Async Permission Handler / Handler asincrono -------------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 4. Handler asincrono de permisos (retraso simulado) ===");
-}
-else
-{
-    Console.WriteLine("=== 4. Async Permission Handler (simulated delay) ===");
-}
-{
-    var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 4: Handler asincrono ──────────────────────────────────────
+    async Task Step4_AsyncHandler(CopilotClient client)
     {
-        OnPermissionRequest = async (request, invocation) =>
+        PrintStep(4, Step4Text);
+        var session = await client.CreateSessionAsync(new SessionConfig
         {
-            Console.WriteLine(isSpanish
-                ? $"    [Permission] Kind: {request.Kind} - Simulando verificacion asincrona..."
-                : $"    [Permission] Kind: {request.Kind} - simulating async check...");
-            await Task.Delay(500); // Simulate async lookup
-            Console.WriteLine(isSpanish
-                ? "    [Permission] Aprobado tras espera"
-                : "    [Permission] Approved after delay");
-            return new PermissionRequestResult { Kind = "approved" };
-        }
-    });
-
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Run 'echo hello from async permission demo' and tell me the output"
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
-
-QUE DECIR:
-  - El handler es async: puedes usar await para consultar bases de datos,
-    APIs externas, o mostrar un dialogo al usuario antes de decidir.
-  - Task.Delay simula una operacion asincrona (ej. verificar en un servicio de politicas).
-  - El SDK espera la respuesta del handler antes de continuar con la operacion.
-
-
-================================================================================
-  BLOQUE 6 — Paso 5: ToolCallId en solicitudes de permisos
-  (dotnet run → titulo + pasos 1-5 + cleanup)
-================================================================================
-
-AGREGAR antes de la seccion de cleanup:
-
-// -- 5. ToolCallId Inspection / Inspeccion de ToolCallId ---------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 5. ToolCallId en solicitudes de permisos ===");
-}
-else
-{
-    Console.WriteLine("=== 5. ToolCallId in Permission Requests ===");
-}
-{
-    var toolCallIds = new List<string>();
-    var session = await client.CreateSessionAsync(new SessionConfig
-    {
-        OnPermissionRequest = (request, invocation) =>
-        {
-            if (!string.IsNullOrEmpty(request.ToolCallId))
+            OnPermissionRequest = async (request, invocation) =>
             {
-                toolCallIds.Add(request.ToolCallId);
-                Console.WriteLine($"    [Permission] ToolCallId: {request.ToolCallId}");
+                Console.WriteLine($"    [Permission] Kind: {request.Kind} - Simulando verificacion asincrona...");
+                await Task.Delay(500);
+                Console.WriteLine("    [Permission] Aprobado tras espera");
+                return new PermissionRequestResult { Kind = "approved" };
             }
-            return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
-        }
-    });
+        });
 
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Run 'echo test-toolcallid'"
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content?.Substring(0, Math.Min(150, answer?.Data.Content?.Length ?? 0))}");
-    Console.WriteLine($"  ToolCallIds received: {toolCallIds.Count}");
-    foreach (var id in toolCallIds) Console.WriteLine($"    -> {id}");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Run 'echo hello from async permission demo' and tell me the output"
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step4_AsyncHandler(client);
 
 QUE DECIR:
-  - Cada solicitud de permiso tiene un ToolCallId unico que identifica la
-    invocacion de herramienta que la origino.
-  - Esto permite rastrear y auditar que operacion especifica pidio cada permiso.
-  - Util para logging, metricas, o para implementar politicas granulares por herramienta.
+  - El handler es async: puedes usar await para consultar APIs externas o
+    mostrar un dialogo antes de decidir.
+  - Task.Delay simula una verificacion asincrona (ej. servicio de politicas).
+  - El SDK espera la respuesta del handler antes de continuar.
 
 
 ================================================================================
-  BLOQUE 7 — Paso 6: Error en handler - Degradacion elegante
-  (dotnet run → titulo + pasos 1-6 + cleanup)
+  BLOQUE 6 — Agregar Step5_ToolCallId
+  (dotnet run → titulo + pasos 1-5)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR despues de Step4_AsyncHandler:
 
-// -- 6. Handler Error Graceful Degradation / Degradacion elegante ------
-if (isSpanish)
-{
-    Console.WriteLine("=== 6. Error en handler - Degradacion elegante ===");
-}
-else
-{
-    Console.WriteLine("=== 6. Handler Error - Graceful Degradation ===");
-}
-{
-    var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 5: ToolCallId ─────────────────────────────────────────────
+    async Task Step5_ToolCallId(CopilotClient client)
     {
-        OnPermissionRequest = (request, invocation) =>
+        PrintStep(5, Step5Text);
+        var toolCallIds = new List<string>();
+        var session = await client.CreateSessionAsync(new SessionConfig
         {
-            Console.WriteLine(isSpanish
-                ? "    [Permission] A punto de LANZAR excepcion!"
-                : "    [Permission] About to THROW an exception!");
-            throw new InvalidOperationException("Simulated handler crash");
-        }
-    });
+            OnPermissionRequest = (request, invocation) =>
+            {
+                if (!string.IsNullOrEmpty(request.ToolCallId))
+                {
+                    toolCallIds.Add(request.ToolCallId);
+                    Console.WriteLine($"    [Permission] ToolCallId: {request.ToolCallId}");
+                }
+                return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
+            }
+        });
 
-    var answer = await session.SendAndWaitAsync(new MessageOptions
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Run 'echo test-toolcallid'"
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content?.Substring(0, Math.Min(150, answer?.Data.Content?.Length ?? 0))}");
+        PrintProp("ToolCallIds recibidos:", toolCallIds.Count);
+        foreach (var id in toolCallIds) Console.WriteLine($"    -> {id}");
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step5_ToolCallId(client);
+
+QUE DECIR:
+  - Cada solicitud tiene un ToolCallId unico que identifica la invocacion.
+  - Util para logging, metricas, o politicas granulares por herramienta.
+
+
+================================================================================
+  BLOQUE 7 — Agregar Step6_HandlerError
+  (dotnet run → titulo + pasos 1-6)
+================================================================================
+
+AGREGAR despues de Step5_ToolCallId:
+
+    // ── Paso 6: Error en handler ───────────────────────────────────────
+    async Task Step6_HandlerError(CopilotClient client)
     {
-        Prompt = "Run 'echo test'. If you can't, say 'failed'."
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
-    Console.WriteLine(isSpanish
-        ? "  (El SDK maneja la excepcion elegantemente - permiso denegado automaticamente)"
-        : "  (SDK handles the exception gracefully - permission denied automatically)");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        PrintStep(6, Step6Text);
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            OnPermissionRequest = (request, invocation) =>
+            {
+                Console.WriteLine("    [Permission] A punto de LANZAR excepcion!");
+                throw new InvalidOperationException("Simulated handler crash");
+            }
+        });
+
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Run 'echo test'. If you can't, say 'failed'."
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
+        Console.WriteLine("  (El SDK maneja la excepcion elegantemente - permiso denegado automaticamente)");
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step6_HandlerError(client);
 
 QUE DECIR:
   - Si el handler lanza una excepcion, el SDK NO se cae.
-  - El SDK captura la excepcion y deniega el permiso automaticamente.
-  - Esto garantiza que un error en tu codigo de permisos no rompe toda la sesion.
-  - Patron de "fail-safe": ante la duda, se deniega el permiso.
+  - Captura la excepcion y deniega el permiso automaticamente.
+  - Patron "fail-safe": ante la duda, se deniega el permiso.
 
 
 ================================================================================
-  BLOQUE 8 — Paso 7: Handler de permisos al reanudar sesion
-  (dotnet run → titulo + pasos 1-7 + cleanup)
+  BLOQUE 8 — Agregar Step7_PermissionOnResume
+  (dotnet run → titulo + pasos 1-7)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR despues de Step6_HandlerError:
 
-// -- 7. Permission on Session Resume / Permisos al reanudar ------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 7. Handler de permisos al reanudar sesion ===");
-}
-else
-{
-    Console.WriteLine("=== 7. Permission Handler on Session Resume ===");
-}
-{
-    var session1 = await client.CreateSessionAsync();
-    var sessionId = session1.SessionId;
-    await session1.SendAndWaitAsync(new MessageOptions { Prompt = "What is 1+1?" });
-    Console.WriteLine($"  Session created: {sessionId}");
-
-    var permissionRequestReceived = false;
-    var session2 = await client.ResumeSessionAsync(sessionId, new ResumeSessionConfig
+    // ── Paso 7: Permisos al reanudar sesion ────────────────────────────
+    async Task Step7_PermissionOnResume(CopilotClient client)
     {
-        OnPermissionRequest = (request, invocation) =>
+        PrintStep(7, Step7Text);
+        var session1 = await client.CreateSessionAsync();
+        var sessionId = session1.SessionId;
+        await session1.SendAndWaitAsync(new MessageOptions { Prompt = "What is 1+1?" });
+        Console.WriteLine($"  Sesion creada: {sessionId}");
+
+        var permissionRequestReceived = false;
+        var session2 = await client.ResumeSessionAsync(sessionId, new ResumeSessionConfig
         {
-            permissionRequestReceived = true;
-            Console.WriteLine(isSpanish
-                ? $"    [Permission on Resume] Kind: {request.Kind} -> APROBADO"
-                : $"    [Permission on Resume] Kind: {request.Kind} -> APPROVED");
-            return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
-        }
-    });
+            OnPermissionRequest = (request, invocation) =>
+            {
+                permissionRequestReceived = true;
+                Console.WriteLine($"    [Permission on Resume] Kind: {request.Kind} -> APROBADO");
+                return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
+            }
+        });
 
-    await session2.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Run 'echo resumed-with-permissions'"
-    });
-    Console.WriteLine($"  Permission handler triggered on resume: {permissionRequestReceived}");
-    await session2.DisposeAsync();
-}
-Console.WriteLine();
+        await session2.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Run 'echo resumed-with-permissions'"
+        });
+        Console.WriteLine($"  Handler disparado al reanudar: {permissionRequestReceived}");
+        await session2.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step7_PermissionOnResume(client);
 
 QUE DECIR:
-  - ResumeSessionAsync permite reanudar una sesion existente con un nuevo handler.
-  - Esto es importante: al reanudar, puedes registrar un OnPermissionRequest diferente.
-  - Util cuando reinicias la app pero quieres continuar la conversacion con Copilot.
+  - ResumeSessionAsync permite reanudar una sesion con un nuevo handler.
+  - Util cuando reinicias la app pero quieres continuar la conversacion.
 
 
 ================================================================================
-  BLOQUE 9 — Modo interactivo (bloque final)
+  BLOQUE 9 — Agregar RunInteractiveMode
   (dotnet run → demo completo + modo interactivo)
 ================================================================================
 
-AGREGAR despues de la seccion de cleanup (al final del archivo):
+AGREGAR despues de Step7_PermissionOnResume:
 
-// -- Interactive mode / Modo interactivo ------------------------------
-Console.WriteLine("================================================================");
-Console.WriteLine(isSpanish
-    ? "  Presiona Enter para modo interactivo (aprobar/denegar cada solicitud)."
-    : "  Press Enter for interactive mode (approve/deny each permission request).");
-Console.WriteLine("================================================================");
-Console.ReadLine();
-
-var chatClient = new CopilotClient(new CopilotClientOptions
-{
-    UseLoggedInUser = true,
-    Logger = logger
-});
-await chatClient.StartAsync();
-
-await using var chatSession = await chatClient.CreateSessionAsync(new SessionConfig
-{
-    Streaming = true,
-    OnPermissionRequest = (request, invocation) =>
+    // ── Modo interactivo ────────────────────────────────────────────────
+    async Task RunInteractiveMode()
     {
-        Console.WriteLine($"\n    [Permission Request] Kind: {request.Kind}, ToolCallId: {request.ToolCallId}");
-        Console.Write(isSpanish ? "    Aprobar? (s/n): " : "    Approve? (y/n): ");
-        var response = Console.ReadLine()?.Trim().ToLowerInvariant();
-        var kind = (response == "n" || response == "no")
-            ? "denied-interactively-by-user"
-            : "approved";
-        Console.WriteLine($"    -> {kind}");
-        return Task.FromResult(new PermissionRequestResult { Kind = kind });
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {InteractiveHint}");
+        Console.WriteLine("================================================================");
+        Console.ReadLine();
+
+        var client = CreateClient();
+        await client.StartAsync();
+
+        await using var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Streaming = true,
+            OnPermissionRequest = (request, invocation) =>
+            {
+                Console.WriteLine($"\n    [Permission Request] Kind: {request.Kind}, ToolCallId: {request.ToolCallId}");
+                Console.Write("    Aprobar? (s/n): ");
+                var response = Console.ReadLine()?.Trim().ToLowerInvariant();
+                var kind = (response == "n" || response == "no")
+                    ? "denied-interactively-by-user"
+                    : "approved";
+                Console.WriteLine($"    -> {kind}");
+                return Task.FromResult(new PermissionRequestResult { Kind = kind });
+            }
+        });
+
+        Console.WriteLine($"  {InteractivePrompt}");
+        while (true)
+        {
+            Console.Write("  Tu: ");
+            var input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input)) break;
+
+            var done = new TaskCompletionSource<bool>();
+            session.On(evt =>
+            {
+                if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
+                if (evt is SessionIdleEvent) done.TrySetResult(true);
+                if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
+            });
+
+            Console.Write("  IA: ");
+            await session.SendAsync(new MessageOptions { Prompt = input });
+            await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
+            Console.WriteLine("\n");
+        }
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+        Console.WriteLine("\n  ¡Listo!");
     }
-});
 
-Console.WriteLine("  Type messages. You'll approve/deny permission requests interactively.\n");
-while (true)
-{
-    Console.Write("  You: ");
-    var input = Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(input)) break;
+MODIFICAR RunAsync (version final):
 
-    var done = new TaskCompletionSource<bool>();
-    chatSession.On(evt =>
+    public async Task RunAsync()
     {
-        if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
-        if (evt is SessionIdleEvent) done.TrySetResult(true);
-        if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
-    });
+        PrintTitle(DemoTitle);
 
-    Console.Write("  AI: ");
-    await chatSession.SendAsync(new MessageOptions { Prompt = input });
-    await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
-    Console.WriteLine();
-}
+        var client = CreateClient();
+        await client.StartAsync();
+        Console.WriteLine("  Cliente iniciado.\n");
 
-await chatClient.StopAsync();
-await chatClient.DisposeAsync();
-Console.WriteLine(isSpanish ? "\n  Listo!" : "\n  Done!");
+        var workDir = Path.Combine(Path.GetTempPath(), "copilot-permissions-demo");
+        Directory.CreateDirectory(workDir);
+
+        await Step1_ApprovePermission(client, workDir);
+        await Step2_DenyPermission(client, workDir);
+        await Step3_DefaultBehavior(client);
+        await Step4_AsyncHandler(client);
+        await Step5_ToolCallId(client);
+        await Step6_HandlerError(client);
+        await Step7_PermissionOnResume(client);
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+
+        try { Directory.Delete(workDir, true); } catch { /* ignore */ }
+
+        await RunInteractiveMode();
+    }
 
 QUE DECIR:
-  - El modo interactivo crea un NUEVO cliente con streaming habilitado.
-  - Cada vez que Copilot necesita permiso, el usuario lo aprueba o deniega en tiempo real.
-  - Streaming = true permite ver la respuesta token por token mientras se genera.
-  - El bucle while(true) sigue hasta que el usuario envia una linea vacia.
+  - El modo interactivo combina streaming + permisos en una sesion de chat.
+  - En cada operacion de escritura/ejecucion, el usuario aprueba o deniega en vivo.
+  - Esto simula un flujo "human-in-the-loop" para control de permisos.
 
 
 ================================================================================
   FINAL: dotnet run (demo en vivo)
 ================================================================================
 
-  Ya todos los pasos estan. Ejecutamos:
+  Ya todos los metodos estan. Ejecutamos:
 
     cd 05.PermissionsDemo && dotnet run
 
 QUE DECIR:
   - Vamos a ver los 7 pasos ejecutarse en orden.
-  - Cada paso demuestra un aspecto diferente del sistema de permisos del SDK.
+  - Cada paso demuestra un aspecto del sistema de permisos del SDK.
   - Al final podemos probar el modo interactivo aprobando o denegando en vivo.
 
 ================================================================================

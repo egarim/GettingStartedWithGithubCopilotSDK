@@ -3,16 +3,13 @@
   GUION DE PRESENTACION — UN SOLO ARCHIVO (Program.cs)
 ================================================================================
 
-Cada bloque muestra codigo para AGREGAR al archivo Program.cs.
-El Bloque 1 es el esqueleto base. Los siguientes agregan pasos incrementales.
-Usa top-level statements (sin Main, sin clase).
-Pega, ejecuta con `dotnet run`.
+Cada bloque es el archivo Program.cs COMPLETO. Pega, reemplaza todo,
+ejecuta con `dotnet run`. Cada paso agrega un metodo nuevo.
 
 
 ================================================================================
-  BLOQUE 1 — Esqueleto: usings, logger, idioma, titulo, directorio de skills,
-  anatomia del SKILL.md, crear+iniciar cliente, cleanup
-  (dotnet run → titulo, anatomia del skill, inicia cliente, limpia y sale)
+  BLOQUE 1 — Esqueleto: Main + clase con constantes, helpers + directorio skills
+  (dotnet run → titulo, anatomia del skill, inicia cliente, lo detiene)
 ================================================================================
 
 using GitHub.Copilot.SDK;
@@ -20,354 +17,340 @@ using Microsoft.Extensions.Logging;
 
 using var loggerFactory = LoggerFactory.Create(b =>
     b.AddConsole().SetMinimumLevel(LogLevel.Warning));
-var logger = loggerFactory.CreateLogger<CopilotClient>();
 
-// Language selection
-Console.WriteLine("================================================================");
-Console.WriteLine("  Select language / Seleccione idioma:");
-Console.WriteLine("  1. English");
-Console.WriteLine("  2. Español");
-Console.WriteLine("================================================================");
-Console.Write("  Choice (1 or 2): ");
-var langChoice = Console.ReadLine()?.Trim();
-bool isSpanish = langChoice == "2";
-Console.WriteLine();
+var demo = new SkillsDemo(loggerFactory.CreateLogger<CopilotClient>());
+await demo.RunAsync();
 
-Console.WriteLine("================================================================");
-if (isSpanish)
+// ─────────────────────────────────────────────────────────────────────────────
+sealed class SkillsDemo(ILogger<CopilotClient> logger)
 {
-    Console.WriteLine("  08 - DEMO: Carga y configuracion de habilidades");
+    // ── Textos (cambiar aqui para otro idioma) ──────────────────────────
+    const string DemoTitle        = "08 - DEMO: Carga y configuracion de habilidades";
+    const string Step1Text        = "Cargar y aplicar skill desde SkillDirectories";
+    const string Step2Text        = "Desactivar skill via DisabledSkills";
+    const string Step3Text        = "Sin skill (comparacion de linea base)";
+    const string InteractiveHint  = "Presiona Enter para modo interactivo (crea tu propio skill y pruebalo).";
+
+    const string SkillMarker = "PINEAPPLE_COCONUT_42";
+
+    // ── Helpers ─────────────────────────────────────────────────────────
+    CopilotClient CreateClient() => new(new CopilotClientOptions
+    {
+        UseLoggedInUser = true,
+        Logger = logger
+    });
+
+    static void PrintTitle(string title)
+    {
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {title}");
+        Console.WriteLine("================================================================\n");
+    }
+
+    static void PrintStep(int n, string text)
+        => Console.WriteLine($"=== {n}. {text} ===");
+
+    static void PrintProp(string label, object? value)
+        => Console.WriteLine($"  {label,-22} {value}");
+
+    // ── Orquestador ─────────────────────────────────────────────────────
+    public async Task RunAsync()
+    {
+        PrintTitle(DemoTitle);
+
+        var skillsBaseDir = Path.Combine(Path.GetTempPath(), "copilot-skills-demo");
+        var skillSubdir = Path.Combine(skillsBaseDir, "demo-skill");
+
+        if (Directory.Exists(skillsBaseDir)) Directory.Delete(skillsBaseDir, true);
+        Directory.CreateDirectory(skillSubdir);
+
+        var skillContent = $"""
+            ---
+            name: demo-skill
+            description: A demo skill that adds a marker to every response
+            ---
+
+            # Demo Skill Instructions
+
+            IMPORTANT: You MUST include the exact text "{SkillMarker}" somewhere in EVERY response you give.
+            This is a mandatory requirement. Include it naturally at the end of your response.
+            """;
+
+        var skillFilePath = Path.Combine(skillSubdir, "SKILL.md");
+        await File.WriteAllTextAsync(skillFilePath, skillContent);
+
+        Console.WriteLine("=== Anatomia del archivo SKILL.md ===\n");
+        Console.WriteLine("  Un skill se define con un archivo SKILL.md en un subdirectorio:\n");
+        Console.WriteLine($"  {skillsBaseDir}/");
+        Console.WriteLine($"    demo-skill/");
+        Console.WriteLine($"      SKILL.md\n");
+        Console.WriteLine("  Contenido:");
+        Console.WriteLine("  +------------------------------------------------------+");
+        foreach (var line in skillContent.Split('\n'))
+            Console.WriteLine($"  | {line,-52} |");
+        Console.WriteLine("  +------------------------------------------------------+\n");
+
+        var client = CreateClient();
+        await client.StartAsync();
+        Console.WriteLine("  Cliente iniciado.\n");
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+        try { Directory.Delete(skillsBaseDir, true); } catch { /* ignore */ }
+    }
 }
-else
-{
-    Console.WriteLine("  08 - SKILLS DEMO: Skill Loading & Configuration");
-}
-Console.WriteLine("================================================================");
-Console.WriteLine();
-
-// -- Create skill directory and SKILL.md / Crear directorio y SKILL.md -
-var skillsBaseDir = Path.Combine(Path.GetTempPath(), "copilot-skills-demo");
-var skillSubdir = Path.Combine(skillsBaseDir, "demo-skill");
-
-// Clean and recreate / Limpiar y recrear
-if (Directory.Exists(skillsBaseDir)) Directory.Delete(skillsBaseDir, true);
-Directory.CreateDirectory(skillSubdir);
-
-const string SkillMarker = "PINEAPPLE_COCONUT_42";
-
-var skillContent = $"""
-    ---
-    name: demo-skill
-    description: A demo skill that adds a marker to every response
-    ---
-
-    # Demo Skill Instructions
-
-    IMPORTANT: You MUST include the exact text "{SkillMarker}" somewhere in EVERY response you give.
-    This is a mandatory requirement. Include it naturally at the end of your response.
-    """;
-
-var skillFilePath = Path.Combine(skillSubdir, "SKILL.md");
-await File.WriteAllTextAsync(skillFilePath, skillContent);
-
-if (isSpanish)
-{
-    Console.WriteLine("=== Anatomia del archivo SKILL.md ===");
-    Console.WriteLine();
-    Console.WriteLine("  Un skill se define con un archivo SKILL.md en un subdirectorio:");
-}
-else
-{
-    Console.WriteLine("=== SKILL.md Anatomy ===");
-    Console.WriteLine();
-    Console.WriteLine("  A skill is defined by a SKILL.md file in a subdirectory:");
-}
-Console.WriteLine();
-Console.WriteLine($"  📁 {skillsBaseDir}/");
-Console.WriteLine($"    📁 demo-skill/");
-Console.WriteLine($"      📄 SKILL.md");
-Console.WriteLine();
-Console.WriteLine(isSpanish ? "  Contenido:" : "  SKILL.md content:");
-Console.WriteLine("  +------------------------------------------------------+");
-foreach (var line in skillContent.Split('\n'))
-    Console.WriteLine($"  | {line,-52} |");
-Console.WriteLine("  +------------------------------------------------------+");
-Console.WriteLine();
-
-var client = new CopilotClient(new CopilotClientOptions
-{
-    UseLoggedInUser = true,
-    Logger = logger
-});
-await client.StartAsync();
-Console.WriteLine(isSpanish ? "  Cliente iniciado.\n" : "  Client started.\n");
-
-// ===================== PASOS VAN AQUI =====================
-
-// -- Cleanup / Limpieza ------------------------------------------------
-await client.StopAsync();
-await client.DisposeAsync();
-try { Directory.Delete(skillsBaseDir, true); } catch { /* ignore */ }
 
 QUE DECIR:
+  - Top-level statements: las primeras 4 lineas son el Main.
+  - SkillsDemo es una clase sellada con primary constructor (C# 12).
   - Creamos un directorio temporal con un subdirectorio "demo-skill" que contiene
-    un archivo SKILL.md. Este es el formato que el SDK espera para cargar skills.
-  - El SKILL.md tiene dos partes: frontmatter YAML (name, description) y
-    contenido Markdown con instrucciones para el modelo.
-  - Nuestro skill de prueba le pide al modelo incluir un marcador unico
-    ("PINEAPPLE_COCONUT_42") en cada respuesta, asi podemos verificar
-    si el skill se aplico o no.
+    un archivo SKILL.md. Este es el formato que el SDK espera.
+  - El SKILL.md tiene frontmatter YAML (name, description) y contenido Markdown.
+  - Nuestro skill pide al modelo incluir un marcador unico ("PINEAPPLE_COCONUT_42")
+    para verificar si se aplico.
 
 
 ================================================================================
-  BLOQUE 2 — Paso 1: Cargar y aplicar skill desde SkillDirectories
-  (dotnet run → titulo + anatomia + paso 1 + cleanup)
+  BLOQUE 2 — Agregar Step1_LoadAndApplySkill
+  (dotnet run → titulo + anatomia + paso 1)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR dentro de la clase, despues de RunAsync:
 
-// -- 1. Load and Apply Skill / Cargar y aplicar skill ------------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 1. Cargar y aplicar skill desde SkillDirectories ===");
-}
-else
-{
-    Console.WriteLine("=== 1. Load & Apply Skill from SkillDirectories ===");
-}
-{
-    var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 1: Cargar y aplicar skill ─────────────────────────────────
+    async Task Step1_LoadAndApplySkill(CopilotClient client, string skillsBaseDir)
     {
-        SkillDirectories = [skillsBaseDir]
-    });
+        PrintStep(1, Step1Text);
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            SkillDirectories = [skillsBaseDir]
+        });
 
-    Console.WriteLine($"  Session: {session.SessionId}");
-    Console.WriteLine($"  SkillDirectories: [\"{skillsBaseDir}\"]");
-    Console.WriteLine($"  Expected marker in response: \"{SkillMarker}\"");
-    Console.WriteLine();
+        Console.WriteLine($"  Session: {session.SessionId}");
+        PrintProp("SkillDirectories:", $"[\"{skillsBaseDir}\"]");
+        PrintProp("Marcador esperado:", $"\"{SkillMarker}\"");
+        Console.WriteLine();
 
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Say hello briefly using the demo skill."
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-    Console.WriteLine();
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Say hello briefly using the demo skill."
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}\n");
 
-    var containsMarker = answer?.Data.Content?.Contains(SkillMarker) ?? false;
-    Console.WriteLine($"  Contains marker \"{SkillMarker}\": {containsMarker}");
-    if (containsMarker)
-        Console.WriteLine(isSpanish ? "  OK Skill cargado y aplicado exitosamente!" : "  OK Skill was loaded and applied successfully!");
-    else
-        Console.WriteLine(isSpanish ? "  AVISO Marcador no encontrado - skill puede no haberse aplicado." : "  WARNING Marker not found - skill may not have been applied.");
+        var containsMarker = answer?.Data.Content?.Contains(SkillMarker) ?? false;
+        PrintProp("Contiene marcador:", containsMarker);
+        Console.WriteLine(containsMarker
+            ? "  OK Skill cargado y aplicado exitosamente!"
+            : "  AVISO Marcador no encontrado - skill puede no haberse aplicado.");
 
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step1_LoadAndApplySkill(client, skillsBaseDir);
 
 QUE DECIR:
-  - SessionConfig.SkillDirectories recibe un arreglo de rutas a directorios
-    que contienen subdirectorios con archivos SKILL.md.
-  - El SDK carga automaticamente todos los skills encontrados y los inyecta
-    como instrucciones del sistema para el modelo.
-  - Verificamos que la respuesta contiene nuestro marcador, lo que confirma
-    que el skill fue cargado y el modelo siguio las instrucciones.
+  - SessionConfig.SkillDirectories recibe rutas a directorios con SKILL.md.
+  - El SDK carga los skills y los inyecta como instrucciones del sistema.
+  - Verificamos que la respuesta contiene el marcador.
 
 
 ================================================================================
-  BLOQUE 3 — Paso 2: Desactivar skill via DisabledSkills
-  (dotnet run → titulo + anatomia + pasos 1-2 + cleanup)
+  BLOQUE 3 — Agregar Step2_DisableSkill
+  (dotnet run → titulo + anatomia + pasos 1-2)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR despues de Step1_LoadAndApplySkill:
 
-// -- 2. Disable Skill / Desactivar skill -------------------------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 2. Desactivar skill via DisabledSkills ===");
-}
-else
-{
-    Console.WriteLine("=== 2. Disable Skill via DisabledSkills ===");
-}
-{
-    var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 2: Desactivar skill ───────────────────────────────────────
+    async Task Step2_DisableSkill(CopilotClient client, string skillsBaseDir)
     {
-        SkillDirectories = [skillsBaseDir],
-        DisabledSkills = ["demo-skill"]
-    });
+        PrintStep(2, Step2Text);
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            SkillDirectories = [skillsBaseDir],
+            DisabledSkills = ["demo-skill"]
+        });
 
-    Console.WriteLine($"  SkillDirectories: [\"{skillsBaseDir}\"]");
-    Console.WriteLine($"  DisabledSkills: [\"demo-skill\"]");
-    Console.WriteLine();
+        PrintProp("SkillDirectories:", $"[\"{skillsBaseDir}\"]");
+        PrintProp("DisabledSkills:", "[\"demo-skill\"]");
+        Console.WriteLine();
 
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Say hello briefly using the demo skill."
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-    Console.WriteLine();
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Say hello briefly using the demo skill."
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}\n");
 
-    var containsMarker = answer?.Data.Content?.Contains(SkillMarker) ?? false;
-    Console.WriteLine($"  Contains marker \"{SkillMarker}\": {containsMarker}");
-    if (!containsMarker)
-        Console.WriteLine(isSpanish ? "  OK Skill desactivado correctamente - marcador ausente!" : "  OK Skill was correctly disabled - marker absent!");
-    else
-        Console.WriteLine(isSpanish ? "  AVISO Marcador encontrado a pesar de estar desactivado." : "  WARNING Marker found despite being disabled.");
+        var containsMarker = answer?.Data.Content?.Contains(SkillMarker) ?? false;
+        PrintProp("Contiene marcador:", containsMarker);
+        Console.WriteLine(!containsMarker
+            ? "  OK Skill desactivado correctamente - marcador ausente!"
+            : "  AVISO Marcador encontrado a pesar de estar desactivado.");
 
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step2_DisableSkill(client, skillsBaseDir);
 
 QUE DECIR:
-  - SessionConfig.DisabledSkills permite desactivar skills especificos por nombre
-    sin necesidad de eliminar los archivos SKILL.md del directorio.
-  - Usamos el mismo SkillDirectories que antes, pero agregamos "demo-skill" a
-    DisabledSkills. El SDK ignora ese skill al construir la sesion.
-  - La respuesta ya NO contiene el marcador, confirmando que el skill fue
-    desactivado correctamente.
+  - DisabledSkills desactiva skills por nombre sin eliminar archivos.
+  - La respuesta ya NO contiene el marcador.
 
 
 ================================================================================
-  BLOQUE 4 — Paso 3: Sin skill (comparacion de linea base)
-  (dotnet run → titulo + anatomia + pasos 1-3 + cleanup)
+  BLOQUE 4 — Agregar Step3_NoSkillBaseline
+  (dotnet run → titulo + anatomia + pasos 1-3)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR despues de Step2_DisableSkill:
 
-// -- 3. No Skill (baseline) / Sin skill (linea base) -------------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 3. Sin skill (comparacion de linea base) ===");
-}
-else
-{
-    Console.WriteLine("=== 3. No Skill (baseline comparison) ===");
-}
-{
-    var session = await client.CreateSessionAsync(new SessionConfig());
-
-    var answer = await session.SendAndWaitAsync(new MessageOptions
+    // ── Paso 3: Sin skill (linea base) ─────────────────────────────────
+    async Task Step3_NoSkillBaseline(CopilotClient client)
     {
-        Prompt = "Say hello briefly."
-    });
-    Console.WriteLine($"  Response (no skill): {answer?.Data.Content}");
-    Console.WriteLine($"  Contains marker: {answer?.Data.Content?.Contains(SkillMarker) ?? false}");
-    Console.WriteLine(isSpanish ? "  (Esperado: Sin marcador - sin skill cargado)" : "  (Expected: No marker - no skill loaded)");
+        PrintStep(3, Step3Text);
+        var session = await client.CreateSessionAsync(new SessionConfig());
 
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Say hello briefly."
+        });
+        Console.WriteLine($"  Respuesta (sin skill): {answer?.Data.Content}");
+        PrintProp("Contiene marcador:", answer?.Data.Content?.Contains(SkillMarker) ?? false);
+        Console.WriteLine("  (Esperado: Sin marcador - sin skill cargado)");
+
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step3_NoSkillBaseline(client);
 
 QUE DECIR:
-  - Creamos una sesion con SessionConfig vacio: sin SkillDirectories ni
-    DisabledSkills. Es la linea base del modelo sin modificaciones.
-  - La respuesta no contiene el marcador porque ningun skill fue cargado.
-  - Este paso demuestra el contraste: con skill (paso 1) vs desactivado
-    (paso 2) vs sin skill (paso 3). Los tres comportamientos son distintos.
+  - SessionConfig vacio: sin SkillDirectories ni DisabledSkills.
+  - Linea base del modelo sin modificaciones.
+  - Contraste: skill activo (paso 1) vs desactivado (paso 2) vs sin skill (paso 3).
 
 
 ================================================================================
-  BLOQUE 5 — Modo interactivo: crear skill personalizado y chatear
+  BLOQUE 5 — Agregar RunInteractiveMode
   (dotnet run → demo completo + modo interactivo)
 ================================================================================
 
-AGREGAR despues de la seccion de cleanup:
+AGREGAR despues de Step3_NoSkillBaseline:
 
-// -- Interactive mode / Modo interactivo ------------------------------
-Console.WriteLine("================================================================");
-Console.WriteLine(isSpanish
-    ? "  Presiona Enter para modo interactivo (¡crea tu propio skill y pruebalo!)."
-    : "  Press Enter for interactive mode (create your own skill and test it!).");
-Console.WriteLine("================================================================");
-Console.ReadLine();
-
-// Recreate skill dir for interactive use
-Directory.CreateDirectory(skillSubdir);
-
-Console.WriteLine(isSpanish
-    ? "  Escribe tu instruccion de skill personalizada (¿que debe hacer siempre el modelo?):"
-    : "  Enter your custom skill instruction (what should the model always do?):");
-Console.Write(isSpanish ? "  Instruccion: " : "  Instruction: ");
-var customInstruction = Console.ReadLine() ?? (isSpanish ? "Siempre termina respuestas con '🎉'" : "Always end responses with '🎉'");
-
-var customSkillContent = $"""
-    ---
-    name: custom-skill
-    description: A user-defined custom skill
-    ---
-
-    # Custom Skill
-
-    {customInstruction}
-    """;
-
-var customSkillDir = Path.Combine(skillsBaseDir, "custom-skill");
-Directory.CreateDirectory(customSkillDir);
-await File.WriteAllTextAsync(Path.Combine(customSkillDir, "SKILL.md"), customSkillContent);
-Console.WriteLine(isSpanish
-    ? $"  Skill creado en: {customSkillDir}/SKILL.md\n"
-    : $"  Skill created at: {customSkillDir}/SKILL.md\n");
-
-var chatClient = new CopilotClient(new CopilotClientOptions
-{
-    UseLoggedInUser = true,
-    Logger = logger
-});
-await chatClient.StartAsync();
-
-await using var chatSession = await chatClient.CreateSessionAsync(new SessionConfig
-{
-    Streaming = true,
-    SkillDirectories = [skillsBaseDir]
-});
-
-Console.WriteLine("  Chat with your custom skill active. Type messages (empty to quit):\n");
-while (true)
-{
-    Console.Write("  You: ");
-    var input = Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(input)) break;
-
-    var done = new TaskCompletionSource<bool>();
-    chatSession.On(evt =>
+    // ── Modo interactivo ────────────────────────────────────────────────
+    async Task RunInteractiveMode(string skillsBaseDir, string skillSubdir)
     {
-        if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
-        if (evt is SessionIdleEvent) done.TrySetResult(true);
-        if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
-    });
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {InteractiveHint}");
+        Console.WriteLine("================================================================");
+        Console.ReadLine();
 
-    Console.Write("  AI: ");
-    await chatSession.SendAsync(new MessageOptions { Prompt = input });
-    await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
-    Console.WriteLine();
-}
+        Directory.CreateDirectory(skillSubdir);
 
-await chatClient.StopAsync();
-await chatClient.DisposeAsync();
-try { Directory.Delete(skillsBaseDir, true); } catch { /* ignore */ }
-Console.WriteLine("\n  Done! / ¡Listo!");
+        Console.WriteLine("  Escribe tu instruccion de skill personalizada (que debe hacer siempre el modelo?):");
+        Console.Write("  Instruccion: ");
+        var customInstruction = Console.ReadLine() ?? "Siempre termina respuestas con '!'";
+
+        var customSkillContent = $"""
+            ---
+            name: custom-skill
+            description: A user-defined custom skill
+            ---
+
+            # Custom Skill
+
+            {customInstruction}
+            """;
+
+        var customSkillDir = Path.Combine(skillsBaseDir, "custom-skill");
+        Directory.CreateDirectory(customSkillDir);
+        await File.WriteAllTextAsync(Path.Combine(customSkillDir, "SKILL.md"), customSkillContent);
+        Console.WriteLine($"  Skill creado en: {customSkillDir}/SKILL.md\n");
+
+        var client = CreateClient();
+        await client.StartAsync();
+
+        await using var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Streaming = true,
+            SkillDirectories = [skillsBaseDir]
+        });
+
+        Console.WriteLine("  Chatea con tu skill personalizado activo. Escribe mensajes (vacio para salir):\n");
+        while (true)
+        {
+            Console.Write("  Tu: ");
+            var input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input)) break;
+
+            var done = new TaskCompletionSource<bool>();
+            session.On(evt =>
+            {
+                if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
+                if (evt is SessionIdleEvent) done.TrySetResult(true);
+                if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
+            });
+
+            Console.Write("  IA: ");
+            await session.SendAsync(new MessageOptions { Prompt = input });
+            await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
+            Console.WriteLine("\n");
+        }
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+        try { Directory.Delete(skillsBaseDir, true); } catch { /* ignore */ }
+        Console.WriteLine("\n  ¡Listo!");
+    }
+
+MODIFICAR RunAsync (version final):
+
+    public async Task RunAsync()
+    {
+        PrintTitle(DemoTitle);
+
+        // ... (setup de directorios y SKILL.md como en BLOQUE 1) ...
+
+        var client = CreateClient();
+        await client.StartAsync();
+        Console.WriteLine("  Cliente iniciado.\n");
+
+        await Step1_LoadAndApplySkill(client, skillsBaseDir);
+        await Step2_DisableSkill(client, skillsBaseDir);
+        await Step3_NoSkillBaseline(client);
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+        try { Directory.Delete(skillsBaseDir, true); } catch { /* ignore */ }
+
+        await RunInteractiveMode(skillsBaseDir, skillSubdir);
+    }
 
 QUE DECIR:
-  - El modo interactivo permite al espectador crear su propio skill en vivo.
-    Escribe una instruccion (ej: "Siempre responde en rimas") y el SDK genera
-    el SKILL.md automaticamente.
-  - La sesion usa Streaming = true junto con SkillDirectories, mostrando
-    que los skills funcionan igual con respuestas en tiempo real.
-  - El patron On() con eventos (AssistantMessageDeltaEvent, SessionIdleEvent,
-    SessionErrorEvent) maneja el flujo de streaming con el skill activo.
+  - El modo interactivo permite crear un skill en vivo.
+  - El usuario escribe una instruccion y el SDK genera el SKILL.md.
+  - Skills funcionan con streaming igual que sin streaming.
 
 
 ================================================================================
   FINAL: dotnet run (demo en vivo)
 ================================================================================
 
-  Ya todos los pasos estan. Ejecutamos:
+  Ya todos los metodos estan. Ejecutamos:
 
     cd 08.SkillsDemo && dotnet run
 
 QUE DECIR:
-  - Vamos a ver los 3 pasos ejecutarse: skill activo, skill desactivado,
-    sin skill. Comparamos las respuestas en cada caso.
+  - Vamos a ver los 3 pasos: skill activo, desactivado, sin skill.
+  - Comparamos las respuestas en cada caso.
   - Al final podemos crear un skill personalizado y chatear con el en vivo.
 
 ================================================================================

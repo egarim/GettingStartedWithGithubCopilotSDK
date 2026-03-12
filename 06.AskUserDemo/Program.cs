@@ -1,275 +1,249 @@
 using GitHub.Copilot.SDK;
 using Microsoft.Extensions.Logging;
 
-// ============================================================================
-// 06 – ASK USER DEMO: User Input Requests
-// 06 – DEMO PREGUNTAR AL USUARIO: Solicitudes de entrada del usuario
-//
-// Demonstrates / Demuestra:
-//   • OnUserInputRequest handler — respond to model's questions
-//   • Choice-based prompts (UserInputRequest.Choices)
-//   • Freeform user input (WasFreeform = true)
-//   • SessionId validation via ToolInvocation
-// ============================================================================
-
 using var loggerFactory = LoggerFactory.Create(b =>
     b.AddConsole().SetMinimumLevel(LogLevel.Warning));
-var logger = loggerFactory.CreateLogger<CopilotClient>();
 
-// Language selection
-Console.WriteLine("================================================================");
-Console.WriteLine("  Select language / Seleccione idioma:");
-Console.WriteLine("  1. English");
-Console.WriteLine("  2. Español");
-Console.WriteLine("================================================================");
-Console.Write("  Choice (1 or 2): ");
-var langChoice = Console.ReadLine()?.Trim();
-bool isSpanish = langChoice == "2";
-Console.WriteLine();
+var demo = new AskUserDemo(loggerFactory.CreateLogger<CopilotClient>());
+await demo.RunAsync();
 
-Console.WriteLine("================================================================");
-if (isSpanish)
+// ─────────────────────────────────────────────────────────────────────────────
+sealed class AskUserDemo(ILogger<CopilotClient> logger)
 {
-    Console.WriteLine("  06 - DEMO: Solicitudes de entrada del usuario");
-}
-else
-{
-    Console.WriteLine("  06 - ASK USER DEMO: User Input Requests");
-}
-Console.WriteLine("================================================================");
-Console.WriteLine();
+    // ── Textos (cambiar aqui para otro idioma) ──────────────────────────
+    const string DemoTitle        = "06 - DEMO: Solicitudes de entrada del usuario";
+    const string Step1Text        = "Entrada con opciones (auto-responder primera opcion)";
+    const string Step2Text        = "Verificar opciones en UserInputRequest";
+    const string Step3Text        = "Entrada libre del usuario (WasFreeform = true)";
+    const string InteractiveHint  = "Presiona Enter para modo interactivo (responde las preguntas del modelo en vivo).";
+    const string InteractivePrompt = "Escribe mensajes (vacio para salir). El modelo te hara preguntas.\n";
 
-var client = new CopilotClient(new CopilotClientOptions
-{
-    UseLoggedInUser = true,
-    Logger = logger
-});
-await client.StartAsync();
-Console.WriteLine(isSpanish ? "  Cliente iniciado.\n" : "  Client started.\n");
-
-// -- 1. Choice-based User Input / Entrada con opciones -----------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 1. Entrada con opciones (auto-responder primera opcion) ===");
-}
-else
-{
-    Console.WriteLine("=== 1. Choice-based User Input (auto-answer first choice) ===");
-}
-{
-    var userInputRequests = new List<UserInputRequest>();
-    CopilotSession? session = null;
-    session = await client.CreateSessionAsync(new SessionConfig
+    // ── Helpers ─────────────────────────────────────────────────────────
+    CopilotClient CreateClient() => new(new CopilotClientOptions
     {
-        OnUserInputRequest = (request, invocation) =>
-        {
-            userInputRequests.Add(request);
-            Console.WriteLine($"    [AskUser] Question: {request.Question}");
-            Console.WriteLine($"    [AskUser] Session: {invocation.SessionId}");
+        UseLoggedInUser = true,
+        Logger = logger
+    });
 
-            if (request.Choices is { Count: > 0 })
+    static void PrintTitle(string title)
+    {
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {title}");
+        Console.WriteLine("================================================================\n");
+    }
+
+    static void PrintStep(int n, string text)
+        => Console.WriteLine($"=== {n}. {text} ===");
+
+    static void PrintProp(string label, object? value)
+        => Console.WriteLine($"  {label,-22} {value}");
+
+    // ── Orquestador ─────────────────────────────────────────────────────
+    public async Task RunAsync()
+    {
+        PrintTitle(DemoTitle);
+
+        var client = CreateClient();
+        await client.StartAsync();
+        Console.WriteLine("  Cliente iniciado.\n");
+
+        await Step1_ChoiceBasedInput(client);
+        await Step2_VerifyChoices(client);
+        await Step3_FreeformInput(client);
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+
+        await RunInteractiveMode();
+    }
+
+    // ── Paso 1: Entrada con opciones ───────────────────────────────────
+    async Task Step1_ChoiceBasedInput(CopilotClient client)
+    {
+        PrintStep(1, Step1Text);
+        var userInputRequests = new List<UserInputRequest>();
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            OnUserInputRequest = (request, invocation) =>
             {
-                Console.WriteLine($"    [AskUser] Choices: [{string.Join(", ", request.Choices)}]");
-                Console.WriteLine($"    [AskUser] Auto-selecting first choice: {request.Choices[0]}");
+                userInputRequests.Add(request);
+                Console.WriteLine($"    [AskUser] Pregunta: {request.Question}");
+                Console.WriteLine($"    [AskUser] Session: {invocation.SessionId}");
+
+                if (request.Choices is { Count: > 0 })
+                {
+                    Console.WriteLine($"    [AskUser] Opciones: [{string.Join(", ", request.Choices)}]");
+                    Console.WriteLine($"    [AskUser] Auto-seleccionando primera: {request.Choices[0]}");
+                    return Task.FromResult(new UserInputResponse
+                    {
+                        Answer = request.Choices[0],
+                        WasFreeform = false
+                    });
+                }
+
+                Console.WriteLine("    [AskUser] Sin opciones — respuesta libre");
                 return Task.FromResult(new UserInputResponse
                 {
-                    Answer = request.Choices[0],
-                    WasFreeform = false
+                    Answer = "I'll go with the default option",
+                    WasFreeform = true
                 });
             }
+        });
 
-            Console.WriteLine("    [AskUser] No choices — returning freeform answer");
-            return Task.FromResult(new UserInputResponse
-            {
-                Answer = "I'll go with the default option",
-                WasFreeform = true
-            });
-        }
-    });
-
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Ask me to choose between 'Option A' and 'Option B' using the ask_user tool. Wait for my response before continuing."
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-    Console.WriteLine($"  UserInputRequests received: {userInputRequests.Count}");
-    foreach (var req in userInputRequests)
-    {
-        Console.WriteLine($"    Question: {req.Question}");
-        Console.WriteLine($"    Has choices: {req.Choices is { Count: > 0 }}");
-    }
-    await session.DisposeAsync();
-}
-Console.WriteLine();
-
-// -- 2. Verify Choices are Received / Verificar opciones recibidas -----
-if (isSpanish)
-{
-    Console.WriteLine("=== 2. Verificar opciones en UserInputRequest ===");
-}
-else
-{
-    Console.WriteLine("=== 2. Verify Choices in UserInputRequest ===");
-}
-{
-    var userInputRequests = new List<UserInputRequest>();
-    var session = await client.CreateSessionAsync(new SessionConfig
-    {
-        OnUserInputRequest = (request, invocation) =>
+        var answer = await session.SendAndWaitAsync(new MessageOptions
         {
-            userInputRequests.Add(request);
-            Console.WriteLine($"    [AskUser] Question: {request.Question}");
-            if (request.Choices is { Count: > 0 })
-            {
-                for (int i = 0; i < request.Choices.Count; i++)
-                    Console.WriteLine($"    [AskUser]   [{i + 1}] {request.Choices[i]}");
-            }
-
-            var answer = request.Choices?.FirstOrDefault() ?? "default";
-            return Task.FromResult(new UserInputResponse { Answer = answer, WasFreeform = false });
-        }
-    });
-
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Use the ask_user tool to ask me to pick between exactly two options: 'Red' and 'Blue'. These should be provided as choices. Wait for my answer."
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-
-    var requestsWithChoices = userInputRequests.Where(r => r.Choices is { Count: > 0 }).ToList();
-    Console.WriteLine(isSpanish
-        ? $"  Con opciones: {requestsWithChoices.Count}"
-        : $"  Requests with choices: {requestsWithChoices.Count}");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
-
-// -- 3. Freeform User Input / Entrada libre ----------------------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 3. Entrada libre del usuario (WasFreeform = true) ===");
-}
-else
-{
-    Console.WriteLine("=== 3. Freeform User Input (WasFreeform = true) ===");
-}
-{
-    const string freeformAnswer = "My favorite color is emerald green, a beautiful shade!";
-    var userInputRequests = new List<UserInputRequest>();
-
-    var session = await client.CreateSessionAsync(new SessionConfig
-    {
-        OnUserInputRequest = (request, invocation) =>
+            Prompt = "Ask me to choose between 'Option A' and 'Option B' using the ask_user tool. Wait for my response before continuing."
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+        PrintProp("Solicitudes recibidas:", userInputRequests.Count);
+        foreach (var req in userInputRequests)
         {
-            userInputRequests.Add(request);
-            Console.WriteLine($"    [AskUser] Question: {request.Question}");
-            Console.WriteLine($"    [AskUser] Freeform answer: \"{freeformAnswer}\"");
-            return Task.FromResult(new UserInputResponse
-            {
-                Answer = freeformAnswer,
-                WasFreeform = true
-            });
+            Console.WriteLine($"    Pregunta: {req.Question}");
+            Console.WriteLine($"    Tiene opciones: {req.Choices is { Count: > 0 }}");
         }
-    });
-
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Ask me a question using ask_user: 'What is your favorite color?' Then include my answer in your response."
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-    Console.WriteLine($"  UserInputRequests: {userInputRequests.Count}");
-    Console.WriteLine(isSpanish
-        ? "  (El modelo deberia incorporar nuestra respuesta libre sobre verde esmeralda)"
-        : "  (The model should incorporate our freeform answer about emerald green)");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
-
-// -- Cleanup / Limpieza ------------------------------------------------
-await client.StopAsync();
-await client.DisposeAsync();
-
-// -- Interactive mode / Modo interactivo ------------------------------
-Console.WriteLine("================================================================");
-Console.WriteLine(isSpanish
-    ? "  Presiona Enter para modo interactivo (¡responde las preguntas del modelo en vivo!)."
-    : "  Press Enter for interactive mode (answer the model's questions live!).");
-Console.WriteLine("================================================================");
-Console.ReadLine();
-
-var chatClient = new CopilotClient(new CopilotClientOptions
-{
-    UseLoggedInUser = true,
-    Logger = logger
-});
-await chatClient.StartAsync();
-
-await using var chatSession = await chatClient.CreateSessionAsync(new SessionConfig
-{
-    Streaming = true,
-    OnUserInputRequest = (request, invocation) =>
-    {
+        await session.DisposeAsync();
         Console.WriteLine();
-        Console.WriteLine(isSpanish
-            ? "    +- El modelo te hace una pregunta:"
-            : "    +- The model is asking you a question:");
-        Console.WriteLine($"    |  {request.Question}");
-
-        if (request.Choices is { Count: > 0 })
-        {
-            Console.WriteLine(isSpanish ? "    |  Opciones:" : "    |  Choices:");
-            for (int i = 0; i < request.Choices.Count; i++)
-                Console.WriteLine($"    |    [{i + 1}] {request.Choices[i]}");
-            Console.Write(isSpanish
-                ? "    +- Elige numero o escribe: "
-                : "    +- Pick a number or type your own answer: ");
-        }
-        else
-        {
-            Console.Write(isSpanish ? "    +- Tu respuesta: " : "    +- Your answer: ");
-        }
-
-        var userAnswer = Console.ReadLine() ?? "";
-        var wasFreeform = true;
-
-        // If they typed a number matching a choice, use that choice
-        if (request.Choices is { Count: > 0 } && int.TryParse(userAnswer, out var idx)
-            && idx >= 1 && idx <= request.Choices.Count)
-        {
-            userAnswer = request.Choices[idx - 1];
-            wasFreeform = false;
-        }
-
-        Console.WriteLine(isSpanish
-            ? $"    -> Respondiendo: \"{userAnswer}\" (libre: {wasFreeform})"
-            : $"    -> Answering: \"{userAnswer}\" (freeform: {wasFreeform})");
-        return Task.FromResult(new UserInputResponse { Answer = userAnswer, WasFreeform = wasFreeform });
     }
-});
 
-Console.WriteLine("  Type prompts that ask the model to ask YOU questions.\n");
-Console.WriteLine("  Try: \"Ask me what programming language I prefer using ask_user\"\n");
-
-while (true)
-{
-    Console.Write("  You: ");
-    var input = Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(input)) break;
-
-    var done = new TaskCompletionSource<bool>();
-    chatSession.On(evt =>
+    // ── Paso 2: Verificar opciones ─────────────────────────────────────
+    async Task Step2_VerifyChoices(CopilotClient client)
     {
-        if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
-        if (evt is SessionIdleEvent) done.TrySetResult(true);
-        if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
-    });
+        PrintStep(2, Step2Text);
+        var userInputRequests = new List<UserInputRequest>();
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            OnUserInputRequest = (request, invocation) =>
+            {
+                userInputRequests.Add(request);
+                Console.WriteLine($"    [AskUser] Pregunta: {request.Question}");
+                if (request.Choices is { Count: > 0 })
+                {
+                    for (int i = 0; i < request.Choices.Count; i++)
+                        Console.WriteLine($"    [AskUser]   [{i + 1}] {request.Choices[i]}");
+                }
 
-    Console.Write("  AI: ");
-    await chatSession.SendAsync(new MessageOptions { Prompt = input });
-    await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
-    Console.WriteLine();
+                var answer = request.Choices?.FirstOrDefault() ?? "default";
+                return Task.FromResult(new UserInputResponse { Answer = answer, WasFreeform = false });
+            }
+        });
+
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Use the ask_user tool to ask me to pick between exactly two options: 'Red' and 'Blue'. These should be provided as choices. Wait for my answer."
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+
+        var requestsWithChoices = userInputRequests.Where(r => r.Choices is { Count: > 0 }).ToList();
+        PrintProp("Con opciones:", requestsWithChoices.Count);
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+    // ── Paso 3: Entrada libre ──────────────────────────────────────────
+    async Task Step3_FreeformInput(CopilotClient client)
+    {
+        PrintStep(3, Step3Text);
+        const string freeformAnswer = "My favorite color is emerald green, a beautiful shade!";
+        var userInputRequests = new List<UserInputRequest>();
+
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            OnUserInputRequest = (request, invocation) =>
+            {
+                userInputRequests.Add(request);
+                Console.WriteLine($"    [AskUser] Pregunta: {request.Question}");
+                Console.WriteLine($"    [AskUser] Respuesta libre: \"{freeformAnswer}\"");
+                return Task.FromResult(new UserInputResponse
+                {
+                    Answer = freeformAnswer,
+                    WasFreeform = true
+                });
+            }
+        });
+
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Ask me a question using ask_user: 'What is your favorite color?' Then include my answer in your response."
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+        PrintProp("Solicitudes recibidas:", userInputRequests.Count);
+        Console.WriteLine("  (El modelo deberia incorporar nuestra respuesta libre sobre verde esmeralda)");
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+    // ── Modo interactivo ────────────────────────────────────────────────
+    async Task RunInteractiveMode()
+    {
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {InteractiveHint}");
+        Console.WriteLine("================================================================");
+        Console.ReadLine();
+
+        var client = CreateClient();
+        await client.StartAsync();
+
+        await using var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Streaming = true,
+            OnUserInputRequest = (request, invocation) =>
+            {
+                Console.WriteLine();
+                Console.WriteLine("    +- El modelo te hace una pregunta:");
+                Console.WriteLine($"    |  {request.Question}");
+
+                if (request.Choices is { Count: > 0 })
+                {
+                    Console.WriteLine("    |  Opciones:");
+                    for (int i = 0; i < request.Choices.Count; i++)
+                        Console.WriteLine($"    |    [{i + 1}] {request.Choices[i]}");
+                    Console.Write("    +- Elige numero o escribe: ");
+                }
+                else
+                {
+                    Console.Write("    +- Tu respuesta: ");
+                }
+
+                var userAnswer = Console.ReadLine() ?? "";
+                var wasFreeform = true;
+
+                if (request.Choices is { Count: > 0 } && int.TryParse(userAnswer, out var idx)
+                    && idx >= 1 && idx <= request.Choices.Count)
+                {
+                    userAnswer = request.Choices[idx - 1];
+                    wasFreeform = false;
+                }
+
+                Console.WriteLine($"    -> Respondiendo: \"{userAnswer}\" (libre: {wasFreeform})");
+                return Task.FromResult(new UserInputResponse { Answer = userAnswer, WasFreeform = wasFreeform });
+            }
+        });
+
+        Console.WriteLine($"  {InteractivePrompt}");
+        Console.WriteLine("  Prueba: \"Preguntame que lenguaje de programacion prefiero usando ask_user\"\n");
+
+        while (true)
+        {
+            Console.Write("  Tu: ");
+            var input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input)) break;
+
+            var done = new TaskCompletionSource<bool>();
+            session.On(evt =>
+            {
+                if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
+                if (evt is SessionIdleEvent) done.TrySetResult(true);
+                if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
+            });
+
+            Console.Write("  IA: ");
+            await session.SendAsync(new MessageOptions { Prompt = input });
+            await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
+            Console.WriteLine("\n");
+        }
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+        Console.WriteLine("\n  ¡Listo!");
+    }
 }
-
-await chatClient.StopAsync();
-await chatClient.DisposeAsync();
-Console.WriteLine(isSpanish ? "\n  ¡Listo!" : "\n  Done!");

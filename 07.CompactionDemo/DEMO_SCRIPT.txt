@@ -3,356 +3,327 @@
   GUION DE PRESENTACION — UN SOLO ARCHIVO (Program.cs)
 ================================================================================
 
-Cada BLOQUE muestra codigo para AGREGAR al archivo Program.cs.
-El Bloque 1 es el esqueleto base. Los siguientes agregan un paso cada uno.
-Este proyecto usa top-level statements (sin Main, sin clase).
-Ejecutar con `dotnet run` despues de cada bloque.
+Cada bloque es el archivo Program.cs COMPLETO. Pega, reemplaza todo,
+ejecuta con `dotnet run`. Cada paso agrega un metodo nuevo.
 
 
 ================================================================================
-  BLOQUE 1 — Esqueleto base: usings, logger, idioma, titulo, cliente
+  BLOQUE 1 — Esqueleto: Main + clase con constantes, helpers
   (dotnet run → imprime titulo, inicia cliente, lo detiene)
 ================================================================================
 
 using GitHub.Copilot.SDK;
 using Microsoft.Extensions.Logging;
 
-// ============================================================================
-// 07 – COMPACTION DEMO: Infinite Sessions & Context Compaction
-// 07 – DEMO COMPACTACIÓN: Sesiones infinitas y compactación de contexto
-//
-// Demonstrates / Demuestra:
-//   • InfiniteSessionConfig — enable infinite sessions
-//   • BackgroundCompactionThreshold / BufferExhaustionThreshold
-//   • SessionCompactionStartEvent / SessionCompactionCompleteEvent
-//   • Token removal tracking (TokensRemoved)
-//   • Disabled compaction — no compaction events
-// ============================================================================
-
 using var loggerFactory = LoggerFactory.Create(b =>
     b.AddConsole().SetMinimumLevel(LogLevel.Warning));
-var logger = loggerFactory.CreateLogger<CopilotClient>();
 
-// Language selection
-Console.WriteLine("================================================================");
-Console.WriteLine("  Select language / Seleccione idioma:");
-Console.WriteLine("  1. English");
-Console.WriteLine("  2. Español");
-Console.WriteLine("================================================================");
-Console.Write("  Choice (1 or 2): ");
-var langChoice = Console.ReadLine()?.Trim();
-bool isSpanish = langChoice == "2";
-Console.WriteLine();
+var demo = new CompactionDemo(loggerFactory.CreateLogger<CopilotClient>());
+await demo.RunAsync();
 
-Console.WriteLine("================================================================");
-if (isSpanish)
+// ─────────────────────────────────────────────────────────────────────────────
+sealed class CompactionDemo(ILogger<CopilotClient> logger)
 {
-    Console.WriteLine("  07 - DEMO: Sesiones infinitas y compactacion de contexto");
-}
-else
-{
-    Console.WriteLine("  07 - COMPACTION DEMO: Infinite Sessions & Compaction");
-}
-Console.WriteLine("================================================================");
-Console.WriteLine();
+    // ── Textos (cambiar aqui para otro idioma) ──────────────────────────
+    const string DemoTitle        = "07 - DEMO: Sesiones infinitas y compactacion de contexto";
+    const string Step1Text        = "Compactacion activada - Umbrales bajos";
+    const string Step2Text        = "Compactacion desactivada - Sin eventos";
+    const string InteractiveHint  = "Presiona Enter para sesion infinita interactiva (sigue chateando para activar compactacion).";
+    const string InteractivePrompt = "Sesion infinita activa - sigue chateando para llenar contexto y activar compactacion.\n";
 
-var client = new CopilotClient(new CopilotClientOptions
-{
-    UseLoggedInUser = true,
-    Logger = logger
-});
-await client.StartAsync();
-Console.WriteLine(isSpanish ? "  Cliente iniciado.\n" : "  Client started.\n");
-
-// =============================================
-// AQUI SE AGREGAN LOS PASOS (bloques 2, 3...)
-// =============================================
-
-// -- Cleanup / Limpieza ------------------------------------------------
-await client.StopAsync();
-await client.DisposeAsync();
-
-QUE DECIR:
-  - Usamos top-level statements: las primeras lineas SON el Main.
-  - LoggerFactory en Warning para no saturar la consola con logs internos del SDK.
-  - CopilotClient con UseLoggedInUser = true reutiliza la sesion de GitHub del usuario.
-  - StartAsync() conecta al servidor de Copilot. Al final, StopAsync + DisposeAsync liberan recursos.
-
-
-================================================================================
-  BLOQUE 2 — Paso 1: Compactacion activada con umbrales bajos
-  (dotnet run → titulo + paso 1 con 3 mensajes largos + cleanup)
-================================================================================
-
-AGREGAR antes de la seccion de cleanup:
-
-// -- 1. Compaction Enabled (low thresholds) / Compactacion activada ----
-if (isSpanish)
-{
-    Console.WriteLine("=== 1. Compactacion activada - Umbrales bajos ===");
-    Console.WriteLine("  (Umbrales bajos activan compactacion rapido para demostracion)");
-}
-else
-{
-    Console.WriteLine("=== 1. Compaction Enabled - Low Thresholds ===");
-    Console.WriteLine("  (Low thresholds trigger compaction quickly for demo purposes)");
-}
-Console.WriteLine();
-{
-    var compactionStartEvents = new List<SessionCompactionStartEvent>();
-    var compactionCompleteEvents = new List<SessionCompactionCompleteEvent>();
-
-    var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Helpers ─────────────────────────────────────────────────────────
+    CopilotClient CreateClient() => new(new CopilotClientOptions
     {
-        InfiniteSessions = new InfiniteSessionConfig
-        {
-            Enabled = true,
-            // Very low thresholds to trigger compaction quickly
-            // Umbrales muy bajos para activar compactación rápidamente
-            BackgroundCompactionThreshold = 0.005, // 0.5% of context → ~1000 tokens
-            BufferExhaustionThreshold = 0.01        // 1% → block and compact
-        }
+        UseLoggedInUser = true,
+        Logger = logger
     });
 
-    session.On(evt =>
+    static void PrintTitle(string title)
     {
-        if (evt is SessionCompactionStartEvent startEvt)
-        {
-            compactionStartEvents.Add(startEvt);
-            Console.WriteLine(isSpanish
-                ? "    * [CompactacionInicio] ¡Compactacion de fondo activada!"
-                : "    * [CompactionStart] Background compaction triggered!");
-        }
-        if (evt is SessionCompactionCompleteEvent completeEvt)
-        {
-            compactionCompleteEvents.Add(completeEvt);
-            Console.WriteLine(isSpanish
-                ? $"    OK [CompactacionCompleta] Exito: {completeEvt.Data.Success}, Tokens removidos: {completeEvt.Data.TokensRemoved}"
-                : $"    OK [CompactionComplete] Success: {completeEvt.Data.Success}, Tokens removed: {completeEvt.Data.TokensRemoved}");
-        }
-    });
-
-    // Send multiple long messages to fill up the context window
-    // Enviar múltiples mensajes largos para llenar la ventana de contexto
-    Console.WriteLine("  Sending message 1/3: Tell me a long story about a dragon...");
-    var a1 = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Tell me a long story about a dragon. Be very detailed. Include at least 5 paragraphs."
-    });
-    Console.WriteLine($"  Response 1 length: {a1?.Data.Content?.Length ?? 0} chars");
-    Console.WriteLine($"  Compaction events so far: start={compactionStartEvents.Count}, complete={compactionCompleteEvents.Count}");
-    Console.WriteLine();
-
-    Console.WriteLine("  Sending message 2/3: Continue the story with the castle...");
-    var a2 = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Continue the story with more details about the dragon's castle. Make it very long and descriptive."
-    });
-    Console.WriteLine($"  Response 2 length: {a2?.Data.Content?.Length ?? 0} chars");
-    Console.WriteLine($"  Compaction events so far: start={compactionStartEvents.Count}, complete={compactionCompleteEvents.Count}");
-    Console.WriteLine();
-
-    Console.WriteLine("  Sending message 3/3: Describe the dragon's treasure...");
-    var a3 = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Now describe the dragon's treasure in great detail. List every item. Make this response very long."
-    });
-    Console.WriteLine($"  Response 3 length: {a3?.Data.Content?.Length ?? 0} chars");
-    Console.WriteLine();
-
-    // Results / Resultados
-    Console.WriteLine(isSpanish
-        ? "  -- Resultados de compactacion --"
-        : "  -- Compaction Results --");
-    Console.WriteLine($"  CompactionStart events:    {compactionStartEvents.Count}");
-    Console.WriteLine($"  CompactionComplete events: {compactionCompleteEvents.Count}");
-
-    if (compactionCompleteEvents.Count > 0)
-    {
-        var last = compactionCompleteEvents[^1];
-        Console.WriteLine($"  Last compaction success:   {last.Data.Success}");
-        Console.WriteLine($"  Last tokens removed:       {last.Data.TokensRemoved}");
-    }
-    else
-    {
-        Console.WriteLine(isSpanish
-            ? "  (No se activo compactacion - la ventana de contexto puede no haberse llenado suficiente)"
-            : "  (No compaction was triggered - context window may not have been filled enough)");
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {title}");
+        Console.WriteLine("================================================================\n");
     }
 
-    // Verify session still works after compaction
-    // Verificar que la sesión aún funciona tras compactación
-    Console.WriteLine();
-    Console.WriteLine("  Verifying session works after compaction...");
-    var a4 = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "What was the main story about? Answer in one sentence."
-    });
-    Console.WriteLine($"  Response: {a4?.Data.Content}");
-    Console.WriteLine(isSpanish
-        ? "  (Deberia recordar que era sobre un dragon - contexto preservado via resumen)"
-        : "  (Should still remember it was about a dragon - context preserved via summary)");
+    static void PrintStep(int n, string text)
+        => Console.WriteLine($"=== {n}. {text} ===");
 
-    await session.DisposeAsync();
+    static void PrintProp(string label, object? value)
+        => Console.WriteLine($"  {label,-22} {value}");
+
+    // ── Orquestador ─────────────────────────────────────────────────────
+    public async Task RunAsync()
+    {
+        PrintTitle(DemoTitle);
+
+        var client = CreateClient();
+        await client.StartAsync();
+        Console.WriteLine("  Cliente iniciado.\n");
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+    }
 }
-Console.WriteLine();
 
 QUE DECIR:
-  - InfiniteSessionConfig con Enabled = true activa sesiones infinitas: el SDK compacta
-    automaticamente el historial cuando se llena la ventana de contexto.
-  - BackgroundCompactionThreshold (0.5%) y BufferExhaustionThreshold (1%) estan muy bajos
-    a proposito para forzar la compactacion rapido en la demo.
-  - session.On() nos suscribe a eventos: SessionCompactionStartEvent cuando inicia
-    y SessionCompactionCompleteEvent cuando termina (con TokensRemoved).
-  - Tras la compactacion, la sesion sigue funcionando — el modelo recuerda el tema
-    porque el SDK genera un resumen automatico del contexto anterior.
+  - Top-level statements: las primeras 4 lineas son el Main.
+  - CompactionDemo es una clase sellada con primary constructor (C# 12).
+  - InfiniteSessionConfig permite sesiones que compactan automaticamente
+    el historial cuando se llena la ventana de contexto.
+  - RunAsync solo imprime titulo e inicia/detiene el cliente. Vamos a agregar pasos.
 
 
 ================================================================================
-  BLOQUE 3 — Paso 2: Compactacion desactivada (sin eventos)
-  (dotnet run → titulo + pasos 1-2 + cleanup)
+  BLOQUE 2 — Agregar Step1_CompactionEnabled
+  (dotnet run → titulo + paso 1 con 3 mensajes largos)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup (despues del Console.WriteLine() del paso 1):
+AGREGAR dentro de la clase, despues de RunAsync:
 
-// -- 2. Compaction Disabled / Compactacion desactivada -----------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 2. Compactacion desactivada - Sin eventos ===");
-}
-else
-{
-    Console.WriteLine("=== 2. Compaction Disabled - No Events ===");
-}
-{
-    var compactionEvents = new List<SessionEvent>();
-
-    var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 1: Compactacion activada ──────────────────────────────────
+    async Task Step1_CompactionEnabled(CopilotClient client)
     {
-        InfiniteSessions = new InfiniteSessionConfig
+        PrintStep(1, Step1Text);
+        Console.WriteLine("  (Umbrales bajos activan compactacion rapido para demostracion)\n");
+
+        var compactionStartEvents = new List<SessionCompactionStartEvent>();
+        var compactionCompleteEvents = new List<SessionCompactionCompleteEvent>();
+
+        var session = await client.CreateSessionAsync(new SessionConfig
         {
-            Enabled = false
-        }
-    });
+            InfiniteSessions = new InfiniteSessionConfig
+            {
+                Enabled = true,
+                BackgroundCompactionThreshold = 0.005,
+                BufferExhaustionThreshold = 0.01
+            }
+        });
 
-    session.On(evt =>
-    {
-        if (evt is SessionCompactionStartEvent or SessionCompactionCompleteEvent)
+        session.On(evt =>
         {
-            compactionEvents.Add(evt);
+            if (evt is SessionCompactionStartEvent startEvt)
+            {
+                compactionStartEvents.Add(startEvt);
+                Console.WriteLine("    * [CompactacionInicio] Compactacion de fondo activada!");
+            }
+            if (evt is SessionCompactionCompleteEvent completeEvt)
+            {
+                compactionCompleteEvents.Add(completeEvt);
+                Console.WriteLine($"    OK [CompactacionCompleta] Exito: {completeEvt.Data.Success}, Tokens removidos: {completeEvt.Data.TokensRemoved}");
+            }
+        });
+
+        Console.WriteLine("  Enviando mensaje 1/3: Historia larga de un dragon...");
+        var a1 = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Tell me a long story about a dragon. Be very detailed. Include at least 5 paragraphs."
+        });
+        Console.WriteLine($"  Respuesta 1 longitud: {a1?.Data.Content?.Length ?? 0} chars");
+        PrintProp("Eventos compactacion:", $"inicio={compactionStartEvents.Count}, completo={compactionCompleteEvents.Count}");
+        Console.WriteLine();
+
+        Console.WriteLine("  Enviando mensaje 2/3: Continuar con el castillo...");
+        var a2 = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Continue the story with more details about the dragon's castle. Make it very long and descriptive."
+        });
+        Console.WriteLine($"  Respuesta 2 longitud: {a2?.Data.Content?.Length ?? 0} chars");
+        PrintProp("Eventos compactacion:", $"inicio={compactionStartEvents.Count}, completo={compactionCompleteEvents.Count}");
+        Console.WriteLine();
+
+        Console.WriteLine("  Enviando mensaje 3/3: Describir el tesoro...");
+        var a3 = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Now describe the dragon's treasure in great detail. List every item. Make this response very long."
+        });
+        Console.WriteLine($"  Respuesta 3 longitud: {a3?.Data.Content?.Length ?? 0} chars\n");
+
+        Console.WriteLine("  -- Resultados de compactacion --");
+        PrintProp("CompactionStart:", compactionStartEvents.Count);
+        PrintProp("CompactionComplete:", compactionCompleteEvents.Count);
+
+        if (compactionCompleteEvents.Count > 0)
+        {
+            var last = compactionCompleteEvents[^1];
+            PrintProp("Ultima exitosa:", last.Data.Success);
+            PrintProp("Tokens removidos:", last.Data.TokensRemoved);
         }
-    });
+        else
+        {
+            Console.WriteLine("  (No se activo compactacion - la ventana de contexto puede no haberse llenado suficiente)");
+        }
 
-    var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 2+2?" });
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-    Console.WriteLine($"  Compaction events fired: {compactionEvents.Count}");
-    Console.WriteLine(isSpanish
-        ? "  (Esperado: 0 - compactacion desactivada)"
-        : "  (Expected: 0 - compaction is disabled)");
+        Console.WriteLine();
+        Console.WriteLine("  Verificando que la sesion funciona tras compactacion...");
+        var a4 = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "What was the main story about? Answer in one sentence."
+        });
+        Console.WriteLine($"  Respuesta: {a4?.Data.Content}");
+        Console.WriteLine("  (Deberia recordar que era sobre un dragon - contexto preservado via resumen)");
 
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step1_CompactionEnabled(client);
 
 QUE DECIR:
-  - Con Enabled = false, la sesion NO compacta — cuando se llene la ventana de contexto,
-    simplemente se pierde el historial mas antiguo o falla.
+  - InfiniteSessionConfig con Enabled = true activa sesiones infinitas.
+  - BackgroundCompactionThreshold (0.5%) y BufferExhaustionThreshold (1%)
+    estan muy bajos a proposito para forzar compactacion rapido.
+  - session.On() nos suscribe a eventos de compactacion.
+  - Tras la compactacion, la sesion sigue funcionando — el SDK genera
+    un resumen automatico del contexto anterior.
+
+
+================================================================================
+  BLOQUE 3 — Agregar Step2_CompactionDisabled
+  (dotnet run → titulo + pasos 1-2)
+================================================================================
+
+AGREGAR despues de Step1_CompactionEnabled:
+
+    // ── Paso 2: Compactacion desactivada ───────────────────────────────
+    async Task Step2_CompactionDisabled(CopilotClient client)
+    {
+        PrintStep(2, Step2Text);
+        var compactionEvents = new List<SessionEvent>();
+
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            InfiniteSessions = new InfiniteSessionConfig
+            {
+                Enabled = false
+            }
+        });
+
+        session.On(evt =>
+        {
+            if (evt is SessionCompactionStartEvent or SessionCompactionCompleteEvent)
+            {
+                compactionEvents.Add(evt);
+            }
+        });
+
+        var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 2+2?" });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+        PrintProp("Eventos disparados:", compactionEvents.Count);
+        Console.WriteLine("  (Esperado: 0 - compactacion desactivada)");
+
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step2_CompactionDisabled(client);
+
+QUE DECIR:
+  - Con Enabled = false, la sesion NO compacta.
   - Confirmamos que cero eventos de compactacion se disparan.
-  - Esto es el comportamiento por defecto si no configuras InfiniteSessionConfig.
+  - Este es el comportamiento por defecto.
 
 
 ================================================================================
-  BLOQUE 4 — Modo interactivo: sesion infinita con streaming
-  (dotnet run → demo completo + modo interactivo al final)
+  BLOQUE 4 — Agregar RunInteractiveMode
+  (dotnet run → demo completo + modo interactivo)
 ================================================================================
 
-AGREGAR despues de la seccion de cleanup (despues de await client.DisposeAsync();):
+AGREGAR despues de Step2_CompactionDisabled:
 
-// -- Interactive mode / Modo interactivo ------------------------------
-Console.WriteLine("================================================================");
-Console.WriteLine(isSpanish
-    ? "  Presiona Enter para sesion infinita interactiva (¡sigue chateando para activar compactacion!)."
-    : "  Press Enter for interactive infinite session (keep chatting to trigger compaction!).");
-Console.WriteLine("================================================================");
-Console.ReadLine();
-
-var chatClient = new CopilotClient(new CopilotClientOptions
-{
-    UseLoggedInUser = true,
-    Logger = logger
-});
-await chatClient.StartAsync();
-
-var compactionCount = 0;
-await using var chatSession = await chatClient.CreateSessionAsync(new SessionConfig
-{
-    Streaming = true,
-    InfiniteSessions = new InfiniteSessionConfig
+    // ── Modo interactivo ────────────────────────────────────────────────
+    async Task RunInteractiveMode()
     {
-        Enabled = true,
-        BackgroundCompactionThreshold = 0.005,
-        BufferExhaustionThreshold = 0.01
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {InteractiveHint}");
+        Console.WriteLine("================================================================");
+        Console.ReadLine();
+
+        var client = CreateClient();
+        await client.StartAsync();
+
+        var compactionCount = 0;
+        await using var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Streaming = true,
+            InfiniteSessions = new InfiniteSessionConfig
+            {
+                Enabled = true,
+                BackgroundCompactionThreshold = 0.005,
+                BufferExhaustionThreshold = 0.01
+            }
+        });
+
+        session.On(evt =>
+        {
+            if (evt is SessionCompactionStartEvent)
+                Console.WriteLine("\n    * COMPACTACION INICIADA");
+            if (evt is SessionCompactionCompleteEvent c)
+            {
+                compactionCount++;
+                Console.WriteLine($"    OK COMPACTACION #{compactionCount} COMPLETA - removidos {c.Data.TokensRemoved} tokens");
+            }
+        });
+
+        Console.WriteLine($"  {InteractivePrompt}");
+        while (true)
+        {
+            Console.Write($"  Tu [{compactionCount} compactaciones]: ");
+            var input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input)) break;
+
+            var done = new TaskCompletionSource<bool>();
+            session.On(evt =>
+            {
+                if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
+                if (evt is SessionIdleEvent) done.TrySetResult(true);
+                if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
+            });
+
+            Console.Write("  IA: ");
+            await session.SendAsync(new MessageOptions { Prompt = input });
+            await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
+            Console.WriteLine("\n");
+        }
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+        Console.WriteLine("\n  ¡Listo!");
     }
-});
 
-chatSession.On(evt =>
-{
-    if (evt is SessionCompactionStartEvent)
-        Console.WriteLine(isSpanish
-            ? "\n    * COMPACTACION INICIADA"
-            : "\n    * COMPACTION STARTED");
-    if (evt is SessionCompactionCompleteEvent c)
+MODIFICAR RunAsync (version final):
+
+    public async Task RunAsync()
     {
-        compactionCount++;
-        Console.WriteLine(isSpanish
-            ? $"    OK COMPACTACION #{compactionCount} COMPLETA - removidos {c.Data.TokensRemoved} tokens"
-            : $"    OK COMPACTION #{compactionCount} COMPLETE - removed {c.Data.TokensRemoved} tokens");
+        PrintTitle(DemoTitle);
+
+        var client = CreateClient();
+        await client.StartAsync();
+        Console.WriteLine("  Cliente iniciado.\n");
+
+        await Step1_CompactionEnabled(client);
+        await Step2_CompactionDisabled(client);
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+
+        await RunInteractiveMode();
     }
-});
-
-Console.WriteLine(isSpanish
-    ? "  Sesion infinita activa - sigue chateando para llenar contexto y activar compactacion.\n"
-    : "  Infinite session active - keep chatting to fill context and trigger compaction.\n");
-
-while (true)
-{
-    Console.Write($"  You [{compactionCount} compactions]: ");
-    var input = Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(input)) break;
-
-    var done = new TaskCompletionSource<bool>();
-    chatSession.On(evt =>
-    {
-        if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
-        if (evt is SessionIdleEvent) done.TrySetResult(true);
-        if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
-    });
-
-    Console.Write("  AI: ");
-    await chatSession.SendAsync(new MessageOptions { Prompt = input });
-    await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
-    Console.WriteLine();
-}
-
-await chatClient.StopAsync();
-await chatClient.DisposeAsync();
-Console.WriteLine(isSpanish ? "\n  ¡Listo!" : "\n  Done!");
 
 QUE DECIR:
-  - El modo interactivo crea un SEGUNDO CopilotClient con Streaming = true para
-    ver las respuestas token por token (AssistantMessageDeltaEvent).
-  - El prompt muestra el contador de compactaciones: mientras mas se chatea,
-    mas se llena el contexto y se activa la compactacion automatica.
-  - SessionIdleEvent indica que el modelo termino de responder.
-  - El usuario puede chatear indefinidamente — el SDK maneja la compactacion
-    de forma transparente, resumiendo el historial cuando se necesita.
+  - El modo interactivo crea una sesion infinita con streaming.
+  - El prompt muestra el contador de compactaciones.
+  - El usuario puede chatear indefinidamente — el SDK compacta transparentemente.
 
 
 ================================================================================
   FINAL: dotnet run (demo en vivo)
 ================================================================================
 
-  Ya todos los pasos estan. Ejecutamos:
+  Ya todos los metodos estan. Ejecutamos:
 
     cd 07.CompactionDemo && dotnet run
 

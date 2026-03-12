@@ -3,16 +3,13 @@
   GUION DE PRESENTACION — UN SOLO ARCHIVO (Program.cs)
 ================================================================================
 
-Cada bloque muestra codigo para AGREGAR al archivo Program.cs.
-El Bloque 1 es el esqueleto base. Los bloques siguientes agregan un paso
-cada uno. Despues de pegar cada bloque, ejecuta con `dotnet run`.
-
-Este demo usa top-level statements (sin Main, sin clase wrapper).
+Cada bloque es el archivo Program.cs COMPLETO. Pega, reemplaza todo,
+ejecuta con `dotnet run`. Cada paso agrega un metodo nuevo.
 
 
 ================================================================================
-  BLOQUE 1 — Esqueleto base: usings, titulo, cliente, auth, tools + cleanup
-  (dotnet run -> imprime titulo, crea cliente, muestra auth, cierra)
+  BLOQUE 1 — Esqueleto: Main + clase con constantes, helpers + tools
+  (dotnet run → imprime titulo, inicia cliente, verifica auth, lo detiene)
 ================================================================================
 
 using System.ComponentModel;
@@ -21,55 +18,67 @@ using GitHub.Copilot.SDK;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 
-// ════════════════════════════════════════════════════════════════════════
-//  11 — Bring Your Own Key (BYOK) Demo
-//  Shows how to use custom models added via GitHub Copilot's BYOK feature.
-//
-//  Your enterprise/org admin adds an API key (e.g., OpenRouter, Anthropic,
-//  Azure OpenAI, etc.) in GitHub settings, and those models appear
-//  automatically in ListModelsAsync(). You use them via SessionConfig.Model
-//  exactly like built-in models — no extra SDK or client needed!
-//
-//  See: https://docs.github.com/en/copilot/how-tos/administer-copilot/
-//       manage-for-enterprise/use-your-own-api-keys
-// ════════════════════════════════════════════════════════════════════════
-
 using var loggerFactory = LoggerFactory.Create(b =>
     b.AddConsole().SetMinimumLevel(LogLevel.Warning));
-var logger = loggerFactory.CreateLogger<CopilotClient>();
 
-Console.WriteLine("════════════════════════════════════════════════════════");
-Console.WriteLine("  11 — BYOK Demo: Use Custom Models via GitHub Copilot");
-Console.WriteLine("════════════════════════════════════════════════════════");
-Console.WriteLine();
+var demo = new BYOKDemo(loggerFactory.CreateLogger<CopilotClient>());
+await demo.RunAsync();
 
-// ── 1. Create the client (same as every other demo) ──────────────────
-Console.WriteLine("=== 1. Starting CopilotClient ===\n");
-
-var token = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
-var client = new CopilotClient(new CopilotClientOptions
+// ─────────────────────────────────────────────────────────────────────────────
+sealed class BYOKDemo(ILogger<CopilotClient> logger)
 {
-    GithubToken = string.IsNullOrWhiteSpace(token) ? null : token,
-    UseLoggedInUser = string.IsNullOrWhiteSpace(token),
-    Logger = logger
-});
-await client.StartAsync();
+    // ── Textos (cambiar aqui para otro idioma) ──────────────────────────
+    const string DemoTitle        = "11 - DEMO: Bring Your Own Key (BYOK) - Modelos personalizados";
+    const string Step1Text        = "Iniciar cliente y verificar auth";
+    const string Step2Text        = "Listar todos los modelos (built-in + BYOK)";
+    const string Step3Text        = "Chat con el modelo por defecto";
+    const string Step4Text        = "Chat con un modelo especifico";
+    const string Step5Text        = "Comparar multiples modelos";
+    const string Step6Text        = "Modelo custom + herramientas";
+    const string Step7Text        = "Streaming con modelo custom";
+    const string InteractiveHint  = "Presiona Enter para chat interactivo con el modelo BYOK.";
+    const string InteractivePrompt = "Escribe mensajes (vacio para salir). Los modelos BYOK funcionan exactamente igual.\n";
 
-var auth = await client.GetAuthStatusAsync();
-Console.WriteLine($"  Auth: {auth.IsAuthenticated} ({auth.AuthType})");
-Console.WriteLine($"  Source: {(string.IsNullOrWhiteSpace(token) ? "VS Code login" : "GitHub PAT")}");
-Console.WriteLine();
+    // ── Helpers ─────────────────────────────────────────────────────────
+    CopilotClient CreateClient()
+    {
+        var token = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
+        return new CopilotClient(new CopilotClientOptions
+        {
+            GithubToken = string.IsNullOrWhiteSpace(token) ? null : token,
+            UseLoggedInUser = string.IsNullOrWhiteSpace(token),
+            Logger = logger
+        });
+    }
 
-// ══════════════════════════════════════════════════════════════════════
-//  >>> AQUI SE AGREGAN LOS PASOS 2-8 <<<
-// ══════════════════════════════════════════════════════════════════════
+    static void PrintTitle(string title)
+    {
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {title}");
+        Console.WriteLine("================================================================\n");
+    }
 
-// ── Cleanup ──────────────────────────────────────────────────────────
-await client.StopAsync();
-await client.DisposeAsync();
-Console.WriteLine("\nDone!");
+    static void PrintStep(int n, string text)
+        => Console.WriteLine($"=== {n}. {text} ===");
 
-// ── Tool implementations ───────────────────────────────────────────────
+    static void PrintProp(string label, object? value)
+        => Console.WriteLine($"  {label,-22} {value}");
+
+    // ── Orquestador ─────────────────────────────────────────────────────
+    public async Task RunAsync()
+    {
+        PrintTitle(DemoTitle);
+
+        var client = CreateClient();
+        await client.StartAsync();
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+    }
+}
+
+// ── Implementaciones de herramientas ────────────────────────────────────────
+
 [Description("Gets the current weather for a city")]
 static string GetWeather([Description("City name")] string city)
 {
@@ -85,275 +94,233 @@ static string GetTime([Description("City name")] string city)
 }
 
 QUE DECIR:
-  - Top-level statements: no hay Main ni clase, el archivo ES el programa.
-  - Soportamos dos modos de auth: GITHUB_TOKEN (PAT) o VS Code login.
-  - El cliente se crea, se inicia, verificamos auth, y al final limpiamos.
-  - Las funciones GetWeather y GetTime son tools locales que el modelo
-    puede invocar. Las dejamos desde el inicio porque son infraestructura.
-  - Con solo este bloque ya compila y corre: muestra titulo, conecta, y cierra.
+  - Top-level statements: las primeras 4 lineas son el Main.
+  - BYOKDemo es una clase sellada con primary constructor (C# 12).
+  - CreateClient soporta GITHUB_TOKEN (PAT) o VS Code login.
+  - Las funciones GetWeather y GetTime son tools locales fuera de la clase.
+  - RunAsync solo imprime titulo e inicia/detiene el cliente. Vamos a agregar pasos.
 
 
 ================================================================================
-  BLOQUE 2 — Paso 2: Listar TODOS los modelos (built-in + BYOK custom)
-  (dotnet run -> titulo + auth + lista de modelos + cierra)
+  BLOQUE 2 — Agregar Step1_StartAndAuth + Step2_ListModels
+  (dotnet run → titulo + auth + lista de modelos)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR dentro de la clase, despues de RunAsync:
 
-// ── 2. List ALL available models (built-in + BYOK custom) ────────────
-Console.WriteLine("=== 2. All Available Models (built-in + custom BYOK) ===\n");
-
-var models = await client.ListModelsAsync();
-Console.WriteLine($"  Total models: {models.Count}");
-Console.WriteLine($"  {"ID",-45} {"Name",-30}");
-Console.WriteLine($"  {"──",-45} {"────",-30}");
-foreach (var m in models)
-    Console.WriteLine($"  {m.Id,-45} {m.Name,-30}");
-Console.WriteLine();
-Console.WriteLine("  Custom models from BYOK appear in this list!");
-Console.WriteLine("  (Admin adds API keys at: GitHub > Enterprise > AI controls > Copilot > Custom models)");
-Console.WriteLine();
-
-QUE DECIR:
-  - ListModelsAsync() devuelve TODOS los modelos: los built-in de GitHub
-    (gpt-4o, claude-sonnet, etc.) Y los custom que el admin agrego via BYOK.
-  - La magia de BYOK es que el admin configura la API key una sola vez
-    y los modelos aparecen automaticamente para todos los developers.
-  - No necesitas ningun SDK extra ni API key propia — todo pasa por Copilot.
-
-
-================================================================================
-  BLOQUE 3 — Paso 3: Chat con el modelo por defecto
-  (dotnet run -> titulo + auth + modelos + chat default + cierra)
-================================================================================
-
-AGREGAR antes de la seccion de cleanup:
-
-// ── 3. Use the DEFAULT model ─────────────────────────────────────────
-Console.WriteLine("=== 3. Chat with Default Model ===\n");
-{
-    await using var session = await client.CreateSessionAsync();
-    var answer = await session.SendAndWaitAsync(
-        new MessageOptions { Prompt = "What model are you? Answer in one short sentence." });
-    Console.WriteLine($"  Q: What model are you?");
-    Console.WriteLine($"  A: {answer?.Data.Content}");
-}
-Console.WriteLine();
-
-QUE DECIR:
-  - CreateSessionAsync() sin parametros usa el modelo por defecto de Copilot.
-  - SendAndWaitAsync() envia el prompt y espera la respuesta completa.
-  - Usamos un bloque { } para que la sesion se dispose al terminar el scope.
-  - El modelo responde cual es — asi confirmamos que modelo se uso.
-
-
-================================================================================
-  BLOQUE 4 — Paso 4: Chat con un modelo especifico (seleccion de modelo)
-  (dotnet run -> titulo + auth + modelos + chat default + chat especifico + cierra)
-================================================================================
-
-AGREGAR antes de la seccion de cleanup:
-
-// ── 4. Use a SPECIFIC model (pick by ID from the list above) ─────────
-Console.WriteLine("=== 4. Chat with a Specific Model ===\n");
-
-// Try claude-sonnet-4 first, fall back to gpt-4.1, then gpt-4o
-var preferredModels = new[] { "claude-sonnet-4", "gpt-4.1", "gpt-4o" };
-string? chosenModel = null;
-
-foreach (var preferred in preferredModels)
-{
-    if (models.Any(m => m.Id.Equals(preferred, StringComparison.OrdinalIgnoreCase)))
+    // ── Paso 1: Iniciar cliente ────────────────────────────────────────
+    async Task<(IReadOnlyList<ModelInfo> models, string chosenModel)> Step1_StartAndAuth(CopilotClient client)
     {
-        chosenModel = preferred;
-        break;
+        PrintStep(1, Step1Text);
+        var token = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
+        var auth = await client.GetAuthStatusAsync();
+        PrintProp("Auth:", $"{auth.IsAuthenticated} ({auth.AuthType})");
+        PrintProp("Fuente:", string.IsNullOrWhiteSpace(token) ? "VS Code login" : "GitHub PAT");
+        Console.WriteLine();
+
+        var models = await client.ListModelsAsync();
+
+        var preferredModels = new[] { "claude-sonnet-4", "gpt-4.1", "gpt-4o" };
+        string? chosenModel = null;
+        foreach (var preferred in preferredModels)
+        {
+            if (models.Any(m => m.Id.Equals(preferred, StringComparison.OrdinalIgnoreCase)))
+            {
+                chosenModel = preferred;
+                break;
+            }
+        }
+        chosenModel ??= models.FirstOrDefault()?.Id ?? "gpt-4o";
+
+        return (models, chosenModel);
     }
-}
-chosenModel ??= models.FirstOrDefault()?.Id ?? "gpt-4o";
 
-Console.WriteLine($"  Using model: {chosenModel}");
-{
-    await using var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 2: Listar modelos ─────────────────────────────────────────
+    Task Step2_ListModels(IReadOnlyList<ModelInfo> models)
     {
-        Model = chosenModel
-    });
-    var answer = await session.SendAndWaitAsync(
-        new MessageOptions { Prompt = "What model are you? Answer in one short sentence." });
-    Console.WriteLine($"  Q: What model are you?");
-    Console.WriteLine($"  A: {answer?.Data.Content}");
-}
-Console.WriteLine();
+        PrintStep(2, Step2Text);
+        PrintProp("Total modelos:", models.Count);
+        Console.WriteLine($"  {"ID",-45} {"Nombre",-30}");
+        Console.WriteLine($"  {"--",-45} {"------",-30}");
+        foreach (var m in models)
+            Console.WriteLine($"  {m.Id,-45} {m.Name,-30}");
+        Console.WriteLine();
+        Console.WriteLine("  Los modelos custom de BYOK aparecen en esta lista!");
+        Console.WriteLine();
+        return Task.CompletedTask;
+    }
+
+MODIFICAR RunAsync — reemplazar contenido:
+
+        var (models, chosenModel) = await Step1_StartAndAuth(client);
+        await Step2_ListModels(models);
+
+QUE DECIR:
+  - GetAuthStatusAsync() verifica la autenticacion.
+  - ListModelsAsync() devuelve TODOS los modelos: built-in + BYOK custom.
+  - La magia de BYOK: el admin configura la API key una vez y los modelos
+    aparecen automaticamente para todos los developers.
+
+
+================================================================================
+  BLOQUE 3 — Agregar Step3_ChatDefault
+  (dotnet run → titulo + auth + modelos + chat default)
+================================================================================
+
+AGREGAR despues de Step2_ListModels:
+
+    // ── Paso 3: Chat con modelo por defecto ────────────────────────────
+    async Task Step3_ChatDefault(CopilotClient client)
+    {
+        PrintStep(3, Step3Text);
+        await using var session = await client.CreateSessionAsync();
+        var answer = await session.SendAndWaitAsync(
+            new MessageOptions { Prompt = "What model are you? Answer in one short sentence." });
+        Console.WriteLine($"  P: What model are you?");
+        Console.WriteLine($"  R: {answer?.Data.Content}");
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step3_ChatDefault(client);
+
+QUE DECIR:
+  - CreateSessionAsync() sin parametros usa el modelo por defecto.
+  - El modelo responde cual es — confirmamos que modelo se uso.
+
+
+================================================================================
+  BLOQUE 4 — Agregar Step4_ChatSpecific
+  (dotnet run → titulo + pasos 1-4)
+================================================================================
+
+AGREGAR despues de Step3_ChatDefault:
+
+    // ── Paso 4: Chat con modelo especifico ─────────────────────────────
+    async Task Step4_ChatSpecific(CopilotClient client, string chosenModel)
+    {
+        PrintStep(4, Step4Text);
+        PrintProp("Modelo elegido:", chosenModel);
+        await using var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Model = chosenModel
+        });
+        var answer = await session.SendAndWaitAsync(
+            new MessageOptions { Prompt = "What model are you? Answer in one short sentence." });
+        Console.WriteLine($"  P: What model are you?");
+        Console.WriteLine($"  R: {answer?.Data.Content}");
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step4_ChatSpecific(client, chosenModel);
 
 QUE DECIR:
   - SessionConfig.Model te permite elegir cual modelo usar por sesion.
-  - Buscamos en la lista de modelos disponibles en orden de preferencia.
-  - El operador ??= es un fallback: si ningun preferido existe, usamos el primero.
-  - Esto es clave para BYOK: usas el mismo SDK, solo cambias el Model ID.
+  - Clave para BYOK: usas el mismo SDK, solo cambias el Model ID.
 
 
 ================================================================================
-  BLOQUE 5 — Paso 5: Comparar multiples modelos lado a lado
-  (dotnet run -> pasos 1-5 + cierra)
+  BLOQUE 5 — Agregar Step5_CompareModels
+  (dotnet run → titulo + pasos 1-5)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR despues de Step4_ChatSpecific:
 
-// ── 5. Compare multiple models side by side ──────────────────────────
-Console.WriteLine("=== 5. Compare Multiple Models ===\n");
-
-var modelsToTry = models
-    .Select(m => m.Id)
-    .Take(Math.Min(models.Count, 4))
-    .ToList();
-
-const string testPrompt = "What is the capital of Australia? One sentence.";
-Console.WriteLine($"  Prompt: \"{testPrompt}\"\n");
-
-foreach (var modelId in modelsToTry)
-{
-    try
+    // ── Paso 5: Comparar modelos ───────────────────────────────────────
+    async Task Step5_CompareModels(CopilotClient client, IReadOnlyList<ModelInfo> models)
     {
+        PrintStep(5, Step5Text);
+        var modelsToTry = models.Select(m => m.Id).Take(Math.Min(models.Count, 4)).ToList();
+
+        const string testPrompt = "What is the capital of Australia? One sentence.";
+        Console.WriteLine($"  Prompt: \"{testPrompt}\"\n");
+
+        foreach (var modelId in modelsToTry)
+        {
+            try
+            {
+                await using var session = await client.CreateSessionAsync(new SessionConfig { Model = modelId });
+                var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = testPrompt });
+                Console.WriteLine($"  {modelId,-45} -> {answer?.Data.Content?.Trim()}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  {modelId,-45} -> Error: {ex.Message.Split('\n')[0]}");
+            }
+        }
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step5_CompareModels(client, models);
+
+QUE DECIR:
+  - Tomamos hasta 4 modelos y les hacemos la misma pregunta.
+  - Demuestra el poder de BYOK: evaluar multiples providers con el mismo codigo.
+
+
+================================================================================
+  BLOQUE 6 — Agregar Step6_ToolsDemo
+  (dotnet run → titulo + pasos 1-6)
+================================================================================
+
+AGREGAR despues de Step5_CompareModels:
+
+    // ── Paso 6: Modelo + herramientas ──────────────────────────────────
+    async Task Step6_ToolsDemo(CopilotClient client, string chosenModel)
+    {
+        PrintStep(6, Step6Text);
+        PrintProp("Modelo:", chosenModel);
         await using var session = await client.CreateSessionAsync(new SessionConfig
         {
-            Model = modelId
+            Model = chosenModel,
+            Tools =
+            [
+                AIFunctionFactory.Create(GetWeather, "get_weather"),
+                AIFunctionFactory.Create(GetTime, "get_time"),
+            ]
         });
+
         var answer = await session.SendAndWaitAsync(
-            new MessageOptions { Prompt = testPrompt });
-        Console.WriteLine($"  {modelId,-45} -> {answer?.Data.Content?.Trim()}");
+            new MessageOptions { Prompt = "What's the weather in Tokyo and what time is it there?" });
+        Console.WriteLine($"  P: What's the weather in Tokyo and what time is it there?");
+        Console.WriteLine($"  R: {answer?.Data.Content}");
+        Console.WriteLine();
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"  {modelId,-45} -> Error: {ex.Message.Split('\n')[0]}");
-    }
-}
-Console.WriteLine();
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step6_ToolsDemo(client, chosenModel);
 
 QUE DECIR:
-  - Tomamos hasta 4 modelos de la lista y les hacemos la misma pregunta.
-  - Cada modelo crea su propia sesion con SessionConfig.Model.
-  - El try/catch maneja modelos que no soporten la operacion o tengan errores.
-  - Esto demuestra el poder de BYOK: puedes evaluar multiples providers
-    (OpenAI, Anthropic, Google, etc.) con el mismo codigo y el mismo SDK.
+  - SessionConfig.Tools registra funciones que el modelo puede invocar.
+  - AIFunctionFactory.Create() convierte un metodo C# en un tool del SDK.
+  - Function calling funciona igual con modelos built-in o BYOK.
 
 
 ================================================================================
-  BLOQUE 6 — Paso 6: Modelo custom + Tools (function calling)
-  (dotnet run -> pasos 1-6 + cierra)
+  BLOQUE 7 — Agregar Step7_Streaming
+  (dotnet run → titulo + pasos 1-7)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR despues de Step6_ToolsDemo:
 
-// ── 6. BYOK model + Custom Tools ─────────────────────────────────────
-Console.WriteLine("=== 6. Custom Model + Tools ===\n");
-{
-    await using var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 7: Streaming ──────────────────────────────────────────────
+    async Task Step7_Streaming(CopilotClient client, string chosenModel)
     {
-        Model = chosenModel,
-        Tools =
-        [
-            AIFunctionFactory.Create(GetWeather, "get_weather"),
-            AIFunctionFactory.Create(GetTime, "get_time"),
-        ]
-    });
-
-    Console.WriteLine($"  Model: {chosenModel}");
-    var answer = await session.SendAndWaitAsync(
-        new MessageOptions { Prompt = "What's the weather in Tokyo and what time is it there?" });
-    Console.WriteLine($"  Q: What's the weather in Tokyo and what time is it there?");
-    Console.WriteLine($"  A: {answer?.Data.Content}");
-}
-Console.WriteLine();
-
-QUE DECIR:
-  - SessionConfig.Tools registra funciones locales que el modelo puede invocar.
-  - AIFunctionFactory.Create() convierte un metodo C# en un tool del SDK,
-    usando los atributos [Description] para generar el schema automaticamente.
-  - El modelo decide cuando llamar a get_weather y get_time — tu no.
-  - Esto funciona igual con modelos built-in o BYOK: el SDK maneja el
-    protocolo de function calling de forma transparente.
-
-
-================================================================================
-  BLOQUE 7 — Paso 7: Streaming con modelo custom
-  (dotnet run -> pasos 1-7 + cierra)
-================================================================================
-
-AGREGAR antes de la seccion de cleanup:
-
-// ── 7. Streaming with a custom model ─────────────────────────────────
-Console.WriteLine("=== 7. Streaming with Custom Model ===\n");
-{
-    await using var session = await client.CreateSessionAsync(new SessionConfig
-    {
-        Model = chosenModel,
-        Streaming = true
-    });
-
-    Console.Write("  Streaming: ");
-    var sb = new StringBuilder();
-    var idleTcs = new TaskCompletionSource<bool>();
-
-    session.On(evt =>
-    {
-        switch (evt)
+        PrintStep(7, Step7Text);
+        PrintProp("Modelo:", chosenModel);
+        await using var session = await client.CreateSessionAsync(new SessionConfig
         {
-            case AssistantMessageDeltaEvent delta:
-                Console.Write(delta.Data.DeltaContent);
-                sb.Append(delta.Data.DeltaContent);
-                break;
-            case SessionIdleEvent:
-                idleTcs.TrySetResult(true);
-                break;
-        }
-    });
+            Model = chosenModel,
+            Streaming = true
+        });
 
-    await session.SendAsync(
-        new MessageOptions { Prompt = "Tell me a very short joke (2 sentences max)." });
-    await idleTcs.Task.WaitAsync(TimeSpan.FromMinutes(1));
-    Console.WriteLine($"\n  Total chars: {sb.Length}");
-}
-Console.WriteLine();
-
-QUE DECIR:
-  - Streaming = true en SessionConfig activa la respuesta token por token.
-  - Usamos session.On() para suscribirnos a eventos en tiempo real.
-  - AssistantMessageDeltaEvent trae cada fragmento (delta) de la respuesta.
-  - SessionIdleEvent indica que el modelo termino de generar.
-  - TaskCompletionSource nos permite esperar de forma asincrona sin bloquear.
-  - Streaming funciona con cualquier modelo — built-in o BYOK.
-
-
-================================================================================
-  BLOQUE 8 — Paso 8: Chat interactivo (bloque final)
-  (dotnet run -> demo completo + modo interactivo)
-================================================================================
-
-AGREGAR antes de la seccion de cleanup:
-
-// ── 8. Interactive chat loop ─────────────────────────────────────────
-Console.WriteLine("=== 8. Interactive Chat (type 'exit' to quit) ===\n");
-Console.WriteLine($"  Model: {chosenModel}");
-Console.WriteLine($"  (Custom BYOK models work exactly the same!)\n");
-{
-    await using var session = await client.CreateSessionAsync(new SessionConfig
-    {
-        Model = chosenModel,
-        Streaming = true
-    });
-
-    while (true)
-    {
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.Write("  You: ");
-        Console.ResetColor();
-        var input = Console.ReadLine();
-        if (string.IsNullOrWhiteSpace(input) || input.Equals("exit", StringComparison.OrdinalIgnoreCase))
-            break;
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.Write("  AI:  ");
-        Console.ResetColor();
-
+        Console.Write("  Streaming: ");
         var sb = new StringBuilder();
         var idleTcs = new TaskCompletionSource<bool>();
 
@@ -371,30 +338,129 @@ Console.WriteLine($"  (Custom BYOK models work exactly the same!)\n");
             }
         });
 
-        await session.SendAsync(new MessageOptions { Prompt = input });
+        await session.SendAsync(
+            new MessageOptions { Prompt = "Tell me a very short joke (2 sentences max)." });
         await idleTcs.Task.WaitAsync(TimeSpan.FromMinutes(1));
-        Console.WriteLine("\n");
+        Console.WriteLine($"\n  Total chars: {sb.Length}");
+        Console.WriteLine();
     }
-}
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step7_Streaming(client, chosenModel);
 
 QUE DECIR:
-  - Este es el cierre del demo: un chat libre con el modelo BYOK elegido.
-  - La sesion mantiene el contexto de la conversacion entre mensajes.
-  - Streaming + colores en consola dan una experiencia de chat fluida.
-  - El punto clave: no hay NINGUNA diferencia en codigo entre usar un modelo
-    built-in y uno BYOK. El admin configura la key, tu solo usas el SDK.
+  - Streaming = true activa respuesta token por token.
+  - AssistantMessageDeltaEvent trae cada fragmento.
+  - SessionIdleEvent indica fin de generacion.
+  - Streaming funciona con cualquier modelo — built-in o BYOK.
+
+
+================================================================================
+  BLOQUE 8 — Agregar RunInteractiveMode
+  (dotnet run → demo completo + modo interactivo)
+================================================================================
+
+AGREGAR despues de Step7_Streaming:
+
+    // ── Modo interactivo ────────────────────────────────────────────────
+    async Task RunInteractiveMode(string chosenModel)
+    {
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {InteractiveHint}");
+        Console.WriteLine("================================================================");
+        Console.ReadLine();
+
+        var client = CreateClient();
+        await client.StartAsync();
+
+        PrintProp("Modelo:", chosenModel);
+        Console.WriteLine($"  {InteractivePrompt}");
+
+        await using var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Model = chosenModel,
+            Streaming = true
+        });
+
+        while (true)
+        {
+            Console.Write("  Tu: ");
+            var input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input) || input.Equals("exit", StringComparison.OrdinalIgnoreCase))
+                break;
+
+            Console.Write("  IA: ");
+            var sb = new StringBuilder();
+            var idleTcs = new TaskCompletionSource<bool>();
+
+            session.On(evt =>
+            {
+                switch (evt)
+                {
+                    case AssistantMessageDeltaEvent delta:
+                        Console.Write(delta.Data.DeltaContent);
+                        sb.Append(delta.Data.DeltaContent);
+                        break;
+                    case SessionIdleEvent:
+                        idleTcs.TrySetResult(true);
+                        break;
+                    case SessionErrorEvent err:
+                        Console.WriteLine($"\n  Error: {err.Data?.Message}");
+                        idleTcs.TrySetResult(false);
+                        break;
+                }
+            });
+
+            await session.SendAsync(new MessageOptions { Prompt = input });
+            await idleTcs.Task.WaitAsync(TimeSpan.FromMinutes(1));
+            Console.WriteLine("\n");
+        }
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+        Console.WriteLine("\n  ¡Listo!");
+    }
+
+MODIFICAR RunAsync (version final):
+
+    public async Task RunAsync()
+    {
+        PrintTitle(DemoTitle);
+
+        var client = CreateClient();
+        await client.StartAsync();
+
+        var (models, chosenModel) = await Step1_StartAndAuth(client);
+        await Step2_ListModels(models);
+        await Step3_ChatDefault(client);
+        await Step4_ChatSpecific(client, chosenModel);
+        await Step5_CompareModels(client, models);
+        await Step6_ToolsDemo(client, chosenModel);
+        await Step7_Streaming(client, chosenModel);
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+
+        await RunInteractiveMode(chosenModel);
+    }
+
+QUE DECIR:
+  - El modo interactivo es un chat libre con el modelo BYOK.
+  - La sesion mantiene contexto entre mensajes.
+  - No hay NINGUNA diferencia en codigo entre un modelo built-in y uno BYOK.
 
 
 ================================================================================
   FINAL: dotnet run (demo en vivo)
 ================================================================================
 
-  Ya todos los pasos estan. Ejecutamos:
+  Ya todos los metodos estan. Ejecutamos:
 
     cd 11.OpenRouterDemo && dotnet run
 
 QUE DECIR:
-  - Vamos a ver los 8 pasos ejecutarse en orden.
+  - Vamos a ver los 7 pasos ejecutarse en orden.
   - Al final podemos chatear en vivo con el modelo BYOK.
   - Resumen de BYOK: el admin agrega API keys en GitHub, los modelos
     aparecen en ListModelsAsync(), y tu los usas con SessionConfig.Model.

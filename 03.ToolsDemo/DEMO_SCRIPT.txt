@@ -3,15 +3,13 @@
   GUION DE PRESENTACION — UN SOLO ARCHIVO (Program.cs)
 ================================================================================
 
-Cada bloque muestra codigo para AGREGAR al archivo Program.cs.
-El Bloque 1 es el esqueleto inicial. Los demas agregan un paso cada vez.
-Usa top-level statements (sin Main, sin clase wrapper).
-Ejecuta con `dotnet run` despues de cada bloque.
+Cada bloque es el archivo Program.cs COMPLETO. Pega, reemplaza todo,
+ejecuta con `dotnet run`. Cada paso agrega un metodo nuevo.
 
 
 ================================================================================
-  BLOQUE 1 — Esqueleto base: usings, logger, titulo, cliente, cleanup
-  + implementaciones de herramientas y tipos
+  BLOQUE 1 — Esqueleto: Main + clase con constantes, helpers
+  + implementaciones de herramientas y tipos al final del archivo
   (dotnet run → imprime titulo, inicia cliente, lo detiene)
 ================================================================================
 
@@ -24,56 +22,65 @@ using Microsoft.Extensions.Logging;
 
 using var loggerFactory = LoggerFactory.Create(b =>
     b.AddConsole().SetMinimumLevel(LogLevel.Warning));
-var logger = loggerFactory.CreateLogger<CopilotClient>();
 
-// Language selection
-Console.WriteLine("================================================================");
-Console.WriteLine("  Select language / Seleccione idioma:");
-Console.WriteLine("  1. English");
-Console.WriteLine("  2. Español");
-Console.WriteLine("================================================================");
-Console.Write("  Choice (1 or 2): ");
-var langChoice = Console.ReadLine()?.Trim();
-bool isSpanish = langChoice == "2";
-Console.WriteLine();
+var demo = new ToolsDemo(loggerFactory.CreateLogger<CopilotClient>());
+await demo.RunAsync();
 
-Console.WriteLine("================================================================");
-if (isSpanish)
+// ─────────────────────────────────────────────────────────────────────────────
+sealed class ToolsDemo(ILogger<CopilotClient> logger)
 {
-    Console.WriteLine("  03 - DEMO: Herramientas personalizadas (AIFunction)");
+    // ── Textos (cambiar aqui para otro idioma) ──────────────────────────
+    const string DemoTitle         = "03 - DEMO: Herramientas personalizadas (AIFunction)";
+    const string Step1Text         = "Herramienta personalizada simple (encrypt_string)";
+    const string Step2Text         = "Multiples herramientas personalizadas";
+    const string Step3Text         = "Tipos complejos de entrada/salida (records, arrays)";
+    const string Step4Text         = "Manejo de errores en herramientas";
+    const string Step5Text         = "Filtros AvailableTools y ExcludedTools";
+    const string InteractiveHint   = "Presiona Enter para modo interactivo con herramientas, o Ctrl+C para salir.";
+    const string InteractiveTools  = "Herramientas: encrypt_string, get_weather, get_time";
+    const string InteractivePrompt = "Escribe mensajes (vacio para salir):";
+
+    // ── Helpers ─────────────────────────────────────────────────────────
+    CopilotClient CreateClient() => new(new CopilotClientOptions
+    {
+        UseLoggedInUser = true,
+        Logger = logger
+    });
+
+    static void PrintTitle(string title)
+    {
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {title}");
+        Console.WriteLine("================================================================\n");
+    }
+
+    static void PrintStep(int n, string text)
+        => Console.WriteLine($"=== {n}. {text} ===");
+
+    static void PrintProp(string label, object? value)
+        => Console.WriteLine($"  {label,-22} {value}");
+
+    // ── Orquestador ─────────────────────────────────────────────────────
+    public async Task RunAsync()
+    {
+        PrintTitle(DemoTitle);
+
+        var client = CreateClient();
+        await client.StartAsync();
+        Console.WriteLine("  Cliente iniciado.\n");
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+    }
 }
-else
-{
-    Console.WriteLine("  03 - TOOLS DEMO: Custom Tools (AIFunction)");
-}
-Console.WriteLine("================================================================");
-Console.WriteLine();
 
-var client = new CopilotClient(new CopilotClientOptions
-{
-    UseLoggedInUser = true,
-    Logger = logger
-});
-await client.StartAsync();
-Console.WriteLine(isSpanish ? "  Cliente iniciado.\n" : "  Client started.\n");
-
-// ============================================================
-// === AQUI SE AGREGAN LOS PASOS (bloques 2-6) ===
-// ============================================================
-
-// -- Cleanup / Limpieza ------------------------------------------------
-await client.StopAsync();
-await client.DisposeAsync();
-
-// -- Tool implementations / Implementaciones de herramientas -----------
+// ── Implementaciones de herramientas ────────────────────────────────────────
 
 [Description("Encrypts a string by converting it to uppercase")]
-// Cifra una cadena convirtiendola a mayusculas
 static string EncryptString([Description("String to encrypt")] string input)
     => input.ToUpperInvariant();
 
 [Description("Gets the current weather for a city")]
-// Obtiene el clima actual de una ciudad
 static string GetWeather([Description("City name")] string city)
 {
     Console.WriteLine($"    [Tool:get_weather] city={city}");
@@ -81,18 +88,16 @@ static string GetWeather([Description("City name")] string city)
 }
 
 [Description("Gets the current time for a city/timezone")]
-// Obtiene la hora actual de una ciudad/zona horaria
 static string GetTime([Description("City name")] string city)
 {
     Console.WriteLine($"    [Tool:get_time] city={city}");
     return $"Current time in {city}: {DateTime.UtcNow:HH:mm} UTC";
 }
 
-// -- Complex types for Demo 3 / Tipos complejos para Demo 3 -----------
+// ── Tipos complejos para Demo 3 ─────────────────────────────────────────────
 record DbQueryOptions(string Table, int[] Ids, bool SortAscending);
 record City(int CountryId, string CityName, int Population);
 
-// NativeAOT-safe JSON serialization context
 // Contexto de serializacion JSON seguro para NativeAOT
 [JsonSourceGenerationOptions(JsonSerializerDefaults.Web)]
 [JsonSerializable(typeof(DbQueryOptions))]
@@ -101,48 +106,60 @@ record City(int CountryId, string CityName, int Population);
 partial class DemoJsonContext : JsonSerializerContext;
 
 QUE DECIR:
-  - Usamos top-level statements: las primeras lineas son el Main implicito.
-  - Creamos un logger (nivel Warning para no saturar la consola) y el
-    CopilotClient con UseLoggedInUser = true.
-  - Las implementaciones de herramientas van al final como funciones locales
-    con atributos [Description] — el SDK usa esos textos para generar el
-    esquema JSON que el modelo recibe.
-  - Los records (DbQueryOptions, City) y el JsonSerializerContext son
-    necesarios para tipos complejos con NativeAOT.
-  - En este punto el programa compila y ejecuta: imprime titulo, inicia
-    el cliente y lo detiene limpiamente.
+  - Top-level statements: las primeras 4 lineas son el Main.
+  - Creamos un logger (nivel Warning para no saturar la consola).
+  - ToolsDemo es una clase sellada con primary constructor (C# 12).
+  - Constantes arriba = facil de cambiar idioma (todo en español).
+  - CreateClient: factory con UseLoggedInUser = true.
+  - PrintTitle/PrintStep/PrintProp: helpers de formato para la consola.
+  - Las implementaciones de herramientas van FUERA de la clase como
+    funciones top-level con atributos [Description].
+  - Los records (DbQueryOptions, City) y el JsonSerializerContext tambien
+    van fuera — son tipos necesarios para herramientas con entrada/salida compleja.
+  - RunAsync solo imprime titulo, inicia y detiene el cliente. Vamos a ir
+    agregando pasos.
 
 
 ================================================================================
-  BLOQUE 2 — Paso 1: Herramienta personalizada simple (encrypt_string)
-  (dotnet run → titulo + paso 1 + cleanup)
+  BLOQUE 2 — Agregar Step1_SimpleCustomTool
+  (dotnet run → titulo + paso 1)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup:
+AGREGAR dentro de la clase, despues de RunAsync:
 
-// -- 1. Simple Custom Tool / Herramienta personalizada simple ---------
-if (isSpanish)
-{
-    Console.WriteLine("=== 1. Herramienta personalizada simple (encrypt_string) ===");
-}
-else
-{
-    Console.WriteLine("=== 1. Simple Custom Tool (encrypt_string) ===");
-}
-{
-    var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 1: Herramienta personalizada simple ────────────────────────
+    async Task Step1_SimpleCustomTool(CopilotClient client)
     {
-        Tools = [AIFunctionFactory.Create(EncryptString, "encrypt_string")]
-    });
+        PrintStep(1, Step1Text);
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Tools = [AIFunctionFactory.Create(EncryptString, "encrypt_string")]
+        });
 
-    var answer = await session.SendAndWaitAsync(
-        new MessageOptions { Prompt = "Use encrypt_string to encrypt this string: Hello World" });
-    Console.WriteLine($"  Prompt:   Use encrypt_string to encrypt: Hello World");
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-    Console.WriteLine("  (The tool converts to uppercase — the model should include 'HELLO WORLD')");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        var answer = await session.SendAndWaitAsync(
+            new MessageOptions { Prompt = "Use encrypt_string to encrypt this string: Hello World" });
+        Console.WriteLine($"  Prompt:   Use encrypt_string to encrypt: Hello World");
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+        Console.WriteLine("  (La herramienta convierte a mayusculas — el modelo deberia incluir 'HELLO WORLD')");
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+    public async Task RunAsync()
+    {
+        PrintTitle(DemoTitle);
+
+        var client = CreateClient();
+        await client.StartAsync();
+        Console.WriteLine("  Cliente iniciado.\n");
+
+        await Step1_SimpleCustomTool(client);
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+    }
 
 QUE DECIR:
   - AIFunctionFactory.Create() convierte cualquier metodo C# en una
@@ -155,38 +172,36 @@ QUE DECIR:
 
 
 ================================================================================
-  BLOQUE 3 — Paso 2: Multiples herramientas personalizadas
-  (dotnet run → titulo + pasos 1-2 + cleanup)
+  BLOQUE 3 — Agregar Step2_MultipleTools
+  (dotnet run → titulo + pasos 1-2)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup (despues del paso 1):
+AGREGAR despues de Step1_SimpleCustomTool:
 
-// -- 2. Multiple Tools / Multiples herramientas -----------------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 2. Multiples herramientas personalizadas ===");
-}
-else
-{
-    Console.WriteLine("=== 2. Multiple Custom Tools ===");
-}
-{
-    var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 2: Multiples herramientas ──────────────────────────────────
+    async Task Step2_MultipleTools(CopilotClient client)
     {
-        Tools =
-        [
-            AIFunctionFactory.Create(GetWeather, "get_weather"),
-            AIFunctionFactory.Create(GetTime, "get_time"),
-        ]
-    });
+        PrintStep(2, Step2Text);
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Tools =
+            [
+                AIFunctionFactory.Create(GetWeather, "get_weather"),
+                AIFunctionFactory.Create(GetTime, "get_time"),
+            ]
+        });
 
-    var answer = await session.SendAndWaitAsync(
-        new MessageOptions { Prompt = "What's the weather in Madrid and what time is it there?" });
-    Console.WriteLine($"  Prompt:   What's the weather in Madrid and what time is it there?");
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        var answer = await session.SendAndWaitAsync(
+            new MessageOptions { Prompt = "What's the weather in Madrid and what time is it there?" });
+        Console.WriteLine($"  Prompt:   What's the weather in Madrid and what time is it there?");
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step2_MultipleTools(client);
 
 QUE DECIR:
   - Una sesion puede tener multiples herramientas — simplemente las
@@ -198,47 +213,45 @@ QUE DECIR:
 
 
 ================================================================================
-  BLOQUE 4 — Paso 3: Tipos complejos de entrada/salida
-  (dotnet run → titulo + pasos 1-3 + cleanup)
+  BLOQUE 4 — Agregar Step3_ComplexTypes
+  (dotnet run → titulo + pasos 1-3)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup (despues del paso 2):
+AGREGAR despues de Step2_MultipleTools:
 
-// -- 3. Complex Input/Output Types / Tipos complejos ------------------
-if (isSpanish)
-{
-    Console.WriteLine("=== 3. Tipos complejos de entrada/salida (records, arrays) ===");
-}
-else
-{
-    Console.WriteLine("=== 3. Complex Input/Output Types (records, arrays) ===");
-}
-{
-    ToolInvocation? receivedInvocation = null;
-
-    City[] PerformDbQuery(DbQueryOptions query, AIFunctionArguments rawArgs)
+    // ── Paso 3: Tipos complejos de entrada/salida ───────────────────────
+    async Task Step3_ComplexTypes(CopilotClient client)
     {
-        Console.WriteLine($"    [Tool called] Table={query.Table}, IDs=[{string.Join(",", query.Ids)}], Sort={query.SortAscending}");
-        receivedInvocation = (ToolInvocation)rawArgs.Context![typeof(ToolInvocation)]!;
-        return [new(19, "Passos", 135460), new(12, "San Lorenzo", 204356)];
+        PrintStep(3, Step3Text);
+        ToolInvocation? receivedInvocation = null;
+
+        City[] PerformDbQuery(DbQueryOptions query, AIFunctionArguments rawArgs)
+        {
+            Console.WriteLine($"    [Tool called] Table={query.Table}, IDs=[{string.Join(",", query.Ids)}], Sort={query.SortAscending}");
+            receivedInvocation = (ToolInvocation)rawArgs.Context![typeof(ToolInvocation)]!;
+            return [new(19, "Passos", 135460), new(12, "San Lorenzo", 204356)];
+        }
+
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Tools = [AIFunctionFactory.Create(PerformDbQuery, "db_query",
+                serializerOptions: DemoJsonContext.Default.Options)]
+        });
+
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "Perform a DB query for the 'cities' table using IDs 12 and 19, sorting ascending. " +
+                     "Reply only with lines of the form: [cityname] [population]"
+        });
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+        Console.WriteLine($"  ToolInvocation.SessionId coincide: {receivedInvocation?.SessionId == session.SessionId}");
+        await session.DisposeAsync();
+        Console.WriteLine();
     }
 
-    var session = await client.CreateSessionAsync(new SessionConfig
-    {
-        Tools = [AIFunctionFactory.Create(PerformDbQuery, "db_query",
-            serializerOptions: DemoJsonContext.Default.Options)]
-    });
+MODIFICAR RunAsync — agregar antes de cleanup:
 
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "Perform a DB query for the 'cities' table using IDs 12 and 19, sorting ascending. " +
-                 "Reply only with lines of the form: [cityname] [population]"
-    });
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-    Console.WriteLine($"  ToolInvocation.SessionId matches: {receivedInvocation?.SessionId == session.SessionId}");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        await Step3_ComplexTypes(client);
 
 QUE DECIR:
   - Las herramientas pueden recibir y devolver tipos complejos: records
@@ -251,45 +264,41 @@ QUE DECIR:
 
 
 ================================================================================
-  BLOQUE 5 — Paso 4: Manejo de errores en herramientas
-  (dotnet run → titulo + pasos 1-4 + cleanup)
+  BLOQUE 5 — Agregar Step4_ToolErrorHandling
+  (dotnet run → titulo + pasos 1-4)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup (despues del paso 3):
+AGREGAR despues de Step3_ComplexTypes:
 
-// -- 4. Tool Error Handling / Manejo de errores en herramientas -------
-if (isSpanish)
-{
-    Console.WriteLine("=== 4. Manejo de errores en herramientas ===");
-}
-else
-{
-    Console.WriteLine("=== 4. Tool Error Handling ===");
-}
-{
-    var failingTool = AIFunctionFactory.Create(
-        () => { throw new Exception("Secret Internal Error — Melbourne"); },
-        "get_user_location",
-        "Gets the user's location");
-
-    var session = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 4: Manejo de errores en herramientas ───────────────────────
+    async Task Step4_ToolErrorHandling(CopilotClient client)
     {
-        Tools = [failingTool]
-    });
+        PrintStep(4, Step4Text);
+        var failingTool = AIFunctionFactory.Create(
+            () => { throw new Exception("Secret Internal Error — Melbourne"); },
+            "get_user_location",
+            "Gets the user's location");
 
-    var answer = await session.SendAndWaitAsync(new MessageOptions
-    {
-        Prompt = "What is my location? If you can't find out, just say 'unknown'."
-    });
-    Console.WriteLine($"  The tool threw an exception with 'Melbourne' in the message.");
-    Console.WriteLine($"  Response: {answer?.Data.Content}");
-    Console.WriteLine($"  Contains 'Melbourne': {answer?.Data.Content?.Contains("Melbourne") ?? false}");
-    Console.WriteLine(isSpanish
-        ? "  (Esperado: Falso - el SDK NO expone detalles de excepciones al modelo)"
-        : "  (Expected: False - SDK does NOT leak exception details to the model)");
-    await session.DisposeAsync();
-}
-Console.WriteLine();
+        var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Tools = [failingTool]
+        });
+
+        var answer = await session.SendAndWaitAsync(new MessageOptions
+        {
+            Prompt = "What is my location? If you can't find out, just say 'unknown'."
+        });
+        Console.WriteLine($"  La herramienta lanzo una excepcion con 'Melbourne' en el mensaje.");
+        Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+        Console.WriteLine($"  Contiene 'Melbourne': {answer?.Data.Content?.Contains("Melbourne") ?? false}");
+        Console.WriteLine("  (Esperado: Falso - el SDK NO expone detalles de excepciones al modelo)");
+        await session.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step4_ToolErrorHandling(client);
 
 QUE DECIR:
   - Cuando una herramienta lanza una excepcion, el SDK la captura y
@@ -301,44 +310,41 @@ QUE DECIR:
 
 
 ================================================================================
-  BLOQUE 6 — Paso 5: Filtros AvailableTools y ExcludedTools
-  (dotnet run → titulo + pasos 1-5 + cleanup)
+  BLOQUE 6 — Agregar Step5_ToolFilters
+  (dotnet run → titulo + pasos 1-5)
 ================================================================================
 
-AGREGAR antes de la seccion de cleanup (despues del paso 4):
+AGREGAR despues de Step4_ToolErrorHandling:
 
-// -- 5. Tool with AvailableTools filter / Filtro de herramientas ------
-if (isSpanish)
-{
-    Console.WriteLine("=== 5. Filtros AvailableTools y ExcludedTools ===");
-}
-else
-{
-    Console.WriteLine("=== 5. AvailableTools & ExcludedTools filters ===");
-}
-{
-    Console.WriteLine("  AvailableTools = [\"view\", \"edit\"] → only these 2 built-in tools allowed");
-    var session1 = await client.CreateSessionAsync(new SessionConfig
+    // ── Paso 5: Filtros AvailableTools y ExcludedTools ──────────────────
+    async Task Step5_ToolFilters(CopilotClient client)
     {
-        AvailableTools = new List<string> { "view", "edit" }
-    });
-    var a1 = await session1.SendAndWaitAsync(new MessageOptions { Prompt = "What tools do you have available?" });
-    Console.WriteLine($"  Response: {a1?.Data.Content?.Substring(0, Math.Min(200, a1.Data.Content?.Length ?? 0))}");
-    await session1.DisposeAsync();
+        PrintStep(5, Step5Text);
 
-    Console.WriteLine();
-    Console.WriteLine(isSpanish
-        ? "  ExcludedTools = [\"view\"] -> 'view' excluido, los demas permanecen"
-        : "  ExcludedTools = [\"view\"] -> 'view' is excluded, others remain");
-    var session2 = await client.CreateSessionAsync(new SessionConfig
-    {
-        ExcludedTools = new List<string> { "view" }
-    });
-    var a2 = await session2.SendAndWaitAsync(new MessageOptions { Prompt = "What tools do you have available?" });
-    Console.WriteLine($"  Response: {a2?.Data.Content?.Substring(0, Math.Min(200, a2.Data.Content?.Length ?? 0))}");
-    await session2.DisposeAsync();
-}
-Console.WriteLine();
+        Console.WriteLine("  AvailableTools = [\"view\", \"edit\"] -> solo estas 2 herramientas built-in");
+        var session1 = await client.CreateSessionAsync(new SessionConfig
+        {
+            AvailableTools = new List<string> { "view", "edit" }
+        });
+        var a1 = await session1.SendAndWaitAsync(new MessageOptions { Prompt = "What tools do you have available?" });
+        Console.WriteLine($"  Respuesta: {a1?.Data.Content?.Substring(0, Math.Min(200, a1.Data.Content?.Length ?? 0))}");
+        await session1.DisposeAsync();
+
+        Console.WriteLine();
+        Console.WriteLine("  ExcludedTools = [\"view\"] -> 'view' excluido, los demas permanecen");
+        var session2 = await client.CreateSessionAsync(new SessionConfig
+        {
+            ExcludedTools = new List<string> { "view" }
+        });
+        var a2 = await session2.SendAndWaitAsync(new MessageOptions { Prompt = "What tools do you have available?" });
+        Console.WriteLine($"  Respuesta: {a2?.Data.Content?.Substring(0, Math.Min(200, a2.Data.Content?.Length ?? 0))}");
+        await session2.DisposeAsync();
+        Console.WriteLine();
+    }
+
+MODIFICAR RunAsync — agregar antes de cleanup:
+
+        await Step5_ToolFilters(client);
 
 QUE DECIR:
   - AvailableTools es una lista blanca: SOLO las herramientas listadas
@@ -350,81 +356,98 @@ QUE DECIR:
 
 
 ================================================================================
-  BLOQUE 7 — Modo interactivo con herramientas
+  BLOQUE 7 — Agregar RunInteractiveMode
   (dotnet run → demo completo + modo interactivo)
 ================================================================================
 
-AGREGAR despues de la seccion de cleanup (despues de client.DisposeAsync):
+AGREGAR despues de Step5_ToolFilters:
 
-// -- Interactive mode / Modo interactivo ------------------------------
-Console.WriteLine("================================================================");
-Console.WriteLine(isSpanish
-    ? "  Presiona Enter para modo interactivo con herramientas, o Ctrl+C para salir."
-    : "  Press Enter for interactive mode with tools, or Ctrl+C to exit.");
-Console.WriteLine("================================================================");
-Console.ReadLine();
-
-var chatClient = new CopilotClient(new CopilotClientOptions
-{
-    UseLoggedInUser = true,
-    Logger = logger
-});
-await chatClient.StartAsync();
-
-await using var chatSession = await chatClient.CreateSessionAsync(new SessionConfig
-{
-    Streaming = true,
-    Tools =
-    [
-        AIFunctionFactory.Create(EncryptString, "encrypt_string"),
-        AIFunctionFactory.Create(GetWeather, "get_weather"),
-        AIFunctionFactory.Create(GetTime, "get_time"),
-    ]
-});
-
-Console.WriteLine(isSpanish
-    ? "  Herramientas: encrypt_string, get_weather, get_time"
-    : "  Available tools: encrypt_string, get_weather, get_time");
-Console.WriteLine(isSpanish ? "  Escribe mensajes (vacio para salir):\n" : "  Type messages (empty to quit):\n");
-
-while (true)
-{
-    Console.Write("  You: ");
-    var input = Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(input)) break;
-
-    var done = new TaskCompletionSource<bool>();
-    chatSession.On(evt =>
+    // ── Modo interactivo ────────────────────────────────────────────────
+    async Task RunInteractiveMode()
     {
-        if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
-        if (evt is SessionIdleEvent) done.TrySetResult(true);
-        if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
-    });
+        Console.WriteLine("================================================================");
+        Console.WriteLine($"  {InteractiveHint}");
+        Console.WriteLine("================================================================");
+        Console.ReadLine();
 
-    Console.Write("  AI: ");
-    await chatSession.SendAsync(new MessageOptions { Prompt = input });
-    await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
-    Console.WriteLine();
-}
+        var client = CreateClient();
+        await client.StartAsync();
 
-await chatClient.StopAsync();
-await chatClient.DisposeAsync();
-Console.WriteLine(isSpanish ? "\n  ¡Listo!" : "\n  Done!");
+        await using var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Streaming = true,
+            Tools =
+            [
+                AIFunctionFactory.Create(EncryptString, "encrypt_string"),
+                AIFunctionFactory.Create(GetWeather, "get_weather"),
+                AIFunctionFactory.Create(GetTime, "get_time"),
+            ]
+        });
+
+        Console.WriteLine($"  {InteractiveTools}");
+        Console.WriteLine($"  {InteractivePrompt}\n");
+
+        while (true)
+        {
+            Console.Write("  Tu: ");
+            var input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input)) break;
+
+            var done = new TaskCompletionSource<bool>();
+            session.On(evt =>
+            {
+                if (evt is AssistantMessageDeltaEvent d) Console.Write(d.Data.DeltaContent);
+                if (evt is SessionIdleEvent) done.TrySetResult(true);
+                if (evt is SessionErrorEvent err) { Console.WriteLine($"\n  Error: {err.Data?.Message}"); done.TrySetResult(false); }
+            });
+
+            Console.Write("  IA: ");
+            await session.SendAsync(new MessageOptions { Prompt = input });
+            await done.Task.WaitAsync(TimeSpan.FromMinutes(2));
+            Console.WriteLine("\n");
+        }
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+        Console.WriteLine("\n  ¡Listo!");
+    }
+
+MODIFICAR RunAsync (version final):
+
+    public async Task RunAsync()
+    {
+        PrintTitle(DemoTitle);
+
+        var client = CreateClient();
+        await client.StartAsync();
+        Console.WriteLine("  Cliente iniciado.\n");
+
+        await Step1_SimpleCustomTool(client);
+        await Step2_MultipleTools(client);
+        await Step3_ComplexTypes(client);
+        await Step4_ToolErrorHandling(client);
+        await Step5_ToolFilters(client);
+
+        await client.StopAsync();
+        await client.DisposeAsync();
+
+        await RunInteractiveMode();
+    }
 
 QUE DECIR:
-  - El modo interactivo crea un NUEVO cliente con streaming habilitado
-    y las tres herramientas registradas.
-  - El usuario puede probar libremente: "encrypt hello", "weather in
-    Tokyo", "what time in New York", o combinar varias en un prompt.
-  - Usamos eventos (AssistantMessageDeltaEvent, SessionIdleEvent) para
-    mostrar la respuesta en tiempo real y saber cuando termina.
+  - Despues del demo guiado, el usuario puede experimentar con herramientas.
+  - Creamos un NUEVO cliente con streaming habilitado y las tres herramientas
+    registradas (encrypt_string, get_weather, get_time).
+  - El usuario puede probar: "encrypt hello", "weather in Tokyo",
+    "what time in New York", o combinar varias en un prompt.
+  - Linea vacia termina el chat. Ctrl+C sale inmediatamente.
 
 
 ================================================================================
   FINAL: dotnet run (demo en vivo)
 ================================================================================
 
-  Ya todos los pasos estan. Ejecutamos:
+  Ya todos los metodos estan. Ejecutamos:
 
     cd 03.ToolsDemo && dotnet run
 
