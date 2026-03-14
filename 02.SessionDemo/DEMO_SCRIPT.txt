@@ -206,6 +206,7 @@ AGREGAR despues de Step2_MultiTurn:
             if (evt is SessionIdleEvent) idleTcs.TrySetResult(true);
         });
 
+        Console.WriteLine("  Prompt: What is 100 + 200?");
         await session.SendAsync(new MessageOptions { Prompt = "What is 100 + 200?" });
         await idleTcs.Task.WaitAsync(TimeSpan.FromMinutes(1));
         sub.Dispose();
@@ -241,6 +242,7 @@ AGREGAR despues de Step3_EventSubscription:
         var events = new List<string>();
         session.On(evt => events.Add(evt.Type));
 
+        Console.WriteLine("  Prompt: What is 2+2?");
         await session.SendAsync(new MessageOptions { Prompt = "What is 2+2?" });
         Console.WriteLine($"  Despues de SendAsync -> session.idle en events? {events.Contains("session.idle")}");
         Console.WriteLine("  (Esperado: False - SendAsync retorna antes de que termine el turno)");
@@ -306,6 +308,7 @@ AGREGAR despues de Step5_SendAndWaitAsync:
         PrintStep(6, Step6Text);
         var session1 = await client.CreateSessionAsync();
         var sessionId = session1.SessionId;
+        Console.WriteLine("  Prompt: Remember this number: 42");
         var a1 = await session1.SendAndWaitAsync(new MessageOptions { Prompt = "Remember this number: 42" });
         Console.WriteLine($"  Sesion 1 (ID: {sessionId}): {a1?.Data.Content?.Substring(0, Math.Min(100, a1.Data.Content?.Length ?? 0))}");
 
@@ -316,6 +319,7 @@ AGREGAR despues de Step5_SendAndWaitAsync:
         PrintProp("Mensajes tras reanudar:", messages.Count);
         Console.WriteLine($"  Contiene SessionResumeEvent: {messages.Any(m => m is SessionResumeEvent)}");
 
+        Console.WriteLine("  Prompt: What number did I ask you to remember?");
         var a2 = await session2.SendAndWaitAsync(new MessageOptions { Prompt = "What number did I ask you to remember?" });
         Console.WriteLine($"  Respuesta sesion 2: {a2?.Data.Content?.Substring(0, Math.Min(100, a2.Data.Content?.Length ?? 0))}");
 
@@ -385,6 +389,7 @@ AGREGAR despues de Step7_ResumeError:
             }
         });
 
+        Console.WriteLine("  Prompt: What is your name?");
         var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is your name?" });
         PrintProp("Respuesta:", answer?.Data.Content);
         Console.WriteLine($"  Contiene 'Have a nice day!': {answer?.Data.Content?.Contains("Have a nice day!") ?? false}");
@@ -421,6 +426,7 @@ AGREGAR despues de Step8_SystemMessageAppend:
             }
         });
 
+        Console.WriteLine("  Prompt: What is your full name?");
         var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is your full name?" });
         PrintProp("Respuesta:", answer?.Data.Content);
         Console.WriteLine("  (Deberia mencionar 'Testy' en lugar de 'GitHub Copilot')");
@@ -466,6 +472,7 @@ AGREGAR despues de Step9_SystemMessageReplace:
             }
         });
 
+        Console.WriteLine("  Prompt: Tell me a very short joke (2 sentences max).");
         Console.Write("  ");
         await session.SendAsync(new MessageOptions { Prompt = "Tell me a very short joke (2 sentences max)." });
         await idleTcs.Task.WaitAsync(TimeSpan.FromMinutes(1));

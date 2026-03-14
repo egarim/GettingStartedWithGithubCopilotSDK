@@ -125,6 +125,7 @@ AGREGAR dentro de la clase, despues de RunAsync:
             }
         });
 
+        Console.WriteLine("  Prompt: What is the price of the product 'Widget Pro'?");
         var answer = await session.SendAndWaitAsync(
             new MessageOptions { Prompt = "What is the price of the product 'Widget Pro'?" });
         Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
@@ -173,6 +174,7 @@ AGREGAR despues de Step1_PreToolUseAllow:
             }
         });
 
+        Console.WriteLine("  Prompt: What is the price of the product 'Gadget X'?");
         var answer = await session.SendAndWaitAsync(
             new MessageOptions { Prompt = "What is the price of the product 'Gadget X'?" });
         Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
@@ -229,6 +231,7 @@ AGREGAR despues de Step2_PostToolUse:
             }
         });
 
+        Console.WriteLine("  Prompt: Look up the price for 'Super Deluxe Widget'.");
         var answer = await session.SendAndWaitAsync(
             new MessageOptions { Prompt = "Look up the price for 'Super Deluxe Widget'." });
         Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
@@ -236,7 +239,8 @@ AGREGAR despues de Step2_PostToolUse:
         Console.WriteLine($"  Post hooks: [{string.Join(", ", postTools)}]");
 
         var overlap = preTools.Intersect(postTools).ToList();
-        Console.WriteLi await Step3_BothHooks(client, lookupTool);ne($"  Misma herramienta en ambos: {overlap.Count > 0} [{string.Join(", ", overlap)}]");
+        Console.WriteLine();
+        await Step3_BothHooks(client, lookupTool);ne($"  Misma herramienta en ambos: {overlap.Count > 0} [{string.Join(", ", overlap)}]");
         await session.DisposeAsync();
         Console.WriteLine();
     }
@@ -279,6 +283,7 @@ AGREGAR despues de Step3_BothHooks:
             }
         });
 
+        Console.WriteLine("  Prompt: Look up the price for 'Widget Pro'. If you can't, explain why.");
         var answer = await session.SendAndWaitAsync(
             new MessageOptions { Prompt = "Look up the price for 'Widget Pro'. If you can't, explain why." });
         Console.WriteLine($"  Respuesta: {answer?.Data.Content}");

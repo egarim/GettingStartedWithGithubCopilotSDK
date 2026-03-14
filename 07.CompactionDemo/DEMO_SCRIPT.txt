@@ -155,6 +155,7 @@ AGREGAR dentro de la clase, despues de RunAsync:
 
         Console.WriteLine();
         Console.WriteLine("  Verificando que la sesion funciona tras compactacion...");
+        Console.WriteLine("  Prompt: What was the main story about? Answer in one sentence.");
         var a4 = await session.SendAndWaitAsync(new MessageOptions
         {
             Prompt = "What was the main story about? Answer in one sentence."
@@ -208,6 +209,7 @@ AGREGAR despues de Step1_CompactionEnabled:
             }
         });
 
+        Console.WriteLine("  Prompt: What is 2+2?");
         var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 2+2?" });
         Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
         PrintProp("Eventos disparados:", compactionEvents.Count);

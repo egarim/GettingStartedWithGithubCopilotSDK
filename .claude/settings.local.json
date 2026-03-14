@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(ls:*)",
-      "Bash(for d:*)"
+      "Bash(for d:*)",
+      "Bash(chmod +x /c/Users/joche/source/repos/GettingStartedWithGithubCopilitSDK/record-demo.sh)",
+      "Bash(DEMO_DIR=\"$HOME/CopilotDemo\" && rm -rf \"$DEMO_DIR\" && mkdir -p \"$DEMO_DIR\" && dotnet new console -n \"02.SessionDemo\" -o \"$DEMO_DIR\" --force 2>&1 | tail -1)",
+      "Bash(echo $HOME)",
+      "Bash(dotnet new:*)",
+      "Bash(REPO=\"C:/Users/joche/source/repos/GettingStartedWithGithubCopilitSDK\")",
+      "Bash(DEMO=\"C:/Users/joche/CopilotDemo\")",
+      "Bash(cp \"$REPO/02.SessionDemo/02.SessionDemo.csproj\" \"$DEMO/SessionDemo.csproj\")",
+      "Read(//c/Users/joche/source/repos/GettingStartedWithGithubCopilitSDK/$DEMO/**)",
+      "Bash(cd \"C:/Users/joche/CopilotDemo\" && dotnet restore 2>&1 | tail -3)"
     ]
   }
 }

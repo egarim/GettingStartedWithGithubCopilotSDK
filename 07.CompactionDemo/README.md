@@ -95,8 +95,16 @@ Press **Enter** to start an infinite chat session. Keep sending long messages to
 
 ---
 
+## Demo Recording
+
+This demo includes 4 step files in `steps/` that build up `Program.cs` incrementally. Use with `record-demo.sh`:
+
+```bash
+./record-demo.sh 07.CompactionDemo
+```
+
 ## Running / Ejecución
 
 ```bash
-dotnet run --project Course/demos/07.CompactionDemo
+dotnet run --project 07.CompactionDemo
 ```

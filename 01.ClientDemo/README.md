@@ -18,9 +18,7 @@ This demo covers the **full client lifecycle**: creation → start → usage →
 | 4 | **GetStatusAsync** | Retrieves version and protocol version of the running Copilot agent. |
 | 5 | **GetAuthStatusAsync** | Checks whether the current user is authenticated, and the auth type. |
 | 6 | **ListModelsAsync** | Lists all available models (e.g., `gpt-4o`, `claude-sonnet-4`) with their capabilities. |
-| 7 | **StopAsync** (graceful) | Sends a shutdown request and waits for cleanup to complete. |
-| 8 | **ForceStopAsync** | Kills the process immediately — skips cleanup. Use only when `StopAsync` hangs. |
-| 9 | **DisposeAsync** | Releases all resources. Always call after stop. |
+| 7 | **StopAsync** (graceful) | Sends a shutdown request and waits for cleanup to complete. (Defined, available for extension.) |
 
 ---
 
@@ -74,10 +72,18 @@ After the automated demos, press **Enter** to enter an interactive command loop 
 
 ---
 
+## Demo Recording
+
+This demo includes 8 step files in `steps/` that build up `Program.cs` incrementally. Use with `record-demo.sh`:
+
+```bash
+./record-demo.sh 01.ClientDemo
+```
+
 ## Running / Ejecución
 
 ```bash
-dotnet run --project Course/demos/01.ClientDemo
+dotnet run --project 01.ClientDemo
 ```
 
 > **Prerequisite**: You must be logged in to GitHub via VS Code or `gh auth login`.

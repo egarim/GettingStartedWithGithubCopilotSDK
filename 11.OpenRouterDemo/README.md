@@ -77,6 +77,14 @@ var answer = await session.SendAndWaitAsync(
     new MessageOptions { Prompt = "Hello!" });
 ```
 
+## Demo Recording
+
+This demo includes 8 step files in `steps/` that build up `Program.cs` incrementally. Use with `record-demo.sh`:
+
+```bash
+./record-demo.sh 11.OpenRouterDemo
+```
+
 ## Run
 
 ```bash

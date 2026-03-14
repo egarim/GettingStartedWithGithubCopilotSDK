@@ -124,10 +124,18 @@ Press **Enter** to create a custom agent interactively. You provide the agent's 
 
 ---
 
+## Demo Recording
+
+This demo includes 10 step files in `steps/` that build up `Program.cs` incrementally. Use with `record-demo.sh`:
+
+```bash
+./record-demo.sh 09.McpAgentsDemo
+```
+
 ## Running / Ejecución
 
 ```bash
-dotnet run --project Course/demos/09.McpAgentsDemo
+dotnet run --project 09.McpAgentsDemo
 ```
 
 > **Note**: MCP server demos use `echo` as a no-op command since they don't require a real MCP server binary. The focus is on showing the configuration patterns. To use real MCP servers, replace `Command` and `Args` with an actual MCP server executable.

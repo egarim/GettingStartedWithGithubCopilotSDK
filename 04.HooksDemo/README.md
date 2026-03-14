@@ -93,8 +93,16 @@ Press **Enter** for interactive mode where you are prompted to **allow or deny**
 
 ---
 
+## Demo Recording
+
+This demo includes 6 step files in `steps/` that build up `Program.cs` incrementally. Use with `record-demo.sh`:
+
+```bash
+./record-demo.sh 04.HooksDemo
+```
+
 ## Running / Ejecución
 
 ```bash
-dotnet run --project Course/demos/04.HooksDemo
+dotnet run --project 04.HooksDemo
 ```

@@ -237,6 +237,7 @@ AGREGAR despues de Step2_MultipleTools:
                 serializerOptions: DemoJsonContext.Default.Options)]
         });
 
+        Console.WriteLine("  Prompt: Perform a DB query for the 'cities' table using IDs 12 and 19, sorting ascending.");
         var answer = await session.SendAndWaitAsync(new MessageOptions
         {
             Prompt = "Perform a DB query for the 'cities' table using IDs 12 and 19, sorting ascending. " +
@@ -283,6 +284,7 @@ AGREGAR despues de Step3_ComplexTypes:
             Tools = [failingTool]
         });
 
+        Console.WriteLine("  Prompt: What is my location? If you can't find out, just say 'unknown'.");
         var answer = await session.SendAndWaitAsync(new MessageOptions
         {
             Prompt = "What is my location? If you can't find out, just say 'unknown'."
@@ -325,6 +327,7 @@ AGREGAR despues de Step4_ToolErrorHandling:
         {
             AvailableTools = new List<string> { "view", "edit" }
         });
+        Console.WriteLine("  Prompt: What tools do you have available?");
         var a1 = await session1.SendAndWaitAsync(new MessageOptions { Prompt = "What tools do you have available?" });
         Console.WriteLine($"  Respuesta: {a1?.Data.Content?.Substring(0, Math.Min(200, a1.Data.Content?.Length ?? 0))}");
         await session1.DisposeAsync();
@@ -335,6 +338,7 @@ AGREGAR despues de Step4_ToolErrorHandling:
         {
             ExcludedTools = new List<string> { "view" }
         });
+        Console.WriteLine("  Prompt: What tools do you have available?");
         var a2 = await session2.SendAndWaitAsync(new MessageOptions { Prompt = "What tools do you have available?" });
         Console.WriteLine($"  Respuesta: {a2?.Data.Content?.Substring(0, Math.Min(200, a2.Data.Content?.Length ?? 0))}");
         await session2.DisposeAsync();

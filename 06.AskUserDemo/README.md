@@ -100,8 +100,16 @@ Press **Enter** to chat interactively. When the model asks a question, you'll se
 
 ---
 
+## Demo Recording
+
+This demo includes 5 step files in `steps/` that build up `Program.cs` incrementally. Use with `record-demo.sh`:
+
+```bash
+./record-demo.sh 06.AskUserDemo
+```
+
 ## Running / Ejecución
 
 ```bash
-dotnet run --project Course/demos/06.AskUserDemo
+dotnet run --project 06.AskUserDemo
 ```

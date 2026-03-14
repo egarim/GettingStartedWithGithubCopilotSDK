@@ -115,6 +115,7 @@ AGREGAR dentro de la clase, despues de RunAsync:
         });
         PrintProp("Sesion creada:", session.SessionId);
 
+        Console.WriteLine("  Prompt: What is 2+2?");
         var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 2+2?" });
         Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
         Console.WriteLine("  Sesion funciona con configuracion MCP");
@@ -207,6 +208,7 @@ AGREGAR despues de Step2_MultipleMcpServers:
         var session = await client.CreateSessionAsync(new SessionConfig { CustomAgents = customAgents });
         PrintProp("Sesion:", session.SessionId);
 
+        Console.WriteLine("  Prompt: What is 5+5?");
         var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 5+5?" });
         Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
         Console.WriteLine("  Configuracion de agente aceptada");
@@ -409,6 +411,7 @@ AGREGAR despues de Step6_MultipleAgents:
             CustomAgents = customAgents
         });
 
+        Console.WriteLine("  Prompt: What is 7+7?");
         var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 7+7?" });
         Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
         Console.WriteLine("  Configuracion combinada aceptada");
@@ -438,6 +441,7 @@ AGREGAR despues de Step7_CombinedMcpAgents:
         PrintStep(8, Step8Text);
         var session1 = await client.CreateSessionAsync();
         var sessionId = session1.SessionId;
+        Console.WriteLine("  Prompt: What is 1+1?");
         await session1.SendAndWaitAsync(new MessageOptions { Prompt = "What is 1+1?" });
         PrintProp("Sesion creada:", sessionId);
 
@@ -464,6 +468,7 @@ AGREGAR despues de Step7_CombinedMcpAgents:
         });
 
         PrintProp("Sesion reanudada:", session2.SessionId);
+        Console.WriteLine("  Prompt: What is 3+3?");
         var answer = await session2.SendAndWaitAsync(new MessageOptions { Prompt = "What is 3+3?" });
         Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
         Console.WriteLine("  MCP y agentes agregados exitosamente al reanudar");

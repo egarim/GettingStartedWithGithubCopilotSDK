@@ -92,8 +92,16 @@ Press **Enter** to chat interactively with all three tools (`encrypt_string`, `g
 
 ---
 
+## Demo Recording
+
+This demo includes 7 step files in `steps/` that build up `Program.cs` incrementally. Use with `record-demo.sh`:
+
+```bash
+./record-demo.sh 03.ToolsDemo
+```
+
 ## Running / Ejecución
 
 ```bash
-dotnet run --project Course/demos/03.ToolsDemo
+dotnet run --project 03.ToolsDemo
 ```

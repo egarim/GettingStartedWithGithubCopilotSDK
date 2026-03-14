@@ -103,8 +103,16 @@ Press **Enter** to create your own skill at runtime. You type a custom instructi
 
 ---
 
+## Demo Recording
+
+This demo includes 5 step files in `steps/` that build up `Program.cs` incrementally. Use with `record-demo.sh`:
+
+```bash
+./record-demo.sh 08.SkillsDemo
+```
+
 ## Running / Ejecución
 
 ```bash
-dotnet run --project Course/demos/08.SkillsDemo
+dotnet run --project 08.SkillsDemo
 ```

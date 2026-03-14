@@ -87,8 +87,16 @@ Press **Enter** to interactively approve or deny each permission request as you 
 
 ---
 
+## Demo Recording
+
+This demo includes 9 step files in `steps/` that build up `Program.cs` incrementally. Use with `record-demo.sh`:
+
+```bash
+./record-demo.sh 05.PermissionsDemo
+```
+
 ## Running / Ejecución
 
 ```bash
-dotnet run --project Course/demos/05.PermissionsDemo
+dotnet run --project 05.PermissionsDemo
 ```
