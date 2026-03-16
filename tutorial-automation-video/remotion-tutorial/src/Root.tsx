@@ -1,9 +1,5 @@
 import { Composition } from "remotion";
-import { Main } from "./Main";
 import { DemoVideo } from "./DemoVideo";
-
-import { calculateMetadata } from "./calculate-metadata/calculate-metadata";
-import { schema } from "./calculate-metadata/schema";
 
 // Demo configs: id + estimated duration (from manifest totalFrames)
 // DemoVideo loads its own data at render time via delayRender,
@@ -24,25 +20,6 @@ const DEMOS = [
 export const RemotionRoot = () => {
   return (
     <>
-      {/* Original Demo 01 with full timeline support */}
-      <Composition
-        id="Main"
-        component={Main}
-        defaultProps={{
-          steps: null,
-          themeColors: null,
-          theme: "github-dark" as const,
-          codeWidth: null,
-          width: { type: "auto" as const },
-        }}
-        fps={30}
-        width={1920}
-        height={1080}
-        calculateMetadata={calculateMetadata}
-        schema={schema}
-      />
-
-      {/* All demos — static durations, data loaded at render time */}
       {DEMOS.map(({ id, frames }) => (
         <Composition
           key={id}
