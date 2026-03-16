@@ -1,0 +1,86 @@
+{
+  "demoId": "demo04",
+  "title": "04 - Hooks: pre y post ejecucion",
+  "fps": 30,
+  "totalFrames": 2449,
+  "slides": [
+    {
+      "file": "slide01.cs",
+      "audioFile": "slide01.mp3",
+      "durationFrames": 387,
+      "narrationText": "Demo cuatro. Hooks, pre y post ejecucion. Aprenderemos a interceptar las llamadas a herramientas para validar, registrar o incluso bloquear su ejecucion.",
+      "consoleOutput": "",
+      "type": "title",
+      "cardData": {
+        "title": "Demo 04 — Hooks: pre y post ejecucion",
+        "subtitle": "Interceptar y controlar la ejecucion de tools",
+        "bullets": [
+          "Hook pre-tool: validar antes de ejecutar",
+          "Hook post-tool: procesar resultados",
+          "Bloquear ejecuciones no autorizadas"
+        ]
+      }
+    },
+    {
+      "file": "slide02.cs",
+      "audioFile": "slide02.mp3",
+      "durationFrames": 321,
+      "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
+      "consoleOutput": "================================================================\n  04 - DEMO: Hooks Pre/Post uso de herramientas\n================================================================\n\n  Cliente iniciado.",
+      "type": "code"
+    },
+    {
+      "file": "slide03.cs",
+      "audioFile": "slide03.mp3",
+      "durationFrames": 307,
+      "narrationText": "Registramos un hook que se ejecuta antes de cada herramienta. Aqui decidimos permitir la ejecucion y registramos la llamada.",
+      "consoleOutput": "=== 1. Hook Pre-uso - Permitir ===\n  Prompt: Price of 'Widget Pro'?\n    [PreToolUse] Tool: lookup_price\n    [PreToolUse] Decision: ALLOW\n    [Tool:lookup_price] productName=Widget Pro\n  Respuesta: Widget Pro costs $29.99.\n  Hooks disparados:      1\n  Herramientas interceptadas: [lookup_price]",
+      "type": "code"
+    },
+    {
+      "file": "slide04.cs",
+      "audioFile": "slide04.mp3",
+      "durationFrames": 261,
+      "narrationText": "El hook post-uso nos permite inspeccionar el resultado de la herramienta despues de ejecutarse, util para auditoria.",
+      "consoleOutput": "=== 2. Hook Post-uso ===\n  Prompt: Price of 'Gadget X'?\n    [Tool:lookup_price] productName=Gadget X\n    [PostToolUse] Tool: lookup_price\n    [PostToolUse] Result preview:\n      Product: Gadget X, Price: $49.95\n  Respuesta: Gadget X costs $49.95.\n  Hooks PostToolUse:     1",
+      "type": "code"
+    },
+    {
+      "file": "slide05.cs",
+      "audioFile": "slide05.mp3",
+      "durationFrames": 300,
+      "narrationText": "Combinamos ambos hooks en la misma sesion. Primero se ejecuta el pre, luego la herramienta, y finalmente el post.",
+      "consoleOutput": "=== 3. Ambos hooks Pre y Post juntos ===\n  Prompt: Price of 'Super Deluxe Widget'\n    [PRE]  -> lookup_price\n    [Tool:lookup_price] productName=Super Deluxe Widget\n    [POST] <- lookup_price\n  Respuesta: Super Deluxe Widget costs $199.00.\n  Pre hooks: [lookup_price]\n  Post hooks: [lookup_price]\n  Misma herramienta en ambos: True [lookup_price]",
+      "type": "code"
+    },
+    {
+      "file": "slide06.cs",
+      "audioFile": "slide06.mp3",
+      "durationFrames": 288,
+      "narrationText": "Demostramos como bloquear una herramienta desde el hook. El modelo recibe un aviso de que no pudo acceder a la funcion.",
+      "consoleOutput": "=== 4. Denegar ejecucion via PreToolUse ===\n  Prompt: Price of 'Widget Pro'? If you can't,\n    explain why.\n    [PreToolUse] DENEGANDO herramienta: lookup_price\n  Respuesta: I'm unable to look up the price\n    because the tool access was denied.\n  Herramientas denegadas: 1\n  (Herramienta bloqueada - modelo explica)",
+      "type": "code"
+    },
+    {
+      "file": "slide07.cs",
+      "audioFile": "slide07.mp3",
+      "durationFrames": 226,
+      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
+      "consoleOutput": "=== 4. Denegar ejecucion via PreToolUse ===\n  Prompt: Price of 'Widget Pro'? If you can't,\n    explain why.\n    [PreToolUse] DENEGANDO herramienta: lookup_price\n  Respuesta: I'm unable to look up the price\n    because the tool access was denied.\n  Herramientas denegadas: 1\n  (Herramienta bloqueada - modelo explica)",
+      "type": "code"
+    },
+    {
+      "file": "slide08.cs",
+      "audioFile": "slide08.mp3",
+      "durationFrames": 359,
+      "narrationText": "Excelente. Los hooks te dan control total sobre las herramientas. En el siguiente video exploraremos el sistema de permisos y autorizacion.",
+      "consoleOutput": "=== 4. Denegar ejecucion via PreToolUse ===\n  Prompt: Price of 'Widget Pro'? If you can't,\n    explain why.\n    [PreToolUse] DENEGANDO herramienta: lookup_price\n  Respuesta: I'm unable to look up the price\n    because the tool access was denied.\n  Herramientas denegadas: 1\n  (Herramienta bloqueada - modelo explica)",
+      "type": "ending",
+      "cardData": {
+        "title": "Siguiente: Demo 05",
+        "subtitle": "Permisos y autorizacion",
+        "nextTitle": "Permisos y autorizacion"
+      }
+    }
+  ]
+}

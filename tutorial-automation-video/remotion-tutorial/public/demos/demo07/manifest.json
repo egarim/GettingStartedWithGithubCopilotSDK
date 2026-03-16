@@ -1,0 +1,150 @@
+{
+  "demoId": "demo07",
+  "title": "07 - Compactacion de contexto",
+  "fps": 30,
+  "totalFrames": 3424,
+  "slides": [
+    {
+      "file": "slide01.cs",
+      "audioFile": "slide01.mp3",
+      "durationFrames": 397,
+      "narrationText": "Demo siete. Compactacion de contexto. Veremos como el SDK puede comprimir automaticamente el historial de conversacion para mantener el uso de tokens bajo control.",
+      "consoleOutput": "",
+      "type": "title",
+      "cardData": {
+        "title": "Demo 07 — Compactacion de contexto",
+        "subtitle": "Optimizar el uso de tokens en conversaciones largas",
+        "bullets": [
+          "Llenar el contexto con muchos mensajes",
+          "Activar compactacion automatica",
+          "Medir reduccion de tokens"
+        ]
+      }
+    },
+    {
+      "file": "slide02.cs",
+      "audioFile": "slide02.mp3",
+      "durationFrames": 321,
+      "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
+      "consoleOutput": "================================================================\n  07 - DEMO: Sesiones infinitas y compactacion\n================================================================\n\n  Cliente iniciado.",
+      "type": "code"
+    },
+    {
+      "file": "slide03.cs",
+      "audioFile": "slide03.mp3",
+      "durationFrames": 333,
+      "narrationText": "Activamos la compactacion con umbrales bajos para que se active rapido. Enviamos mensajes largos para llenar el contexto y disparar la compactacion.",
+      "consoleOutput": "=== 1. Compactacion activada - Umbrales bajos ===\n  (Umbrales bajos para demostracion)\n\n  Enviando mensaje 1/3: Historia de un dragon...\n  Respuesta 1 longitud: 322 chars\n  Eventos compactacion:  inicio=0, completo=0",
+      "type": "code"
+    },
+    {
+      "file": "slide04.cs",
+      "audioFile": "slide04.mp3",
+      "durationFrames": 148,
+      "narrationText": "Continuamos con compactacion activada.",
+      "consoleOutput": "  Enviando mensaje 2/3: Continuar con castillo...\n    * [CompactacionInicio] Compactacion activada!\n  Respuesta 2 longitud: 496 chars\n  Eventos compactacion:  inicio=1, completo=0",
+      "type": "code"
+    },
+    {
+      "file": "slide05.cs",
+      "audioFile": "slide05.mp3",
+      "durationFrames": 148,
+      "narrationText": "Continuamos con compactacion activada.",
+      "consoleOutput": "  Enviando mensaje 3/3: Describir el tesoro...\n    OK [CompactacionCompleta] Exito: True,\n      Tokens removidos: (calculado)\n  Respuesta 3 longitud: 346 chars",
+      "type": "code"
+    },
+    {
+      "file": "slide06.cs",
+      "audioFile": "slide06.mp3",
+      "durationFrames": 148,
+      "narrationText": "Continuamos con compactacion activada.",
+      "consoleOutput": "  -- Resultados de compactacion --\n  CompactionStart:       1\n  CompactionComplete:    1\n  Ultima exitosa:        True\n  Tokens removidos:      (variable)",
+      "type": "code"
+    },
+    {
+      "file": "slide07.cs",
+      "audioFile": "slide07.mp3",
+      "durationFrames": 148,
+      "narrationText": "Continuamos con compactacion activada.",
+      "consoleOutput": "  Verificando sesion tras compactacion...\n  Prompt: What was the main story about?\n  Respuesta: The story was about a dragon\n    and its castle.\n  (Contexto preservado via resumen)",
+      "type": "code"
+    },
+    {
+      "file": "slide08.cs",
+      "audioFile": "slide08.mp3",
+      "durationFrames": 148,
+      "narrationText": "Continuamos con compactacion activada.",
+      "consoleOutput": "  Verificando sesion tras compactacion...\n  Prompt: What was the main story about?\n  Respuesta: The story was about a dragon\n    and its castle.\n  (Contexto preservado via resumen)",
+      "type": "code"
+    },
+    {
+      "file": "slide09.cs",
+      "audioFile": "slide09.mp3",
+      "durationFrames": 148,
+      "narrationText": "Continuamos con compactacion activada.",
+      "consoleOutput": "  Verificando sesion tras compactacion...\n  Prompt: What was the main story about?\n  Respuesta: The story was about a dragon\n    and its castle.\n  (Contexto preservado via resumen)",
+      "type": "code"
+    },
+    {
+      "file": "slide10.cs",
+      "audioFile": "slide10.mp3",
+      "durationFrames": 148,
+      "narrationText": "Continuamos con compactacion activada.",
+      "consoleOutput": "  Verificando sesion tras compactacion...\n  Prompt: What was the main story about?\n  Respuesta: The story was about a dragon\n    and its castle.\n  (Contexto preservado via resumen)",
+      "type": "code"
+    },
+    {
+      "file": "slide11.cs",
+      "audioFile": "slide11.mp3",
+      "durationFrames": 318,
+      "narrationText": "Comparamos con la compactacion desactivada. Sin ella, no se generan eventos de compactacion, confirmando que el control funciona.",
+      "consoleOutput": "=== 2. Compactacion desactivada ===\n  Prompt: What is 2+2?\n  Respuesta: 2+2 = 4\n  Eventos disparados:    0\n  (Esperado: 0 - compactacion desactivada)",
+      "type": "code"
+    },
+    {
+      "file": "slide12.cs",
+      "audioFile": "slide12.mp3",
+      "durationFrames": 153,
+      "narrationText": "Continuamos con compactacion desactivada.",
+      "consoleOutput": "=== 2. Compactacion desactivada ===\n  Prompt: What is 2+2?\n  Respuesta: 2+2 = 4\n  Eventos disparados:    0\n  (Esperado: 0 - compactacion desactivada)",
+      "type": "code"
+    },
+    {
+      "file": "slide13.cs",
+      "audioFile": "slide13.mp3",
+      "durationFrames": 153,
+      "narrationText": "Continuamos con compactacion desactivada.",
+      "consoleOutput": "=== 2. Compactacion desactivada ===\n  Prompt: What is 2+2?\n  Respuesta: 2+2 = 4\n  Eventos disparados:    0\n  (Esperado: 0 - compactacion desactivada)",
+      "type": "code"
+    },
+    {
+      "file": "slide14.cs",
+      "audioFile": "slide14.mp3",
+      "durationFrames": 153,
+      "narrationText": "Continuamos con compactacion desactivada.",
+      "consoleOutput": "=== 2. Compactacion desactivada ===\n  Prompt: What is 2+2?\n  Respuesta: 2+2 = 4\n  Eventos disparados:    0\n  (Esperado: 0 - compactacion desactivada)",
+      "type": "code"
+    },
+    {
+      "file": "slide15.cs",
+      "audioFile": "slide15.mp3",
+      "durationFrames": 226,
+      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
+      "consoleOutput": "=== 2. Compactacion desactivada ===\n  Prompt: What is 2+2?\n  Respuesta: 2+2 = 4\n  Eventos disparados:    0\n  (Esperado: 0 - compactacion desactivada)",
+      "type": "code"
+    },
+    {
+      "file": "slide16.cs",
+      "audioFile": "slide16.mp3",
+      "durationFrames": 334,
+      "narrationText": "Perfecto. La compactacion es clave para aplicaciones en produccion. En el siguiente video exploraremos las skills del SDK.",
+      "consoleOutput": "=== 2. Compactacion desactivada ===\n  Prompt: What is 2+2?\n  Respuesta: 2+2 = 4\n  Eventos disparados:    0\n  (Esperado: 0 - compactacion desactivada)",
+      "type": "ending",
+      "cardData": {
+        "title": "Siguiente: Demo 08",
+        "subtitle": "Skills del SDK",
+        "nextTitle": "Skills del SDK"
+      }
+    }
+  ]
+}

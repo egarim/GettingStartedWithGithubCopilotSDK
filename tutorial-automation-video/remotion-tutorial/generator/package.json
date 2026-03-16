@@ -1,0 +1,21 @@
+{
+  "name": "tutorial-generator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "tsx cli.ts",
+    "recorder": "tsx recorder-server.ts"
+  },
+  "dependencies": {
+    "diff": "^7.0.0",
+    "music-metadata": "^10.6.1",
+    "node-edge-tts": "^1.2.10"
+  },
+  "devDependencies": {
+    "@types/diff": "^7.0.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.0"
+  }
+}
