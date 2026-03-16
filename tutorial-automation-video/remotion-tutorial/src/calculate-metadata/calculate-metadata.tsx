@@ -10,7 +10,7 @@ import {
   waitUntilDone,
 } from "../font";
 import { Props } from "../Main";
-import { getFiles } from "./get-files";
+import { getFiles, getManifest } from "./get-files";
 import { processSnippet } from "./process-snippet";
 import { schema } from "./schema";
 
@@ -61,17 +61,46 @@ export const calculateMetadata: CalculateMetadataFunction<
 };
 
 /**
- * Calculate metadata for a manifest-driven demo composition.
- * Reads slides and durations from the demo's manifest.json.
+ * Lightweight calculateMetadata for manifest-driven demos.
+ * Only reads the manifest for duration — defers heavy code processing
+ * to render time so Remotion Studio doesn't choke loading 10 demos at once.
  */
 export function createDemoCalculateMetadata(demoId: string) {
   const calc: CalculateMetadataFunction<any> = async ({ props }) => {
+    // Step 1: Read manifest FIRST (cheap — just a JSON fetch)
+    const manifest = await getManifest(demoId);
+
+    let totalDuration = 300;
+    let stepDurations: number[] = [300];
+    let audioFiles: string[] = [];
+    let consoleOutputs: string[] = [];
+    let slideMetadata: { type: string; cardData?: unknown }[] = [{ type: "code" }];
+
+    if (manifest) {
+      stepDurations = manifest.slides.map(
+        (s: { durationFrames: number }) => s.durationFrames
+      );
+      audioFiles = manifest.slides.map(
+        (s: { audioFile: string }) => `demos/${demoId}/audio/${s.audioFile}`
+      );
+      consoleOutputs = manifest.slides.map(
+        (s: { consoleOutput: string }) => s.consoleOutput
+      );
+      slideMetadata = manifest.slides.map(
+        (s: { type?: string; cardData?: unknown }) => ({
+          type: s.type ?? "code",
+          cardData: s.cardData,
+        })
+      );
+      totalDuration = stepDurations.reduce((a, b) => a + b, 0);
+    }
+
+    // Step 2: Load and process code files (expensive but needed for rendering)
     const contents = await getFiles(demoId);
 
-    // If no slides found for this demo, fall back to empty
     if (contents.length === 0) {
       return {
-        durationInFrames: 300,
+        durationInFrames: totalDuration,
         width: 1920,
         props: {
           ...props,
@@ -79,9 +108,10 @@ export function createDemoCalculateMetadata(demoId: string) {
           steps: null,
           themeColors: null,
           codeWidth: 1080,
-          stepDurations: [300],
-          audioFiles: [],
-          consoleOutputs: [],
+          stepDurations,
+          audioFiles,
+          consoleOutputs,
+          slideMetadata,
         },
       };
     }
@@ -111,42 +141,6 @@ export function createDemoCalculateMetadata(demoId: string) {
         await processSnippet(snippet, props.theme ?? "github-dark")
       );
     }
-
-    // Load manifest for durations, audio, console outputs
-    const { getManifest } = await import("./get-files");
-    const manifest = await getManifest(demoId);
-
-    let stepDurations: number[];
-    let audioFiles: string[];
-    let consoleOutputs: string[];
-    let slideMetadata: { type: string; cardData?: unknown }[];
-
-    if (manifest) {
-      stepDurations = manifest.slides.map(
-        (s: { durationFrames: number }) => s.durationFrames
-      );
-      audioFiles = manifest.slides.map(
-        (s: { audioFile: string }) => `demos/${demoId}/audio/${s.audioFile}`
-      );
-      consoleOutputs = manifest.slides.map(
-        (s: { consoleOutput: string }) => s.consoleOutput
-      );
-      slideMetadata = manifest.slides.map(
-        (s: { type?: string; cardData?: unknown }) => ({
-          type: s.type ?? "code",
-          cardData: s.cardData,
-        })
-      );
-    } else {
-      // Default: uniform durations, no audio
-      const defaultDuration = 210; // 7 seconds
-      stepDurations = twoSlashedCode.map(() => defaultDuration);
-      audioFiles = [];
-      consoleOutputs = twoSlashedCode.map(() => "");
-      slideMetadata = twoSlashedCode.map(() => ({ type: "code" }));
-    }
-
-    const totalDuration = stepDurations.reduce((a, b) => a + b, 0);
 
     return {
       durationInFrames: totalDuration,

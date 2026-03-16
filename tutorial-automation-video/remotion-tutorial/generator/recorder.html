@@ -195,8 +195,11 @@
       manifest = await res.json();
       activeSlideIdx = 0;
 
-      const compId = demoId.charAt(0).toUpperCase() + demoId.slice(1);
-      document.getElementById('remotionFrame').src = `${REMOTION_URL}/?composition=${compId}`;
+      // Always use Main composition (loads fast, has timeline)
+      const iframe = document.getElementById('remotionFrame');
+      if (!iframe.src || !iframe.src.includes('localhost')) {
+        iframe.src = `${REMOTION_URL}/?composition=Main`;
+      }
 
       await renderSlides();
     }
@@ -457,8 +460,7 @@
 
     function reloadPreview() {
       const iframe = document.getElementById('remotionFrame');
-      const compId = currentDemo.charAt(0).toUpperCase() + currentDemo.slice(1);
-      iframe.src = `${REMOTION_URL}/?composition=${compId}`;
+      iframe.src = `${REMOTION_URL}/?composition=Main`;
     }
 
     // ── Keyboard shortcuts ────────────────────────────────────────

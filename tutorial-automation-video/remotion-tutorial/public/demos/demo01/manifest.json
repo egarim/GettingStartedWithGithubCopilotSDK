@@ -2,12 +2,12 @@
   "demoId": "demo01",
   "title": "01 - Ciclo de vida y conexion del cliente",
   "fps": 30,
-  "totalFrames": 3941,
+  "totalFrames": 3415,
   "slides": [
     {
       "file": "slide01.cs",
       "audioFile": "slide01.mp3",
-      "durationFrames": 588,
+      "durationFrames": 62,
       "narrationText": "Demo uno. Ciclo de vida y conexion del cliente. En este video aprenderemos a crear el cliente de Copilot, conectarnos al servidor, hacer consultas basicas como ping, listar modelos, y finalmente cerrar la conexion de forma ordenada.",
       "consoleOutput": "",
       "type": "title",
