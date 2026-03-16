@@ -10,22 +10,6 @@ await demo.RunAsync();
 // ─────────────────────────────────────────────────────────────────────────────
 sealed class ClientDemo(ILogger<CopilotClient> logger)
 {
-    // ── Textos (cambiar aqui para otro idioma) ──────────────────────────
-    const string DemoTitle = "01 - DEMO: Ciclo de vida y conexion del cliente";
-    const string Step1Text = "Creando CopilotClient (UseLoggedInUser = true)";
-    const string Step2Text = "Iniciando cliente (StartAsync)";
-    const string Step3Text = "Ping";
-    const string Step4Text = "Estado (GetStatusAsync)";
-    const string Step5Text = "Estado de autenticacion (GetAuthStatusAsync)";
-    const string Step6Text = "Listar modelos disponibles (ListModelsAsync)";
-    const string Step7Text = "Parada ordenada (StopAsync)";
-    const string Step8Text = "Demostracion de ForceStop";
-    const string SkippedNoAuth = "Omitido (no autenticado)";
-    const string ForceStopIntro = "Iniciando un nuevo cliente para demostrar ForceStop...";
-    const string InteractiveHint = "Presiona Enter para modo interactivo, o Ctrl+C para salir.";
-    const string InteractiveHelp = "Comandos: ping, status, auth, models, quit";
-    const string UnknownCmd = "Comando desconocido. Prueba: ping, status, auth, models, quit";
-
     // ── Helpers ─────────────────────────────────────────────────────────
     CopilotClient CreateClient() => new(new CopilotClientOptions
     {
@@ -49,28 +33,19 @@ sealed class ClientDemo(ILogger<CopilotClient> logger)
     // ── Orquestador ─────────────────────────────────────────────────────
     public async Task RunAsync()
     {
-        PrintTitle(DemoTitle);
+        PrintTitle(Strings.DemoTitle);
 
         var client = Step1_CreateClient();
-        await Step2_StartClient(client);
         await client.DisposeAsync();
     }
 
     // ── Paso 1: Crear el cliente ────────────────────────────────────────
     CopilotClient Step1_CreateClient()
     {
-        PrintStep(1, Step1Text);
+        PrintStep(1, Strings.Step1Text);
         var client = CreateClient();
         PrintProp("Estado inicial:", client.State);
         Console.WriteLine();
         return client;
-    }
-    // ── Paso 2: Iniciar el cliente ──────────────────────────────────────
-    async Task Step2_StartClient(CopilotClient client)
-    {
-        PrintStep(2, Step2Text);
-        await client.StartAsync();
-        PrintProp("Estado tras iniciar:", client.State);
-        Console.WriteLine();
     }
 }

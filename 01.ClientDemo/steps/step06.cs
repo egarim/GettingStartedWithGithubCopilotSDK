@@ -10,22 +10,6 @@ await demo.RunAsync();
 // ─────────────────────────────────────────────────────────────────────────────
 sealed class ClientDemo(ILogger<CopilotClient> logger)
 {
-    // ── Textos (cambiar aqui para otro idioma) ──────────────────────────
-    const string DemoTitle = "01 - DEMO: Ciclo de vida y conexion del cliente";
-    const string Step1Text = "Creando CopilotClient (UseLoggedInUser = true)";
-    const string Step2Text = "Iniciando cliente (StartAsync)";
-    const string Step3Text = "Ping";
-    const string Step4Text = "Estado (GetStatusAsync)";
-    const string Step5Text = "Estado de autenticacion (GetAuthStatusAsync)";
-    const string Step6Text = "Listar modelos disponibles (ListModelsAsync)";
-    const string Step7Text = "Parada ordenada (StopAsync)";
-    const string Step8Text = "Demostracion de ForceStop";
-    const string SkippedNoAuth = "Omitido (no autenticado)";
-    const string ForceStopIntro = "Iniciando un nuevo cliente para demostrar ForceStop...";
-    const string InteractiveHint = "Presiona Enter para modo interactivo, o Ctrl+C para salir.";
-    const string InteractiveHelp = "Comandos: ping, status, auth, models, quit";
-    const string UnknownCmd = "Comando desconocido. Prueba: ping, status, auth, models, quit";
-
     // ── Helpers ─────────────────────────────────────────────────────────
     CopilotClient CreateClient() => new(new CopilotClientOptions
     {
@@ -49,61 +33,52 @@ sealed class ClientDemo(ILogger<CopilotClient> logger)
     // ── Orquestador ─────────────────────────────────────────────────────
     public async Task RunAsync()
     {
-        PrintTitle(DemoTitle);
+        PrintTitle(Strings.DemoTitle);
 
         var client = Step1_CreateClient();
         await Step2_StartClient(client);
         await Step3_Ping(client);
         await Step4_GetStatus(client);
-        var isAuth = await Step5_GetAuthStatus(client);
         await client.DisposeAsync();
     }
 
     // ── Paso 1: Crear el cliente ────────────────────────────────────────
     CopilotClient Step1_CreateClient()
     {
-        PrintStep(1, Step1Text);
+        PrintStep(1, Strings.Step1Text);
         var client = CreateClient();
         PrintProp("Estado inicial:", client.State);
         Console.WriteLine();
         return client;
     }
+
     // ── Paso 2: Iniciar el cliente ──────────────────────────────────────
     async Task Step2_StartClient(CopilotClient client)
     {
-        PrintStep(2, Step2Text);
+        PrintStep(2, Strings.Step2Text);
         await client.StartAsync();
         PrintProp("Estado tras iniciar:", client.State);
         Console.WriteLine();
     }
+
     // ── Paso 3: Ping ────────────────────────────────────────────────────
     async Task Step3_Ping(CopilotClient client)
     {
-        PrintStep(3, Step3Text);
+        PrintStep(3, Strings.Step3Text);
         var pong = await client.PingAsync("hello from demo!");
         PrintProp("Enviado:", "\"hello from demo!\"");
         PrintProp("Respuesta:", $"\"{pong.Message}\"");
         PrintProp("Timestamp:", pong.Timestamp);
         Console.WriteLine();
     }
+
     // ── Paso 4: Status del servidor ─────────────────────────────────────
     async Task Step4_GetStatus(CopilotClient client)
     {
-        PrintStep(4, Step4Text);
+        PrintStep(4, Strings.Step4Text);
         var s = await client.GetStatusAsync();
         PrintProp("Version:", s.Version);
         PrintProp("Version Protocolo:", s.ProtocolVersion);
         Console.WriteLine();
-    }
-    // ── Paso 5: Estado de autenticacion ─────────────────────────────────
-    async Task<bool> Step5_GetAuthStatus(CopilotClient client)
-    {
-        PrintStep(5, Step5Text);
-        var auth = await client.GetAuthStatusAsync();
-        PrintProp("Autenticado:", auth.IsAuthenticated);
-        PrintProp("Tipo:", auth.AuthType ?? "");
-        PrintProp("Mensaje:", auth.StatusMessage ?? "");
-        Console.WriteLine();
-        return auth.IsAuthenticated;
     }
 }

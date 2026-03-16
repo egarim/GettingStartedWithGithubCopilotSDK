@@ -8,6 +8,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="single-file-steps/**" />
+    <Compile Remove="steps/**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="GitHub.Copilot.SDK" Version="0.1.23" />
     <PackageReference Include="Microsoft.Extensions.AI" Version="*" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="*" />
