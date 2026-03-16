@@ -1,0 +1,100 @@
+{
+  "demoId": "howto",
+  "title": "How to Use the Video Pipeline",
+  "fps": 30,
+  "totalFrames": 4335,
+  "slides": [
+    {
+      "file": "slide01.cs",
+      "audioFile": "slide01.mp3",
+      "durationFrames": 384,
+      "narrationText": "Bienvenido al tutorial de la pipeline de video. Te mostrare como generar videos de codigo automaticamente usando Remotion, y como grabar tu propia narracion desde el navegador.",
+      "consoleOutput": "",
+      "type": "title",
+      "cardData": {
+        "title": "Video Pipeline Tutorial",
+        "subtitle": "Genera videos de codigo con narracion automatica",
+        "bullets": [
+          "Generar slides desde codigo fuente",
+          "Narracion TTS o grabacion propia",
+          "Preview y render en 1080p"
+        ]
+      }
+    },
+    {
+      "file": "slide02.cs",
+      "audioFile": "slide02.mp3",
+      "durationFrames": 572,
+      "narrationText": "Paso uno. Instala las dependencias. Ejecuta npm install en el directorio remotion tutorial, y luego en el directorio generator. Esto instala Remotion, Code Hike para resaltado de sintaxis, y Edge TTS para narracion automatica.",
+      "consoleOutput": "$ cd remotion-tutorial\n$ npm install\n\nadded 450 packages in 12s\n\n$ cd generator\n$ npm install\n\nadded 49 packages in 2s",
+      "type": "code",
+      "cardData": {
+        "title": "Paso 1: Instalar dependencias"
+      }
+    },
+    {
+      "file": "slide03.cs",
+      "audioFile": "slide03.mp3",
+      "durationFrames": 634,
+      "narrationText": "Paso dos. Genera los slides y la narracion. Ejecuta el generador con el flag all para procesar todos los demos, o usa demo seguido del numero para uno especifico. El generador extrae el codigo nuevo de cada paso, genera audio con texto a voz, y crea el manifiesto con las duraciones.",
+      "consoleOutput": "$ cd generator\n$ npx tsx cli.ts --all\n\nProcessing Demo 01\n  Extracted 11 slides\n  TTS slide 1: \"Demo uno...\"\n  TTS slide 2: \"Empezamos...\"\n  ...\n  Done! Total: 122s\n\nProcessing Demo 02\n  Extracted 17 slides\n  Done! Total: 165s\n\nAll done!",
+      "type": "code",
+      "cardData": {
+        "title": "Paso 2: Generar slides y audio"
+      }
+    },
+    {
+      "file": "slide04.cs",
+      "audioFile": "slide04.mp3",
+      "durationFrames": 638,
+      "narrationText": "Paso tres. Abre el Recorder Studio para previsualizar y grabar tu narracion. Necesitas dos terminales: una para Remotion Studio en el puerto tres mil, y otra para el recorder en el puerto tres mil cuatrocientos cincuenta y seis. Luego abre el navegador en localhost tres mil cuatrocientos cincuenta y seis.",
+      "consoleOutput": "# Terminal 1:\n$ cd remotion-tutorial\n$ npx remotion studio\n  Server: http://localhost:3000\n\n# Terminal 2:\n$ cd generator\n$ npm run recorder\n  Recorder: http://localhost:3456",
+      "type": "code",
+      "cardData": {
+        "title": "Paso 3: Abrir el Studio"
+      }
+    },
+    {
+      "file": "slide05.cs",
+      "audioFile": "slide05.mp3",
+      "durationFrames": 751,
+      "narrationText": "Paso cuatro. Graba tu narracion. En el recorder studio, selecciona un demo del dropdown, haz clic en un slide para expandirlo, y presiona el boton rojo de Record o la tecla R. Habla tu narracion siguiendo el guion que aparece en azul. Presiona Stop cuando termines. El audio se guarda automaticamente y la duracion se sincroniza con el video.",
+      "consoleOutput": "",
+      "type": "title",
+      "cardData": {
+        "title": "Paso 4: Grabar narracion",
+        "subtitle": "Atajos de teclado del Recorder Studio",
+        "bullets": [
+          "R  -  Grabar / Detener grabacion",
+          "Espacio  -  Reproducir / Detener slide",
+          "P  -  Reproducir todos los slides",
+          "Flechas  -  Navegar entre slides",
+          "Esc  -  Detener todo"
+        ]
+      }
+    },
+    {
+      "file": "slide06.cs",
+      "audioFile": "slide06.mp3",
+      "durationFrames": 647,
+      "narrationText": "Paso cinco. Renderiza el video final. Usa el comando remotion render seguido del nombre de la composicion, por ejemplo Demo cero uno. El video se genera en formato MP4 a mil novecientos veinte por mil ochenta pixeles a treinta cuadros por segundo. El archivo aparece en la carpeta out.",
+      "consoleOutput": "$ cd remotion-tutorial\n$ npx remotion render Demo01\n\n  Rendering Demo01...\n  Frame 1/3654 (0%)\n  Frame 1000/3654 (27%)\n  Frame 2000/3654 (55%)\n  Frame 3654/3654 (100%)\n\n  Output: out/Demo01.mp4\n  Duration: 2m 2s\n  Size: 18.4 MB",
+      "type": "code",
+      "cardData": {
+        "title": "Paso 5: Renderizar video"
+      }
+    },
+    {
+      "file": "slide07.cs",
+      "audioFile": "slide07.mp3",
+      "durationFrames": 709,
+      "narrationText": "Listo! Ya sabes como usar la pipeline completa. Recuerda: el generador crea los slides automaticamente desde tu codigo, puedes usar la narracion automatica o grabar la tuya, y el recorder studio sincroniza todo. Para otro proyecto, solo apunta el recorder a tu directorio de demos. Buena suerte con tus videos!",
+      "consoleOutput": "",
+      "type": "ending",
+      "cardData": {
+        "title": "Listo!",
+        "subtitle": "Pipeline completa: codigo -> slides -> audio -> video"
+      }
+    }
+  ]
+}

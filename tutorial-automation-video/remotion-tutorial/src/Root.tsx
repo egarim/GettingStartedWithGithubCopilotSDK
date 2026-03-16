@@ -4,6 +4,7 @@ import { createDemoCalculateMetadata } from "./calculate-metadata/calculate-meta
 
 // All demo IDs (matching folder names in public/demos/)
 const DEMO_IDS = [
+  "howto",
   "demo01",
   "demo02",
   "demo03",
