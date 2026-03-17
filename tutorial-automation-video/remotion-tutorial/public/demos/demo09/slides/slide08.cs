@@ -1,12 +1,16 @@
-// Agente personalizado
-var customAgents = new List<CustomAgentConfig>
+// Multiples servidores MCP
+var mcpServers = new Dictionary<string, object>
 {
-    new CustomAgentConfig
+    ["filesystem-server"] = new McpLocalServerConfig
     {
-        Name = "business-analyst",
-        DisplayName = "Business Analyst Agent",
-        Description = "An agent specialized in business analysis and reporting",
-        Prompt = "You are a business analyst. Focus on data-driven insights, KPIs, and actionable recommendations.",
-        Infer = true
-    }
-};
+        Type = "local",
+        Command = "echo",
+        Args = ["filesystem-server"],
+        Tools = ["*"]
+    },
+    ["database-server"] = new McpLocalServerConfig
+    {
+        Type = "local",
+        Command = "echo",
+        Args = ["database-server"],
+// ...

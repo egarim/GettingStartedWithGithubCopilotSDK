@@ -1,2 +1,3 @@
-// Siguiente: Demo 06
-// AskUser: interaccion con el usuario
+// Modo interactivo
+// Mismo patron que Demo 01
+// (bucle de entrada del usuario)

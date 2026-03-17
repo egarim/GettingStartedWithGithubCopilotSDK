@@ -2,12 +2,12 @@
   "demoId": "demo03",
   "title": "03 - Tools: funciones personalizadas",
   "fps": 30,
-  "totalFrames": 3841,
+  "totalFrames": 3150,
   "slides": [
     {
       "file": "slide01.cs",
       "audioFile": "slide01.mp3",
-      "durationFrames": 441,
+      "durationFrames": 210,
       "narrationText": "Demo tres. Tools, funciones personalizadas. Veremos como definir herramientas que el modelo puede invocar, registrarlas en la sesion, y manejar tipos complejos de entrada y salida.",
       "consoleOutput": "",
       "type": "title",
@@ -25,7 +25,7 @@
     {
       "file": "slide02.cs",
       "audioFile": "slide02.mp3",
-      "durationFrames": 321,
+      "durationFrames": 210,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
       "consoleOutput": "================================================================\n  03 - DEMO: Herramientas personalizadas (AIFunction)\n================================================================\n\n  Cliente iniciado.",
       "type": "code"
@@ -33,39 +33,39 @@
     {
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
-      "durationFrames": 326,
-      "narrationText": "Definimos una herramienta simple que el modelo puede invocar. En este caso, una funcion que encripta texto convirtiendolo a mayusculas.",
+      "durationFrames": 210,
+      "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
       "consoleOutput": "=== 1. Herramienta personalizada simple ===\n  Prompt:   Use encrypt_string to encrypt: Hello World\n  Respuesta: The encrypted string is \"HELLO WORLD\"\n  (La herramienta convierte a mayusculas)",
       "type": "code"
     },
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
-      "durationFrames": 294,
-      "narrationText": "Registramos varias herramientas en la sesion. El modelo decide automaticamente cual usar segun la pregunta del usuario.",
+      "durationFrames": 210,
+      "narrationText": "Definimos una herramienta simple que el modelo puede invocar. En este caso, una funcion que encripta texto convirtiendolo a mayusculas.",
       "consoleOutput": "=== 2. Multiples herramientas personalizadas ===\n    [Tool:get_weather] city=Madrid\n    [Tool:get_time] city=Madrid\n  Prompt:   What's the weather in Madrid?\n  Respuesta: In Madrid it's 22°C, partly cloudy,\n    humidity 65%. The time is 17:23 UTC.",
       "type": "code"
     },
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
-      "durationFrames": 325,
-      "narrationText": "Creamos herramientas que reciben y devuelven tipos complejos como records y arrays. El SDK serializa automaticamente los datos.",
+      "durationFrames": 210,
+      "narrationText": "Registramos varias herramientas en la sesion. El modelo decide automaticamente cual usar segun la pregunta del usuario.",
       "consoleOutput": "=== 3. Tipos complejos de entrada/salida ===\n  Prompt: Perform a DB query for 'cities'...\n    [Tool called] Table=cities, IDs=[12,19],\n      Sort=True\n  Respuesta: Passos (135460), San Lorenzo (204356)\n  ToolInvocation.SessionId coincide: True",
       "type": "code"
     },
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
-      "durationFrames": 188,
-      "narrationText": "Continuamos con tipos complejos de entrada/salida.",
+      "durationFrames": 210,
+      "narrationText": "Creamos herramientas que reciben y devuelven tipos complejos como records y arrays. El SDK serializa automaticamente los datos.",
       "consoleOutput": "=== 3. Tipos complejos de entrada/salida ===\n  Prompt: Perform a DB query for 'cities'...\n    [Tool called] Table=cities, IDs=[12,19],\n      Sort=True\n  Respuesta: Passos (135460), San Lorenzo (204356)\n  ToolInvocation.SessionId coincide: True",
       "type": "code"
     },
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 188,
+      "durationFrames": 210,
       "narrationText": "Continuamos con tipos complejos de entrada/salida.",
       "consoleOutput": "=== 3. Tipos complejos de entrada/salida ===\n  Prompt: Perform a DB query for 'cities'...\n    [Tool called] Table=cities, IDs=[12,19],\n      Sort=True\n  Respuesta: Passos (135460), San Lorenzo (204356)\n  ToolInvocation.SessionId coincide: True",
       "type": "code"
@@ -73,23 +73,23 @@
     {
       "file": "slide08.cs",
       "audioFile": "slide08.mp3",
-      "durationFrames": 313,
-      "narrationText": "Demostramos que cuando una herramienta falla, el SDK protege la informacion sensible. El modelo no ve los detalles del error.",
+      "durationFrames": 210,
+      "narrationText": "Continuamos con tipos complejos de entrada/salida.",
       "consoleOutput": "=== 4. Manejo de errores en herramientas ===\n  Prompt: What is my location?\n  La herramienta lanzo excepcion con 'Melbourne'\n  Respuesta: I'm unable to determine your\n    location - it's unknown.\n  Contiene 'Melbourne': False\n  (SDK NO expone detalles de excepciones al modelo)",
       "type": "code"
     },
     {
       "file": "slide09.cs",
       "audioFile": "slide09.mp3",
-      "durationFrames": 166,
-      "narrationText": "Continuamos con manejo de errores en herramientas.",
+      "durationFrames": 210,
+      "narrationText": "Demostramos que cuando una herramienta falla, el SDK protege la informacion sensible. El modelo no ve los detalles del error.",
       "consoleOutput": "=== 4. Manejo de errores en herramientas ===\n  Prompt: What is my location?\n  La herramienta lanzo excepcion con 'Melbourne'\n  Respuesta: I'm unable to determine your\n    location - it's unknown.\n  Contiene 'Melbourne': False\n  (SDK NO expone detalles de excepciones al modelo)",
       "type": "code"
     },
     {
       "file": "slide10.cs",
       "audioFile": "slide10.mp3",
-      "durationFrames": 166,
+      "durationFrames": 210,
       "narrationText": "Continuamos con manejo de errores en herramientas.",
       "consoleOutput": "=== 4. Manejo de errores en herramientas ===\n  Prompt: What is my location?\n  La herramienta lanzo excepcion con 'Melbourne'\n  Respuesta: I'm unable to determine your\n    location - it's unknown.\n  Contiene 'Melbourne': False\n  (SDK NO expone detalles de excepciones al modelo)",
       "type": "code"
@@ -97,31 +97,39 @@
     {
       "file": "slide11.cs",
       "audioFile": "slide11.mp3",
-      "durationFrames": 294,
-      "narrationText": "Controlamos que herramientas estan disponibles para el modelo. Podemos permitir solo algunas o excluir las que no queremos.",
+      "durationFrames": 210,
+      "narrationText": "Continuamos con manejo de errores en herramientas.",
       "consoleOutput": "=== 5. Filtros AvailableTools y ExcludedTools ===\n  AvailableTools = [\"view\", \"edit\"]\n  Prompt: What tools do you have available?\n  Respuesta: I have the view and edit tools.\n\n  ExcludedTools = [\"view\"]\n  Prompt: What tools do you have available?\n  Respuesta: I have edit, bash and other tools\n    (view is excluded).",
       "type": "code"
     },
     {
       "file": "slide12.cs",
       "audioFile": "slide12.mp3",
-      "durationFrames": 180,
-      "narrationText": "Continuamos con filtros availabletools y excludedtools.",
+      "durationFrames": 210,
+      "narrationText": "Controlamos que herramientas estan disponibles para el modelo. Podemos permitir solo algunas o excluir las que no queremos.",
       "consoleOutput": "=== 5. Filtros AvailableTools y ExcludedTools ===\n  AvailableTools = [\"view\", \"edit\"]\n  Prompt: What tools do you have available?\n  Respuesta: I have the view and edit tools.\n\n  ExcludedTools = [\"view\"]\n  Prompt: What tools do you have available?\n  Respuesta: I have edit, bash and other tools\n    (view is excluded).",
       "type": "code"
     },
     {
       "file": "slide13.cs",
       "audioFile": "slide13.mp3",
-      "durationFrames": 226,
-      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
+      "durationFrames": 210,
+      "narrationText": "Continuamos con filtros availabletools y excludedtools.",
       "consoleOutput": "=== 5. Filtros AvailableTools y ExcludedTools ===\n  AvailableTools = [\"view\", \"edit\"]\n  Prompt: What tools do you have available?\n  Respuesta: I have the view and edit tools.\n\n  ExcludedTools = [\"view\"]\n  Prompt: What tools do you have available?\n  Respuesta: I have edit, bash and other tools\n    (view is excluded).",
       "type": "code"
     },
     {
       "file": "slide14.cs",
       "audioFile": "slide14.mp3",
-      "durationFrames": 413,
+      "durationFrames": 210,
+      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
+      "consoleOutput": "=== 5. Filtros AvailableTools y ExcludedTools ===\n  AvailableTools = [\"view\", \"edit\"]\n  Prompt: What tools do you have available?\n  Respuesta: I have the view and edit tools.\n\n  ExcludedTools = [\"view\"]\n  Prompt: What tools do you have available?\n  Respuesta: I have edit, bash and other tools\n    (view is excluded).",
+      "type": "code"
+    },
+    {
+      "file": "slide15.cs",
+      "audioFile": "slide15.mp3",
+      "durationFrames": 210,
       "narrationText": "Muy bien. Ya puedes crear herramientas personalizadas. En el siguiente video veremos los hooks, que te permiten interceptar la ejecucion de tools antes y despues de que ocurran.",
       "consoleOutput": "=== 5. Filtros AvailableTools y ExcludedTools ===\n  AvailableTools = [\"view\", \"edit\"]\n  Prompt: What tools do you have available?\n  Respuesta: I have the view and edit tools.\n\n  ExcludedTools = [\"view\"]\n  Prompt: What tools do you have available?\n  Respuesta: I have edit, bash and other tools\n    (view is excluded).",
       "type": "ending",

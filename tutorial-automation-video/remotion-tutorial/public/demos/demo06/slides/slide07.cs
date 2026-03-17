@@ -1,13 +1,14 @@
-// Verificar opciones
-var userInputRequests = new List<UserInputRequest>();
-var session = await client.CreateSessionAsync(new SessionConfig
+// ...
+Console.WriteLine("  Prompt: Ask me to choose between 'Option A' and 'Option B' using the ask_user tool.");
+var answer = await session.SendAndWaitAsync(new MessageOptions
 {
-    OnUserInputRequest = (request, invocation) =>
-    {
-        userInputRequests.Add(request);
-        Console.WriteLine($"    [AskUser] Pregunta: {request.Question}");
-        if (request.Choices is { Count: > 0 })
-        {
-            for (int i = 0; i < request.Choices.Count; i++)
-                Console.WriteLine($"    [AskUser]   [{i + 1}] {request.Choices[i]}");
-        }
+    Prompt = "Ask me to choose between 'Option A' and 'Option B' using the ask_user tool. Wait for my response before continuing."
+});
+Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+PrintProp("Solicitudes recibidas:", userInputRequests.Count);
+foreach (var req in userInputRequests)
+{
+    Console.WriteLine($"    Pregunta: {req.Question}");
+    Console.WriteLine($"    Tiene opciones: {req.Choices is { Count: > 0 }}");
+}
+await session.DisposeAsync();

@@ -1,16 +1,16 @@
-// Modelo + herramientas
-PrintProp("Modelo:", chosenModel);
-await using var session = await client.CreateSessionAsync(new SessionConfig
-{
-    Model = chosenModel,
-    Tools =
-    [
-        AIFunctionFactory.Create(GetWeather, "get_weather"),
-        AIFunctionFactory.Create(GetTime, "get_time"),
-    ]
-});
+// Comparar modelos
+var modelsToTry = models.Select(m => m.Id).Take(Math.Min(models.Count, 4)).ToList();
 
-var answer = await session.SendAndWaitAsync(
-    new MessageOptions { Prompt = "What's the weather in Tokyo and what time is it there?" });
-Console.WriteLine($"  P: What's the weather in Tokyo and what time is it there?");
-Console.WriteLine($"  R: {answer?.Data.Content}");
+const string testPrompt = "What is the capital of Australia? One sentence.";
+Console.WriteLine($"  Prompt: \"{testPrompt}\"\n");
+
+foreach (var modelId in modelsToTry)
+{
+    try
+    {
+        await using var session = await client.CreateSessionAsync(new SessionConfig { Model = modelId });
+        var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = testPrompt });
+        Console.WriteLine($"  {modelId,-45} -> {answer?.Data.Content?.Trim()}");
+    }
+    catch (Exception ex)
+// ...

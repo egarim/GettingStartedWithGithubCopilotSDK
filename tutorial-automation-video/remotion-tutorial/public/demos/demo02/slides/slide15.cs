@@ -1,16 +1,14 @@
-// Deltas en streaming
-await using var session = await client.CreateSessionAsync(new SessionConfig { Streaming = true });
-var buffer = new StringBuilder();
-var idleTcs = new TaskCompletionSource<bool>();
-
-session.On(evt =>
+// Mensaje de sistema - Modo Replace
+await using var session = await client.CreateSessionAsync(new SessionConfig
 {
-    switch (evt)
+    SystemMessage = new SystemMessageConfig
     {
-        case AssistantMessageDeltaEvent delta:
-            Console.Write(delta.Data.DeltaContent);
-            buffer.Append(delta.Data.DeltaContent);
-            break;
-        case SessionIdleEvent:
-            idleTcs.TrySetResult(true);
-// ...
+        Mode = SystemMessageMode.Replace,
+        Content = "You are an assistant called Testy McTestface. Reply succinctly."
+    }
+});
+
+Console.WriteLine("  Prompt: What is your full name?");
+var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is your full name?" });
+PrintProp("Respuesta:", answer?.Data.Content);
+Console.WriteLine("  (Deberia mencionar 'Testy' en lugar de 'GitHub Copilot')");

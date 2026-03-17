@@ -1,11 +1,11 @@
-// Filtros AvailableTools y ExcludedTools
-
-Console.WriteLine("  AvailableTools = [\"view\", \"edit\"] -> solo estas 2 herramientas built-in");
-var session1 = await client.CreateSessionAsync(new SessionConfig
+// ...
+Console.WriteLine("  Prompt: What is my location? If you can't find out, just say 'unknown'.");
+var answer = await session.SendAndWaitAsync(new MessageOptions
 {
-    AvailableTools = new List<string> { "view", "edit" }
+    Prompt = "What is my location? If you can't find out, just say 'unknown'."
 });
-Console.WriteLine("  Prompt: What tools do you have available?");
-var a1 = await session1.SendAndWaitAsync(new MessageOptions { Prompt = "What tools do you have available?" });
-Console.WriteLine($"  Respuesta: {a1?.Data.Content?.Substring(0, Math.Min(200, a1.Data.Content?.Length ?? 0))}");
-await session1.DisposeAsync();
+Console.WriteLine($"  La herramienta lanzo una excepcion con 'Melbourne' en el mensaje.");
+Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+Console.WriteLine($"  Contiene 'Melbourne': {answer?.Data.Content?.Contains("Melbourne") ?? false}");
+Console.WriteLine("  (Esperado: Falso - el SDK NO expone detalles de excepciones al modelo)");
+await session.DisposeAsync();

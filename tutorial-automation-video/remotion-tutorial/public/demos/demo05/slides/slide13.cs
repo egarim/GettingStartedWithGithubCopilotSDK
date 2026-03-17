@@ -1,10 +1,14 @@
-// ...
-Console.WriteLine("  Prompt: Run 'echo test-toolcallid'");
-var answer = await session.SendAndWaitAsync(new MessageOptions
+// ToolCallId
+var toolCallIds = new List<string>();
+var session = await client.CreateSessionAsync(new SessionConfig
 {
-    Prompt = "Run 'echo test-toolcallid'"
+    OnPermissionRequest = (request, invocation) =>
+    {
+        if (!string.IsNullOrEmpty(request.ToolCallId))
+        {
+            toolCallIds.Add(request.ToolCallId);
+            Console.WriteLine($"    [Permission] ToolCallId: {request.ToolCallId}");
+        }
+        return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
+    }
 });
-Console.WriteLine($"  Respuesta: {answer?.Data.Content?.Substring(0, Math.Min(150, answer?.Data.Content?.Length ?? 0))}");
-PrintProp("ToolCallIds recibidos:", toolCallIds.Count);
-foreach (var id in toolCallIds) Console.WriteLine($"    -> {id}");
-await session.DisposeAsync();

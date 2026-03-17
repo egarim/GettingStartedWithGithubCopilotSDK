@@ -1,13 +1,19 @@
-// Aprobar permiso
-var permissionRequests = new List<PermissionRequest>();
-var session = await client.CreateSessionAsync(new SessionConfig
+// Helpers
+CopilotClient CreateClient() => new(new CopilotClientOptions
 {
-    OnPermissionRequest = (request, invocation) =>
-    {
-        permissionRequests.Add(request);
-        Console.WriteLine($"    [Permission] Kind: {request.Kind}, ToolCallId: {request.ToolCallId}");
-        Console.WriteLine($"    [Permission] Session: {invocation.SessionId}");
-        Console.WriteLine("    [Permission] Decision: APROBADO");
-        return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
-    }
+    UseLoggedInUser = true,
+    Logger = logger
 });
+
+static void PrintTitle(string title)
+{
+    Console.WriteLine("================================================================");
+    Console.WriteLine($"  {title}");
+    Console.WriteLine("================================================================\n");
+}
+
+static void PrintStep(int n, string text)
+    => Console.WriteLine($"=== {n}. {text} ===");
+
+static void PrintProp(string label, object? value)
+    => Console.WriteLine($"  {label,-22} {value}");

@@ -1,8 +1,11 @@
-// ...
-Console.WriteLine("  Prompt: Run 'echo hello from async permission demo' and tell me the output");
-var answer = await session.SendAndWaitAsync(new MessageOptions
+// Handler asincrono
+var session = await client.CreateSessionAsync(new SessionConfig
 {
-    Prompt = "Run 'echo hello from async permission demo' and tell me the output"
+    OnPermissionRequest = async (request, invocation) =>
+    {
+        Console.WriteLine($"    [Permission] Kind: {request.Kind} - Simulando verificacion asincrona...");
+        await Task.Delay(500);
+        Console.WriteLine("    [Permission] Aprobado tras espera");
+        return new PermissionRequestResult { Kind = "approved" };
+    }
 });
-Console.WriteLine($"  Respuesta: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
-await session.DisposeAsync();

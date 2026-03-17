@@ -1,10 +1,11 @@
-// ...
-Console.WriteLine("  McpServers config:");
-Console.WriteLine("  {");
-Console.WriteLine("    \"test-server\": {");
-Console.WriteLine("      Type: \"local\",");
-Console.WriteLine("      Command: \"echo\",");
-Console.WriteLine("      Args: [\"hello-mcp\"],");
-Console.WriteLine("      Tools: [\"*\"]   <- todas las herramientas del servidor");
-Console.WriteLine("    }");
-Console.WriteLine("  }\n");
+// Servidor MCP simple
+var mcpServers = new Dictionary<string, object>
+{
+    ["test-server"] = new McpLocalServerConfig
+    {
+        Type = "local",
+        Command = "echo",
+        Args = ["hello-mcp"],
+        Tools = ["*"]
+    }
+};

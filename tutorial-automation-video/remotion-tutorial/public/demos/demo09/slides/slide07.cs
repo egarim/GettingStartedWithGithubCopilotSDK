@@ -1,16 +1,6 @@
-// Multiples servidores MCP
-var mcpServers = new Dictionary<string, object>
-{
-    ["filesystem-server"] = new McpLocalServerConfig
-    {
-        Type = "local",
-        Command = "echo",
-        Args = ["filesystem-server"],
-        Tools = ["*"]
-    },
-    ["database-server"] = new McpLocalServerConfig
-    {
-        Type = "local",
-        Command = "echo",
-        Args = ["database-server"],
 // ...
+Console.WriteLine("  Prompt: What is 2+2?");
+var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 2+2?" });
+Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+Console.WriteLine("  Sesion funciona con configuracion MCP");
+await session.DisposeAsync();

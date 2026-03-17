@@ -1,2 +1,6 @@
-// Siguiente: Demo 02
-// Sesiones y conversaciones
+// Estado de autenticacion
+var auth = await client.GetAuthStatusAsync();
+PrintProp("Autenticado:", auth.IsAuthenticated);
+PrintProp("Tipo:", auth.AuthType ?? "");
+PrintProp("Mensaje:", auth.StatusMessage ?? "");
+return auth.IsAuthenticated;

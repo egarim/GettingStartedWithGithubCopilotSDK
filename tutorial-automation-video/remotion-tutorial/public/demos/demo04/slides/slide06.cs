@@ -1,5 +1,6 @@
-// Denegar ejecucion
-var deniedTools = new List<string>();
+// Ambos hooks juntos
+var preTools = new List<string>();
+var postTools = new List<string>();
 
 var session = await client.CreateSessionAsync(new SessionConfig
 {
@@ -8,9 +9,8 @@ var session = await client.CreateSessionAsync(new SessionConfig
     {
         OnPreToolUse = (input, invocation) =>
         {
-            deniedTools.Add(input.ToolName ?? "?");
-            Console.WriteLine($"    [PreToolUse] DENEGANDO herramienta: {input.ToolName}");
+            preTools.Add(input.ToolName ?? "?");
+            Console.WriteLine($"    [PRE]  -> {input.ToolName}");
             return Task.FromResult<PreToolUseHookOutput?>(
-                new PreToolUseHookOutput { PermissionDecision = "deny" });
-        }
+                new PreToolUseHookOutput { PermissionDecision = "allow" });
 // ...

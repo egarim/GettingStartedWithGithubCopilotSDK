@@ -1,11 +1,8 @@
-// Handler asincrono
-var session = await client.CreateSessionAsync(new SessionConfig
-{
-    OnPermissionRequest = async (request, invocation) =>
-    {
-        Console.WriteLine($"    [Permission] Kind: {request.Kind} - Simulando verificacion asincrona...");
-        await Task.Delay(500);
-        Console.WriteLine("    [Permission] Aprobado tras espera");
-        return new PermissionRequestResult { Kind = "approved" };
-    }
-});
+// Comportamiento por defecto
+var session = await client.CreateSessionAsync(new SessionConfig());
+
+Console.WriteLine("  Prompt: What is 2+2?");
+var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 2+2?" });
+Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+Console.WriteLine("  (Funciona sin handler - solo se activa para operaciones de escritura/ejecucion)");
+await session.DisposeAsync();

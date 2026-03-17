@@ -1,13 +1,6 @@
-// Agente con herramientas
-var customAgents = new List<CustomAgentConfig>
-{
-    new CustomAgentConfig
-    {
-        Name = "devops-agent",
-        DisplayName = "DevOps Agent",
-        Description = "An agent for DevOps tasks with specific tool access",
-        Prompt = "You are a DevOps agent. You can use bash and edit tools.",
-        Tools = ["bash", "edit"],
-        Infer = true
-    }
-};
+// ...
+Console.WriteLine("  Prompt: What is 5+5?");
+var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 5+5?" });
+Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+Console.WriteLine("  Configuracion de agente aceptada");
+await session.DisposeAsync();

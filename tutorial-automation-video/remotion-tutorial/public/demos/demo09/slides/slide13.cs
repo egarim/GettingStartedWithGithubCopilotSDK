@@ -1,10 +1,13 @@
-// ...
-PrintProp("Agente:", "devops-agent");
-PrintProp("Herramientas:", "[\"bash\", \"edit\"] <- conjunto restringido");
-
-var session = await client.CreateSessionAsync(new SessionConfig
+// Agente con herramientas
+var customAgents = new List<CustomAgentConfig>
 {
-    CustomAgents = customAgents
-});
-PrintProp("Sesion:", $"{session.SessionId}");
-await session.DisposeAsync();
+    new CustomAgentConfig
+    {
+        Name = "devops-agent",
+        DisplayName = "DevOps Agent",
+        Description = "An agent for DevOps tasks with specific tool access",
+        Prompt = "You are a DevOps agent. You can use bash and edit tools.",
+        Tools = ["bash", "edit"],
+        Infer = true
+    }
+};

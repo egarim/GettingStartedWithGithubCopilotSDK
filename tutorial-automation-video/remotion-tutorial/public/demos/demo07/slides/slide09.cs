@@ -1,9 +1,15 @@
 // ...
-Console.WriteLine("  Verificando que la sesion funciona tras compactacion...");
-Console.WriteLine("  Prompt: What was the main story about? Answer in one sentence.");
-var a4 = await session.SendAndWaitAsync(new MessageOptions
+Console.WriteLine("  -- Resultados de compactacion --");
+PrintProp("CompactionStart:", compactionStartEvents.Count);
+PrintProp("CompactionComplete:", compactionCompleteEvents.Count);
+
+if (compactionCompleteEvents.Count > 0)
 {
-    Prompt = "What was the main story about? Answer in one sentence."
-});
-Console.WriteLine($"  Respuesta: {a4?.Data.Content}");
-Console.WriteLine("  (Deberia recordar que era sobre un dragon - contexto preservado via resumen)");
+    var last = compactionCompleteEvents[^1];
+    PrintProp("Ultima exitosa:", last.Data.Success);
+    PrintProp("Tokens removidos:", last.Data.TokensRemoved);
+}
+else
+{
+    Console.WriteLine("  (No se activo compactacion - la ventana de contexto puede no haberse llenado suficiente)");
+}

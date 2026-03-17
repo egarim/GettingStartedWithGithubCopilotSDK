@@ -1,14 +1,5 @@
 // ...
-session.On(evt =>
-{
-    switch (evt)
-    {
-        case AssistantMessageDeltaEvent delta:
-            Console.Write(delta.Data.DeltaContent);
-            sb.Append(delta.Data.DeltaContent);
-            break;
-        case SessionIdleEvent:
-            idleTcs.TrySetResult(true);
-            break;
-    }
-});
+Console.WriteLine("  Prompt: Tell me a very short joke (2 sentences max).");
+Console.Write("  Streaming: ");
+var sb = new StringBuilder();
+var idleTcs = new TaskCompletionSource<bool>();

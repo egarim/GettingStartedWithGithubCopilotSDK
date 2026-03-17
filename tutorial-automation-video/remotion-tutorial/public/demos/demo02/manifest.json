@@ -2,12 +2,12 @@
   "demoId": "demo02",
   "title": "02 - Sesiones y conversaciones multi-turno",
   "fps": 30,
-  "totalFrames": 4959,
+  "totalFrames": 3780,
   "slides": [
     {
       "file": "slide01.cs",
       "audioFile": "slide01.mp3",
-      "durationFrames": 459,
+      "durationFrames": 210,
       "narrationText": "Demo dos. Sesiones y conversaciones multi-turno. Aprenderemos a crear sesiones, mantener el contexto entre mensajes, suscribirnos a eventos en tiempo real y reanudar conversaciones previas.",
       "consoleOutput": "",
       "type": "title",
@@ -25,7 +25,7 @@
     {
       "file": "slide02.cs",
       "audioFile": "slide02.mp3",
-      "durationFrames": 321,
+      "durationFrames": 210,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
       "consoleOutput": "================================================================\n  02 - DEMO: Ciclo de vida, eventos y multi-turno\n================================================================\n\n  Cliente iniciado.",
       "type": "code"
@@ -33,47 +33,47 @@
     {
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
-      "durationFrames": 293,
-      "narrationText": "Creamos una sesion de chat y verificamos su estado inicial. Luego la destruimos y confirmamos que ya no se puede usar.",
+      "durationFrames": 210,
+      "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
       "consoleOutput": "=== 1. Crear y destruir una sesion ===\n  Sesion creada:         cf7bb019-8897-4f55-ae8b-...\n  Mensajes iniciales:    1\n  Tipo primer evento:    SystemMessageEvent\n  Sesion destruida.\n  Error esperado:        Cannot read or write...",
       "type": "code"
     },
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
-      "durationFrames": 158,
-      "narrationText": "Continuamos con crear y destruir una sesion.",
+      "durationFrames": 210,
+      "narrationText": "Creamos una sesion de chat y verificamos su estado inicial. Luego la destruimos y confirmamos que ya no se puede usar.",
       "consoleOutput": "=== 1. Crear y destruir una sesion ===\n  Sesion creada:         cf7bb019-8897-4f55-ae8b-...\n  Mensajes iniciales:    1\n  Tipo primer evento:    SystemMessageEvent\n  Sesion destruida.\n  Error esperado:        Cannot read or write...",
       "type": "code"
     },
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
-      "durationFrames": 329,
-      "narrationText": "Iniciamos una conversacion de multiples turnos. El modelo recuerda las respuestas anteriores, asi podemos hacer preguntas de seguimiento.",
+      "durationFrames": 210,
+      "narrationText": "Continuamos con crear y destruir una sesion.",
       "consoleOutput": "=== 2. Conversacion con estado multi-turno ===\n  Q1: What is 10 + 15?\n  A1: 10 + 15 = 25\n  Q2: Now double that result.\n  A2: 25 × 2 = 50\n  (El modelo recuerda la respuesta anterior)",
       "type": "code"
     },
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
-      "durationFrames": 299,
-      "narrationText": "Nos suscribimos a los eventos de la sesion para monitorear todo lo que ocurre: mensajes, deltas y cuando el modelo termina de responder.",
+      "durationFrames": 210,
+      "narrationText": "Iniciamos una conversacion de multiples turnos. El modelo recuerda las respuestas anteriores, asi podemos hacer preguntas de seguimiento.",
       "consoleOutput": "=== 3. Suscripcion a eventos (session.On) ===\n  Prompt: What is 100 + 200?\n  Eventos recibidos:\n    • AssistantMessageDeltaEvent\n    • AssistantMessageDeltaEvent\n    • AssistantMessageEvent\n    • SessionIdleEvent",
       "type": "code"
     },
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 150,
-      "narrationText": "Continuamos con suscripcion a eventos.",
+      "durationFrames": 210,
+      "narrationText": "Nos suscribimos a los eventos de la sesion para monitorear todo lo que ocurre: mensajes, deltas y cuando el modelo termina de responder.",
       "consoleOutput": "=== 3. Suscripcion a eventos (session.On) ===\n  Prompt: What is 100 + 200?\n  Eventos recibidos:\n    • AssistantMessageDeltaEvent\n    • AssistantMessageDeltaEvent\n    • AssistantMessageEvent\n    • SessionIdleEvent",
       "type": "code"
     },
     {
       "file": "slide08.cs",
       "audioFile": "slide08.mp3",
-      "durationFrames": 150,
+      "durationFrames": 210,
       "narrationText": "Continuamos con suscripcion a eventos.",
       "consoleOutput": "=== 3. Suscripcion a eventos (session.On) ===\n  Prompt: What is 100 + 200?\n  Eventos recibidos:\n    • AssistantMessageDeltaEvent\n    • AssistantMessageDeltaEvent\n    • AssistantMessageEvent\n    • SessionIdleEvent",
       "type": "code"
@@ -81,71 +81,79 @@
     {
       "file": "slide09.cs",
       "audioFile": "slide09.mp3",
-      "durationFrames": 330,
-      "narrationText": "Enviamos un mensaje con send async, que retorna inmediatamente sin esperar la respuesta. Util cuando no necesitamos bloquear la ejecucion.",
+      "durationFrames": 210,
+      "narrationText": "Continuamos con suscripcion a eventos.",
       "consoleOutput": "=== 4. SendAsync (disparar y olvidar) ===\n  Prompt: What is 2+2?\n  Despues de SendAsync -> session.idle en events? False\n  (Esperado: False - SendAsync retorna antes de que termine)\n  Despues de esperar -> session.idle en events? True\n  Respuesta: 2 + 2 = 4",
       "type": "code"
     },
     {
       "file": "slide10.cs",
       "audioFile": "slide10.mp3",
-      "durationFrames": 320,
-      "narrationText": "Enviamos un mensaje con send and wait, que bloquea hasta recibir la respuesta completa. Es la forma mas simple de obtener una respuesta.",
+      "durationFrames": 210,
+      "narrationText": "Enviamos un mensaje con send async, que retorna inmediatamente sin esperar la respuesta. Util cuando no necesitamos bloquear la ejecucion.",
       "consoleOutput": "=== 5. SendAndWaitAsync (bloquea hasta idle) ===\n  Respuesta: 3 + 3 = 6\n  Eventos tras retornar: assistant.message.delta,\n    assistant.message, session.idle\n  (session.idle ya esta en events)",
       "type": "code"
     },
     {
       "file": "slide11.cs",
       "audioFile": "slide11.mp3",
-      "durationFrames": 336,
-      "narrationText": "Reanudamos una sesion anterior usando su identificador. El modelo conserva toda la conversacion previa, incluyendo lo que le pedimos recordar.",
+      "durationFrames": 210,
+      "narrationText": "Enviamos un mensaje con send and wait, que bloquea hasta recibir la respuesta completa. Es la forma mas simple de obtener una respuesta.",
       "consoleOutput": "=== 6. Reanudar sesion (ResumeSessionAsync) ===\n  Prompt: Remember this number: 42\n  Sesion 1: I'll remember the number 42!\n  ID coincide:           True\n  Mensajes tras reanudar: 4\n  Contiene SessionResumeEvent: True\n  Prompt: What number did I ask you to remember?\n  Respuesta sesion 2: The number you asked me to\n    remember is 42.",
       "type": "code"
     },
     {
       "file": "slide12.cs",
       "audioFile": "slide12.mp3",
-      "durationFrames": 297,
-      "narrationText": "Intentamos reanudar una sesion que no existe. El SDK lanza un error controlado que podemos manejar en nuestro codigo.",
+      "durationFrames": 210,
+      "narrationText": "Reanudamos una sesion anterior usando su identificador. El modelo conserva toda la conversacion previa, incluyendo lo que le pedimos recordar.",
       "consoleOutput": "=== 7. Reanudar sesion inexistente ===\n  Error esperado:        Session not found",
       "type": "code"
     },
     {
       "file": "slide13.cs",
       "audioFile": "slide13.mp3",
-      "durationFrames": 287,
-      "narrationText": "Agregamos un mensaje de sistema en modo append. Esto añade instrucciones al prompt del sistema sin reemplazarlo.",
+      "durationFrames": 210,
+      "narrationText": "Intentamos reanudar una sesion que no existe. El SDK lanza un error controlado que podemos manejar en nuestro codigo.",
       "consoleOutput": "=== 8. Mensaje de sistema - Modo Append ===\n  Prompt: What is your name?\n  Respuesta:             I'm GitHub Copilot, an AI\n    programming assistant. Have a nice day!\n  Contiene 'Have a nice day!': True",
       "type": "code"
     },
     {
       "file": "slide14.cs",
       "audioFile": "slide14.mp3",
-      "durationFrames": 303,
-      "narrationText": "Reemplazamos completamente el mensaje de sistema. Ahora el modelo responde con la identidad personalizada que definimos.",
+      "durationFrames": 210,
+      "narrationText": "Agregamos un mensaje de sistema en modo append. Esto añade instrucciones al prompt del sistema sin reemplazarlo.",
       "consoleOutput": "=== 9. Mensaje de sistema - Modo Replace ===\n  Prompt: What is your full name?\n  Respuesta:             I'm Testy McTestface.\n  (Deberia mencionar 'Testy' en lugar de\n    'GitHub Copilot')",
       "type": "code"
     },
     {
       "file": "slide15.cs",
       "audioFile": "slide15.mp3",
-      "durationFrames": 280,
-      "narrationText": "Activamos el streaming para recibir la respuesta caracter por caracter, en tiempo real, a medida que el modelo la genera.",
+      "durationFrames": 210,
+      "narrationText": "Reemplazamos completamente el mensaje de sistema. Ahora el modelo responde con la identidad personalizada que definimos.",
       "consoleOutput": "=== 10. Deltas en streaming ===\n  Prompt: Tell me a very short joke.\n  Why don't scientists trust atoms?\n  Because they make up everything!\n  Caracteres transmitidos: 66",
       "type": "code"
     },
     {
       "file": "slide16.cs",
       "audioFile": "slide16.mp3",
-      "durationFrames": 226,
-      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
+      "durationFrames": 210,
+      "narrationText": "Activamos el streaming para recibir la respuesta caracter por caracter, en tiempo real, a medida que el modelo la genera.",
       "consoleOutput": "=== 10. Deltas en streaming ===\n  Prompt: Tell me a very short joke.\n  Why don't scientists trust atoms?\n  Because they make up everything!\n  Caracteres transmitidos: 66",
       "type": "code"
     },
     {
       "file": "slide17.cs",
       "audioFile": "slide17.mp3",
-      "durationFrames": 421,
+      "durationFrames": 210,
+      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
+      "consoleOutput": "=== 10. Deltas en streaming ===\n  Prompt: Tell me a very short joke.\n  Why don't scientists trust atoms?\n  Because they make up everything!\n  Caracteres transmitidos: 66",
+      "type": "code"
+    },
+    {
+      "file": "slide18.cs",
+      "audioFile": "slide18.mp3",
+      "durationFrames": 210,
       "narrationText": "Perfecto. Ya sabes como manejar sesiones completas. En el siguiente video aprenderemos a registrar herramientas personalizadas para que el modelo pueda ejecutar funciones de tu codigo.",
       "consoleOutput": "=== 10. Deltas en streaming ===\n  Prompt: Tell me a very short joke.\n  Why don't scientists trust atoms?\n  Because they make up everything!\n  Caracteres transmitidos: 66",
       "type": "ending",

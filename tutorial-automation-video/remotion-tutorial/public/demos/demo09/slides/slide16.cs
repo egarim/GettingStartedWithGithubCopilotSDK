@@ -1,11 +1,16 @@
-// Combinacion MCP + Agentes
-var mcpServers = new Dictionary<string, object>
+// Multiples agentes
+var customAgents = new List<CustomAgentConfig>
 {
-    ["shared-server"] = new McpLocalServerConfig
+    new CustomAgentConfig
     {
-        Type = "local",
-        Command = "echo",
-        Args = ["shared"],
-        Tools = ["*"]
-    }
-};
+        Name = "frontend-agent",
+        DisplayName = "Frontend Agent",
+        Description = "Specializes in React, CSS, and UI development",
+        Prompt = "You are a frontend development expert."
+    },
+    new CustomAgentConfig
+    {
+        Name = "backend-agent",
+        DisplayName = "Backend Agent",
+        Description = "Specializes in C#, .NET, and API development",
+// ...

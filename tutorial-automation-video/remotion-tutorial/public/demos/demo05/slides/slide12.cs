@@ -1,14 +1,8 @@
-// ToolCallId
-var toolCallIds = new List<string>();
-var session = await client.CreateSessionAsync(new SessionConfig
+// ...
+Console.WriteLine("  Prompt: Run 'echo hello from async permission demo' and tell me the output");
+var answer = await session.SendAndWaitAsync(new MessageOptions
 {
-    OnPermissionRequest = (request, invocation) =>
-    {
-        if (!string.IsNullOrEmpty(request.ToolCallId))
-        {
-            toolCallIds.Add(request.ToolCallId);
-            Console.WriteLine($"    [Permission] ToolCallId: {request.ToolCallId}");
-        }
-        return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
-    }
+    Prompt = "Run 'echo hello from async permission demo' and tell me the output"
 });
+Console.WriteLine($"  Respuesta: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
+await session.DisposeAsync();

@@ -1,14 +1,15 @@
-// ...
-session.On(evt =>
+// Compactacion activada
+Console.WriteLine("  (Umbrales bajos activan compactacion rapido para demostracion)\n");
+
+var compactionStartEvents = new List<SessionCompactionStartEvent>();
+var compactionCompleteEvents = new List<SessionCompactionCompleteEvent>();
+
+var session = await client.CreateSessionAsync(new SessionConfig
 {
-    if (evt is SessionCompactionStartEvent startEvt)
+    InfiniteSessions = new InfiniteSessionConfig
     {
-        compactionStartEvents.Add(startEvt);
-        Console.WriteLine("    * [CompactacionInicio] Compactacion de fondo activada!");
-    }
-    if (evt is SessionCompactionCompleteEvent completeEvt)
-    {
-        compactionCompleteEvents.Add(completeEvt);
-        Console.WriteLine($"    OK [CompactacionCompleta] Exito: {completeEvt.Data.Success}, Tokens removidos: {completeEvt.Data.TokensRemoved}");
+        Enabled = true,
+        BackgroundCompactionThreshold = 0.005,
+        BufferExhaustionThreshold = 0.01
     }
 });

@@ -1,8 +1,11 @@
 // ...
-Console.WriteLine("  Prompt: Run 'echo resumed-with-permissions'");
-await session2.SendAndWaitAsync(new MessageOptions
+var permissionRequestReceived = false;
+var session2 = await client.ResumeSessionAsync(sessionId, new ResumeSessionConfig
 {
-    Prompt = "Run 'echo resumed-with-permissions'"
+    OnPermissionRequest = (request, invocation) =>
+    {
+        permissionRequestReceived = true;
+        Console.WriteLine($"    [Permission on Resume] Kind: {request.Kind} -> APROBADO");
+        return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
+    }
 });
-Console.WriteLine($"  Handler disparado al reanudar: {permissionRequestReceived}");
-await session2.DisposeAsync();

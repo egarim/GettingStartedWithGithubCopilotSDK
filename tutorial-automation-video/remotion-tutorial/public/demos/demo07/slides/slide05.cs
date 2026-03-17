@@ -1,8 +1,14 @@
 // ...
-Console.WriteLine("  Enviando mensaje 1/3: Historia larga de un dragon...");
-var a1 = await session.SendAndWaitAsync(new MessageOptions
+session.On(evt =>
 {
-    Prompt = "Tell me a long story about a dragon. Be very detailed. Include at least 5 paragraphs."
+    if (evt is SessionCompactionStartEvent startEvt)
+    {
+        compactionStartEvents.Add(startEvt);
+        Console.WriteLine("    * [CompactacionInicio] Compactacion de fondo activada!");
+    }
+    if (evt is SessionCompactionCompleteEvent completeEvt)
+    {
+        compactionCompleteEvents.Add(completeEvt);
+        Console.WriteLine($"    OK [CompactacionCompleta] Exito: {completeEvt.Data.Success}, Tokens removidos: {completeEvt.Data.TokensRemoved}");
+    }
 });
-Console.WriteLine($"  Respuesta 1 longitud: {a1?.Data.Content?.Length ?? 0} chars");
-PrintProp("Eventos compactacion:", $"inicio={compactionStartEvents.Count}, completo={compactionCompleteEvents.Count}");

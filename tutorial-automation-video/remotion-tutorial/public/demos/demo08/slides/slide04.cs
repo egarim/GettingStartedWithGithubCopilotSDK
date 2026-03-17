@@ -1,11 +1,5 @@
-// ...
-Console.WriteLine($"  Session: {session.SessionId}");
-PrintProp("SkillDirectories:", $"[\"{skillsBaseDir}\"]");
-PrintProp("Marcador esperado:", $"\"{SkillMarker}\"");
-
-Console.WriteLine("  Prompt: Say hello briefly using the demo skill.");
-var answer = await session.SendAndWaitAsync(new MessageOptions
+// Cargar y aplicar skill
+var session = await client.CreateSessionAsync(new SessionConfig
 {
-    Prompt = "Say hello briefly using the demo skill."
+    SkillDirectories = [skillsBaseDir]
 });
-Console.WriteLine($"  Respuesta: {answer?.Data.Content}\n");

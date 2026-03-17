@@ -1,8 +1,10 @@
-// ...
-session.On(evt =>
+// Compactacion desactivada
+var compactionEvents = new List<SessionEvent>();
+
+var session = await client.CreateSessionAsync(new SessionConfig
 {
-    if (evt is SessionCompactionStartEvent or SessionCompactionCompleteEvent)
+    InfiniteSessions = new InfiniteSessionConfig
     {
-        compactionEvents.Add(evt);
+        Enabled = false
     }
 });

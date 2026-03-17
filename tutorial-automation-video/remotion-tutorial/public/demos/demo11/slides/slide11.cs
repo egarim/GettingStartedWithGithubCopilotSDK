@@ -1,5 +1,14 @@
 // ...
-await session.SendAsync(
-    new MessageOptions { Prompt = "Tell me a very short joke (2 sentences max)." });
-await idleTcs.Task.WaitAsync(TimeSpan.FromMinutes(1));
-Console.WriteLine($"\n  Total chars: {sb.Length}");
+session.On(evt =>
+{
+    switch (evt)
+    {
+        case AssistantMessageDeltaEvent delta:
+            Console.Write(delta.Data.DeltaContent);
+            sb.Append(delta.Data.DeltaContent);
+            break;
+        case SessionIdleEvent:
+            idleTcs.TrySetResult(true);
+            break;
+    }
+});

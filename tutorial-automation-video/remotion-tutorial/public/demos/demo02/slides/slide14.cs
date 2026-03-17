@@ -1,14 +1,14 @@
-// Mensaje de sistema - Modo Replace
+// Mensaje de sistema - Modo Append
 await using var session = await client.CreateSessionAsync(new SessionConfig
 {
     SystemMessage = new SystemMessageConfig
     {
-        Mode = SystemMessageMode.Replace,
-        Content = "You are an assistant called Testy McTestface. Reply succinctly."
+        Mode = SystemMessageMode.Append,
+        Content = "End each response with the phrase 'Have a nice day!'"
     }
 });
 
-Console.WriteLine("  Prompt: What is your full name?");
-var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is your full name?" });
+Console.WriteLine("  Prompt: What is your name?");
+var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is your name?" });
 PrintProp("Respuesta:", answer?.Data.Content);
-Console.WriteLine("  (Deberia mencionar 'Testy' en lugar de 'GitHub Copilot')");
+Console.WriteLine($"  Contiene 'Have a nice day!': {answer?.Data.Content?.Contains("Have a nice day!") ?? false}");

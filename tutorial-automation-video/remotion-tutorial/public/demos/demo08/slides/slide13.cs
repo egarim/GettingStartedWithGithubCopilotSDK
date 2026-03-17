@@ -1,2 +1,3 @@
-// Siguiente: Demo 09
-// MCP Agents
+// Modo interactivo
+// Mismo patron que Demo 01
+// (bucle de entrada del usuario)

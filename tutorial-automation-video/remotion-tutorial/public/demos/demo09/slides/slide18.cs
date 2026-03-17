@@ -1,10 +1,11 @@
 // ...
-Console.WriteLine("  McpServers: { \"shared-server\": { ... } }");
-Console.WriteLine("  CustomAgents: [ { name: \"coordinator-agent\", ... } ]");
-Console.WriteLine("  (Tanto servidores MCP como agentes en la misma sesion)\n");
-
-var session = await client.CreateSessionAsync(new SessionConfig
+var customAgents = new List<CustomAgentConfig>
 {
-    McpServers = mcpServers,
-    CustomAgents = customAgents
-});
+    new CustomAgentConfig
+    {
+        Name = "coordinator-agent",
+        DisplayName = "Coordinator Agent",
+        Description = "Coordinates tasks across MCP servers and other agents",
+        Prompt = "You are a coordinator that can access shared MCP servers."
+    }
+};

@@ -1,7 +1,8 @@
 // ...
-Console.WriteLine("  Enviando mensaje 3/3: Describir el tesoro...");
-var a3 = await session.SendAndWaitAsync(new MessageOptions
+Console.WriteLine("  Enviando mensaje 2/3: Continuar con el castillo...");
+var a2 = await session.SendAndWaitAsync(new MessageOptions
 {
-    Prompt = "Now describe the dragon's treasure in great detail. List every item. Make this response very long."
+    Prompt = "Continue the story with more details about the dragon's castle. Make it very long and descriptive."
 });
-Console.WriteLine($"  Respuesta 3 longitud: {a3?.Data.Content?.Length ?? 0} chars\n");
+Console.WriteLine($"  Respuesta 2 longitud: {a2?.Data.Content?.Length ?? 0} chars");
+PrintProp("Eventos compactacion:", $"inicio={compactionStartEvents.Count}, completo={compactionCompleteEvents.Count}");

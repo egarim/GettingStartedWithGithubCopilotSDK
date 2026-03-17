@@ -2,12 +2,12 @@
   "demoId": "demo08",
   "title": "08 - Skills: habilidades del SDK",
   "fps": 30,
-  "totalFrames": 3137,
+  "totalFrames": 2940,
   "slides": [
     {
       "file": "slide01.cs",
       "audioFile": "slide01.mp3",
-      "durationFrames": 388,
+      "durationFrames": 210,
       "narrationText": "Demo ocho. Skills del SDK. Aprenderemos a usar las habilidades predefinidas del SDK como explicacion de codigo, generacion de tests y mas.",
       "consoleOutput": "",
       "type": "title",
@@ -24,7 +24,7 @@
     {
       "file": "slide02.cs",
       "audioFile": "slide02.mp3",
-      "durationFrames": 321,
+      "durationFrames": 210,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
       "consoleOutput": "================================================================\n  08 - DEMO: Carga y configuracion de habilidades\n================================================================\n\n=== Anatomia del archivo SKILL.md ===\n  demo-skill/\n    SKILL.md\n\n  Cliente iniciado.",
       "type": "code"
@@ -32,23 +32,23 @@
     {
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
-      "durationFrames": 332,
-      "narrationText": "Cargamos un skill desde un archivo que instruye al modelo a incluir un marcador especifico. Verificamos que el marcador aparece en la respuesta.",
+      "durationFrames": 210,
+      "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
       "consoleOutput": "=== 1. Cargar y aplicar skill ===\n  SkillDirectories: [\".../copilot-skills-demo\"]\n  Marcador esperado: \"PINEAPPLE_COCONUT_42\"\n\n  Prompt: Say hello briefly using demo skill.\n  Respuesta: Hello! Hope you're having a great\n    day! PINEAPPLE_COCONUT_42\n\n  Contiene marcador:     True\n  OK Skill cargado y aplicado exitosamente!",
       "type": "code"
     },
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
-      "durationFrames": 149,
-      "narrationText": "Continuamos con cargar y aplicar skill.",
+      "durationFrames": 210,
+      "narrationText": "Cargamos un skill desde un archivo que instruye al modelo a incluir un marcador especifico. Verificamos que el marcador aparece en la respuesta.",
       "consoleOutput": "=== 1. Cargar y aplicar skill ===\n  SkillDirectories: [\".../copilot-skills-demo\"]\n  Marcador esperado: \"PINEAPPLE_COCONUT_42\"\n\n  Prompt: Say hello briefly using demo skill.\n  Respuesta: Hello! Hope you're having a great\n    day! PINEAPPLE_COCONUT_42\n\n  Contiene marcador:     True\n  OK Skill cargado y aplicado exitosamente!",
       "type": "code"
     },
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
-      "durationFrames": 149,
+      "durationFrames": 210,
       "narrationText": "Continuamos con cargar y aplicar skill.",
       "consoleOutput": "=== 1. Cargar y aplicar skill ===\n  SkillDirectories: [\".../copilot-skills-demo\"]\n  Marcador esperado: \"PINEAPPLE_COCONUT_42\"\n\n  Prompt: Say hello briefly using demo skill.\n  Respuesta: Hello! Hope you're having a great\n    day! PINEAPPLE_COCONUT_42\n\n  Contiene marcador:     True\n  OK Skill cargado y aplicado exitosamente!",
       "type": "code"
@@ -56,7 +56,7 @@
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
-      "durationFrames": 149,
+      "durationFrames": 210,
       "narrationText": "Continuamos con cargar y aplicar skill.",
       "consoleOutput": "=== 1. Cargar y aplicar skill ===\n  SkillDirectories: [\".../copilot-skills-demo\"]\n  Marcador esperado: \"PINEAPPLE_COCONUT_42\"\n\n  Prompt: Say hello briefly using demo skill.\n  Respuesta: Hello! Hope you're having a great\n    day! PINEAPPLE_COCONUT_42\n\n  Contiene marcador:     True\n  OK Skill cargado y aplicado exitosamente!",
       "type": "code"
@@ -64,23 +64,23 @@
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 301,
-      "narrationText": "Desactivamos el skill por nombre. El modelo ya no sigue las instrucciones del skill y el marcador desaparece de las respuestas.",
+      "durationFrames": 210,
+      "narrationText": "Continuamos con cargar y aplicar skill.",
       "consoleOutput": "=== 2. Desactivar skill via DisabledSkills ===\n  DisabledSkills: [\"demo-skill\"]\n\n  Prompt: Say hello briefly.\n  Respuesta: Hello! How can I help you today?\n\n  Contiene marcador:     False\n  OK Skill desactivado correctamente!",
       "type": "code"
     },
     {
       "file": "slide08.cs",
       "audioFile": "slide08.mp3",
-      "durationFrames": 142,
-      "narrationText": "Continuamos con desactivar skill.",
+      "durationFrames": 210,
+      "narrationText": "Desactivamos el skill por nombre. El modelo ya no sigue las instrucciones del skill y el marcador desaparece de las respuestas.",
       "consoleOutput": "=== 2. Desactivar skill via DisabledSkills ===\n  DisabledSkills: [\"demo-skill\"]\n\n  Prompt: Say hello briefly.\n  Respuesta: Hello! How can I help you today?\n\n  Contiene marcador:     False\n  OK Skill desactivado correctamente!",
       "type": "code"
     },
     {
       "file": "slide09.cs",
       "audioFile": "slide09.mp3",
-      "durationFrames": 142,
+      "durationFrames": 210,
       "narrationText": "Continuamos con desactivar skill.",
       "consoleOutput": "=== 2. Desactivar skill via DisabledSkills ===\n  DisabledSkills: [\"demo-skill\"]\n\n  Prompt: Say hello briefly.\n  Respuesta: Hello! How can I help you today?\n\n  Contiene marcador:     False\n  OK Skill desactivado correctamente!",
       "type": "code"
@@ -88,7 +88,7 @@
     {
       "file": "slide10.cs",
       "audioFile": "slide10.mp3",
-      "durationFrames": 142,
+      "durationFrames": 210,
       "narrationText": "Continuamos con desactivar skill.",
       "consoleOutput": "=== 2. Desactivar skill via DisabledSkills ===\n  DisabledSkills: [\"demo-skill\"]\n\n  Prompt: Say hello briefly.\n  Respuesta: Hello! How can I help you today?\n\n  Contiene marcador:     False\n  OK Skill desactivado correctamente!",
       "type": "code"
@@ -96,23 +96,31 @@
     {
       "file": "slide11.cs",
       "audioFile": "slide11.mp3",
-      "durationFrames": 295,
-      "narrationText": "Como comparacion, creamos una sesion sin ningun skill. El modelo responde normalmente sin incluir el marcador.",
+      "durationFrames": 210,
+      "narrationText": "Continuamos con desactivar skill.",
       "consoleOutput": "=== 3. Sin skill (linea base) ===\n  Prompt: Say hello briefly.\n  Respuesta (sin skill): Hello there!\n  Contiene marcador:     False\n  (Esperado: Sin marcador)",
       "type": "code"
     },
     {
       "file": "slide12.cs",
       "audioFile": "slide12.mp3",
-      "durationFrames": 226,
-      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
+      "durationFrames": 210,
+      "narrationText": "Como comparacion, creamos una sesion sin ningun skill. El modelo responde normalmente sin incluir el marcador.",
       "consoleOutput": "=== 3. Sin skill (linea base) ===\n  Prompt: Say hello briefly.\n  Respuesta (sin skill): Hello there!\n  Contiene marcador:     False\n  (Esperado: Sin marcador)",
       "type": "code"
     },
     {
       "file": "slide13.cs",
       "audioFile": "slide13.mp3",
-      "durationFrames": 401,
+      "durationFrames": 210,
+      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
+      "consoleOutput": "=== 3. Sin skill (linea base) ===\n  Prompt: Say hello briefly.\n  Respuesta (sin skill): Hello there!\n  Contiene marcador:     False\n  (Esperado: Sin marcador)",
+      "type": "code"
+    },
+    {
+      "file": "slide14.cs",
+      "audioFile": "slide14.mp3",
+      "durationFrames": 210,
       "narrationText": "Excelente. Las skills aceleran tareas comunes de desarrollo. En el siguiente video veremos MCP Agents, una forma poderosa de conectar agentes externos.",
       "consoleOutput": "=== 3. Sin skill (linea base) ===\n  Prompt: Say hello briefly.\n  Respuesta (sin skill): Hello there!\n  Contiene marcador:     False\n  (Esperado: Sin marcador)",
       "type": "ending",

@@ -1,16 +1,16 @@
-// PostToolUse Hook
-var postToolUseInputs = new List<(string tool, string? result)>();
+// PreToolUse Hook (Permitir)
+var preToolUseInputs = new List<string>();
 var session = await client.CreateSessionAsync(new SessionConfig
 {
     Tools = [lookupTool],
     Hooks = new SessionHooks
     {
-        OnPostToolUse = (input, invocation) =>
+        OnPreToolUse = (input, invocation) =>
         {
-            var resultStr = input.ToolResult?.ToString();
-            postToolUseInputs.Add((input.ToolName ?? "(unknown)", resultStr));
-            Console.WriteLine($"    [PostToolUse] Tool: {input.ToolName}");
-            Console.WriteLine($"    [PostToolUse] Result preview: {resultStr?.Substring(0, Math.Min(80, resultStr.Length))}");
-            return Task.FromResult<PostToolUseHookOutput?>(null);
+            preToolUseInputs.Add(input.ToolName ?? "(unknown)");
+            Console.WriteLine($"    [PreToolUse] Tool: {input.ToolName}, Session: {invocation.SessionId}");
+            Console.WriteLine($"    [PreToolUse] Decision: ALLOW");
+            return Task.FromResult<PreToolUseHookOutput?>(
+                new PreToolUseHookOutput { PermissionDecision = "allow" });
         }
 // ...

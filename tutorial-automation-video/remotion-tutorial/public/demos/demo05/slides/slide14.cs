@@ -1,9 +1,10 @@
-// Error en handler
-var session = await client.CreateSessionAsync(new SessionConfig
+// ...
+Console.WriteLine("  Prompt: Run 'echo test-toolcallid'");
+var answer = await session.SendAndWaitAsync(new MessageOptions
 {
-    OnPermissionRequest = (request, invocation) =>
-    {
-        Console.WriteLine("    [Permission] A punto de LANZAR excepcion!");
-        throw new InvalidOperationException("Simulated handler crash");
-    }
+    Prompt = "Run 'echo test-toolcallid'"
 });
+Console.WriteLine($"  Respuesta: {answer?.Data.Content?.Substring(0, Math.Min(150, answer?.Data.Content?.Length ?? 0))}");
+PrintProp("ToolCallIds recibidos:", toolCallIds.Count);
+foreach (var id in toolCallIds) Console.WriteLine($"    -> {id}");
+await session.DisposeAsync();

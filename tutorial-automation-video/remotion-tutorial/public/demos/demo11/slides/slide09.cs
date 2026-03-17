@@ -1,5 +1,7 @@
-// ...
-Console.WriteLine("  Prompt: Tell me a very short joke (2 sentences max).");
-Console.Write("  Streaming: ");
-var sb = new StringBuilder();
-var idleTcs = new TaskCompletionSource<bool>();
+// Streaming
+PrintProp("Modelo:", chosenModel);
+await using var session = await client.CreateSessionAsync(new SessionConfig
+{
+    Model = chosenModel,
+    Streaming = true
+});

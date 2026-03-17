@@ -1,12 +1,13 @@
-// ...
-var testFile = Path.Combine(workDir, "test.txt");
-await File.WriteAllTextAsync(testFile, "original content");
-
-Console.WriteLine($"  Prompt: Edit the file at {testFile} and replace 'original' with 'modified'");
-var answer = await session.SendAndWaitAsync(new MessageOptions
+// Aprobar permiso
+var permissionRequests = new List<PermissionRequest>();
+var session = await client.CreateSessionAsync(new SessionConfig
 {
-    Prompt = $"Edit the file at {testFile} and replace 'original' with 'modified'"
+    OnPermissionRequest = (request, invocation) =>
+    {
+        permissionRequests.Add(request);
+        Console.WriteLine($"    [Permission] Kind: {request.Kind}, ToolCallId: {request.ToolCallId}");
+        Console.WriteLine($"    [Permission] Session: {invocation.SessionId}");
+        Console.WriteLine("    [Permission] Decision: APROBADO");
+        return Task.FromResult(new PermissionRequestResult { Kind = "approved" });
+    }
 });
-Console.WriteLine($"  Respuesta: {answer?.Data.Content?.Substring(0, Math.Min(200, answer?.Data.Content?.Length ?? 0))}");
-PrintProp("Solicitudes recibidas:", permissionRequests.Count);
-Console.WriteLine($"  Permisos de escritura: {permissionRequests.Count(r => r.Kind == "write")}");

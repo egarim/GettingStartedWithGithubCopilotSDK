@@ -107,11 +107,13 @@ function parseMethods(content: string): ParsedMethod[] {
 
   for (let i = 0; i < lines.length; i++) {
     // Look for method signatures like:
-    //   CopilotClient Step1_CreateClient()
+    //   CopilotClient CreateClient()
+    //   static void PrintTitle(string title)
     //   async Task Step2_StartClient(CopilotClient client)
+    //   async Task<AssistantMessageEvent?> WaitForIdleAsync(...)
     //   public async Task RunAsync()
     const sigMatch = lines[i].match(
-      /^\s+(?:public\s+)?(?:async\s+)?(?:Task(?:<\w+>)?\s+|void\s+|CopilotClient\s+)((?:Step\d+_)?\w+)\s*\(/
+      /^\s+(?:public\s+)?(?:static\s+)?(?:async\s+)?(?:Task(?:<[^>]+>)?\s+|void\s+|CopilotClient\s+|string\s+|bool\s+|int\s+|IReadOnlyList<[^>]+>\s+)((?:Step\d+_)?\w+)\s*\(/
     );
     if (!sigMatch) continue;
 
@@ -269,6 +271,27 @@ export function extractSlides(config: DemoConfig): SlideContent[] {
         isSubSlide: false,
         type: "code",
       });
+
+      // Show helper methods from step01 (CreateClient, PrintTitle, etc.)
+      const helpers = currentMethods.filter(
+        (m) =>
+          m.name !== "RunAsync" &&
+          !m.name.startsWith("Step") &&
+          !m.name.includes("Interactive")
+      );
+      if (helpers.length > 0) {
+        const helperCode = helpers
+          .map((h) => dedentBlock(h.fullLines))
+          .join("\n\n");
+        slides.push({
+          slideNumber: slideNumber++,
+          code: `// Helpers\n${helperCode}`,
+          comment: "Helpers",
+          isSubSlide: false,
+          type: "code",
+        });
+      }
+
       currentMethods.forEach((m) => seenMethods.add(m.name));
       continue;
     }

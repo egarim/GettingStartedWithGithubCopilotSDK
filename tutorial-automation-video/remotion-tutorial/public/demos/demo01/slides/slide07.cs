@@ -1,4 +1,4 @@
-// Status del servidor
-var s = await client.GetStatusAsync();
-PrintProp("Version:", s.Version);
-PrintProp("Version Protocolo:", s.ProtocolVersion);
+// Crear el cliente
+var client = CreateClient();
+PrintProp("Estado inicial:", client.State);
+return client;

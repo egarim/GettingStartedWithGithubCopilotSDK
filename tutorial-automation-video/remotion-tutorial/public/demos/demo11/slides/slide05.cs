@@ -1,9 +1,5 @@
-// Chat con modelo especifico
-PrintProp("Modelo elegido:", chosenModel);
-await using var session = await client.CreateSessionAsync(new SessionConfig
-{
-    Model = chosenModel
-});
+// Chat con modelo por defecto
+await using var session = await client.CreateSessionAsync();
 var answer = await session.SendAndWaitAsync(
     new MessageOptions { Prompt = "What model are you? Answer in one short sentence." });
 Console.WriteLine($"  P: What model are you?");

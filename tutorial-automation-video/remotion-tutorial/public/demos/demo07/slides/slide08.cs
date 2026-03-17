@@ -1,15 +1,7 @@
 // ...
-Console.WriteLine("  -- Resultados de compactacion --");
-PrintProp("CompactionStart:", compactionStartEvents.Count);
-PrintProp("CompactionComplete:", compactionCompleteEvents.Count);
-
-if (compactionCompleteEvents.Count > 0)
+Console.WriteLine("  Enviando mensaje 3/3: Describir el tesoro...");
+var a3 = await session.SendAndWaitAsync(new MessageOptions
 {
-    var last = compactionCompleteEvents[^1];
-    PrintProp("Ultima exitosa:", last.Data.Success);
-    PrintProp("Tokens removidos:", last.Data.TokensRemoved);
-}
-else
-{
-    Console.WriteLine("  (No se activo compactacion - la ventana de contexto puede no haberse llenado suficiente)");
-}
+    Prompt = "Now describe the dragon's treasure in great detail. List every item. Make this response very long."
+});
+Console.WriteLine($"  Respuesta 3 longitud: {a3?.Data.Content?.Length ?? 0} chars\n");
