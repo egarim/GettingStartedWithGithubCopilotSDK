@@ -27,7 +27,7 @@
       "audioFile": "slide02.mp3",
       "durationFrames": 210,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
-      "consoleOutput": "================================================================\n  05 - DEMO: Manejo de solicitudes de permisos\n================================================================\n\n  Cliente iniciado.",
+      "consoleOutput": "================================================================\n  05 - DEMO: Manejo de solicitudes de permisos\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
@@ -35,7 +35,7 @@
       "audioFile": "slide03.mp3",
       "durationFrames": 210,
       "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
-      "consoleOutput": "=== 1. Aprobar permiso ===\n  Prompt: Edit test.txt, replace 'original'\n    with 'modified'\n    [Permission] Kind: write,\n      ToolCallId: call_abc123\n    [Permission] Decision: APROBADO\n  Respuesta: I've updated the file.\n  Solicitudes recibidas: 1\n  Contenido despues: \"modified content\"",
+      "consoleOutput": "  Cliente iniciado.",
       "type": "code"
     },
     {
@@ -43,7 +43,7 @@
       "audioFile": "slide04.mp3",
       "durationFrames": 210,
       "narrationText": "Configuramos un handler que aprueba automaticamente solicitudes de escritura. El modelo puede editar archivos con nuestro permiso.",
-      "consoleOutput": "=== 1. Aprobar permiso ===\n  Prompt: Edit test.txt, replace 'original'\n    with 'modified'\n    [Permission] Kind: write,\n      ToolCallId: call_abc123\n    [Permission] Decision: APROBADO\n  Respuesta: I've updated the file.\n  Solicitudes recibidas: 1\n  Contenido despues: \"modified content\"",
+      "consoleOutput": "=== 1. Aprobar permiso ===\n    [Permission] Kind: write -> APROBADO\n  Respuesta: File updated.\n  Contenido despues: \"modified content\"",
       "type": "code"
     },
     {
@@ -51,7 +51,7 @@
       "audioFile": "slide05.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con aprobar permiso.",
-      "consoleOutput": "=== 1. Aprobar permiso ===\n  Prompt: Edit test.txt, replace 'original'\n    with 'modified'\n    [Permission] Kind: write,\n      ToolCallId: call_abc123\n    [Permission] Decision: APROBADO\n  Respuesta: I've updated the file.\n  Solicitudes recibidas: 1\n  Contenido despues: \"modified content\"",
+      "consoleOutput": "=== 1. Aprobar permiso ===\n    [Permission] Kind: write -> APROBADO\n  Respuesta: File updated.\n  Contenido despues: \"modified content\"",
       "type": "code"
     },
     {
@@ -59,7 +59,7 @@
       "audioFile": "slide06.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con aprobar permiso.",
-      "consoleOutput": "=== 2. Denegar permiso ===\n  Prompt: Edit protected.txt...\n    [Permission] Kind: write -> DENEGADO\n  Respuesta: Unable to modify the file.\n  Contenido (intacto): \"protected content\"\n  Archivo protegido: True",
+      "consoleOutput": "=== 1. Aprobar permiso ===\n    [Permission] Kind: write -> APROBADO\n  Respuesta: File updated.\n  Contenido despues: \"modified content\"",
       "type": "code"
     },
     {
@@ -67,7 +67,7 @@
       "audioFile": "slide07.mp3",
       "durationFrames": 210,
       "narrationText": "Ahora denegamos los permisos. El archivo queda protegido porque nuestro handler bloquea la operacion de escritura.",
-      "consoleOutput": "=== 2. Denegar permiso ===\n  Prompt: Edit protected.txt...\n    [Permission] Kind: write -> DENEGADO\n  Respuesta: Unable to modify the file.\n  Contenido (intacto): \"protected content\"\n  Archivo protegido: True",
+      "consoleOutput": "=== 2. Denegar permiso ===\n    [Permission] Kind: write -> DENEGADO\n  Contenido (intacto): \"protected content\"\n  Archivo protegido: True",
       "type": "code"
     },
     {
@@ -75,7 +75,7 @@
       "audioFile": "slide08.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con denegar permiso.",
-      "consoleOutput": "=== 2. Denegar permiso ===\n  Prompt: Edit protected.txt...\n    [Permission] Kind: write -> DENEGADO\n  Respuesta: Unable to modify the file.\n  Contenido (intacto): \"protected content\"\n  Archivo protegido: True",
+      "consoleOutput": "=== 2. Denegar permiso ===\n    [Permission] Kind: write -> DENEGADO\n  Contenido (intacto): \"protected content\"\n  Archivo protegido: True",
       "type": "code"
     },
     {
@@ -83,7 +83,7 @@
       "audioFile": "slide09.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con denegar permiso.",
-      "consoleOutput": "=== 3. Comportamiento por defecto ===\n  Prompt: What is 2+2?\n  Respuesta: 2 + 2 = 4\n  (Funciona sin handler)",
+      "consoleOutput": "=== 2. Denegar permiso ===\n    [Permission] Kind: write -> DENEGADO\n  Contenido (intacto): \"protected content\"\n  Archivo protegido: True",
       "type": "code"
     },
     {
@@ -91,7 +91,7 @@
       "audioFile": "slide10.mp3",
       "durationFrames": 210,
       "narrationText": "Sin un handler configurado, las operaciones basicas de chat funcionan normalmente. Los permisos solo se piden para escritura y ejecucion.",
-      "consoleOutput": "=== 4. Handler asincrono de permisos ===\n    [Permission] Kind: execute\n      Simulando verificacion asincrona...\n    [Permission] Aprobado tras espera\n  Respuesta: Output: hello from async demo",
+      "consoleOutput": "=== 3. Comportamiento por defecto ===\n  Respuesta: 2 + 2 = 4\n  (Funciona sin handler)",
       "type": "code"
     },
     {
@@ -99,7 +99,7 @@
       "audioFile": "slide11.mp3",
       "durationFrames": 210,
       "narrationText": "El handler de permisos puede ser asincrono. Aqui simulamos una verificacion que toma tiempo antes de aprobar.",
-      "consoleOutput": "=== 4. Handler asincrono de permisos ===\n    [Permission] Kind: execute\n      Simulando verificacion asincrona...\n    [Permission] Aprobado tras espera\n  Respuesta: Output: hello from async demo",
+      "consoleOutput": "=== 4. Handler asincrono ===\n    [Permission] Kind: execute -> Aprobado tras espera\n  Respuesta: hello from async demo",
       "type": "code"
     },
     {
@@ -107,7 +107,7 @@
       "audioFile": "slide12.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con handler asincrono.",
-      "consoleOutput": "=== 5. ToolCallId en solicitudes ===\n    [Permission] ToolCallId: call_xyz789\n  Respuesta: Output: test-toolcallid\n  ToolCallIds recibidos: 1\n    -> call_xyz789",
+      "consoleOutput": "=== 4. Handler asincrono ===\n    [Permission] Kind: execute -> Aprobado tras espera\n  Respuesta: hello from async demo",
       "type": "code"
     },
     {
@@ -115,7 +115,7 @@
       "audioFile": "slide13.mp3",
       "durationFrames": 210,
       "narrationText": "Cada solicitud de permiso incluye un identificador unico de la llamada. Util para rastrear y auditar las operaciones.",
-      "consoleOutput": "=== 5. ToolCallId en solicitudes ===\n    [Permission] ToolCallId: call_xyz789\n  Respuesta: Output: test-toolcallid\n  ToolCallIds recibidos: 1\n    -> call_xyz789",
+      "consoleOutput": "=== 5. ToolCallId ===\n    [Permission] ToolCallId: call_xyz789\n  ToolCallIds recibidos: 1",
       "type": "code"
     },
     {
@@ -123,7 +123,7 @@
       "audioFile": "slide14.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con toolcallid.",
-      "consoleOutput": "=== 6. Error en handler ===\n    [Permission] A punto de LANZAR excepcion!\n  Respuesta: I wasn't able to run that. Failed.\n  (SDK maneja excepcion - permiso denegado)",
+      "consoleOutput": "=== 5. ToolCallId ===\n    [Permission] ToolCallId: call_xyz789\n  ToolCallIds recibidos: 1",
       "type": "code"
     },
     {
@@ -131,7 +131,7 @@
       "audioFile": "slide15.mp3",
       "durationFrames": 210,
       "narrationText": "Si el handler de permisos falla, el SDK lo maneja elegantemente. El permiso se deniega automaticamente sin interrumpir la sesion.",
-      "consoleOutput": "=== 6. Error en handler ===\n    [Permission] A punto de LANZAR excepcion!\n  Respuesta: I wasn't able to run that. Failed.\n  (SDK maneja excepcion - permiso denegado)",
+      "consoleOutput": "=== 6. Error en handler ===\n    [Permission] A punto de LANZAR excepcion!\n  (SDK deniega automaticamente)",
       "type": "code"
     },
     {
@@ -139,7 +139,7 @@
       "audioFile": "slide16.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con error en handler.",
-      "consoleOutput": "=== 7. Permisos al reanudar sesion ===\n  Sesion creada: sess_abc123\n    [Permission on Resume] Kind: execute\n      -> APROBADO\n  Handler disparado al reanudar: True",
+      "consoleOutput": "=== 6. Error en handler ===\n    [Permission] A punto de LANZAR excepcion!\n  (SDK deniega automaticamente)",
       "type": "code"
     },
     {
@@ -147,7 +147,7 @@
       "audioFile": "slide17.mp3",
       "durationFrames": 210,
       "narrationText": "Al reanudar una sesion existente, podemos registrar un nuevo handler de permisos que se activa en la sesion recuperada.",
-      "consoleOutput": "=== 7. Permisos al reanudar sesion ===\n  Sesion creada: sess_abc123\n    [Permission on Resume] Kind: execute\n      -> APROBADO\n  Handler disparado al reanudar: True",
+      "consoleOutput": "=== 7. Permisos al reanudar sesion ===\n    [Permission on Resume] Kind: execute -> APROBADO\n  Handler disparado al reanudar: True",
       "type": "code"
     },
     {
@@ -155,7 +155,7 @@
       "audioFile": "slide18.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con permisos al reanudar sesion.",
-      "consoleOutput": "=== 7. Permisos al reanudar sesion ===\n  Sesion creada: sess_abc123\n    [Permission on Resume] Kind: execute\n      -> APROBADO\n  Handler disparado al reanudar: True",
+      "consoleOutput": "=== 7. Permisos al reanudar sesion ===\n    [Permission on Resume] Kind: execute -> APROBADO\n  Handler disparado al reanudar: True",
       "type": "code"
     },
     {
@@ -163,7 +163,7 @@
       "audioFile": "slide19.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con permisos al reanudar sesion.",
-      "consoleOutput": "=== 7. Permisos al reanudar sesion ===\n  Sesion creada: sess_abc123\n    [Permission on Resume] Kind: execute\n      -> APROBADO\n  Handler disparado al reanudar: True",
+      "consoleOutput": "=== 7. Permisos al reanudar sesion ===\n    [Permission on Resume] Kind: execute -> APROBADO\n  Handler disparado al reanudar: True",
       "type": "code"
     },
     {
@@ -171,7 +171,7 @@
       "audioFile": "slide20.mp3",
       "durationFrames": 210,
       "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
-      "consoleOutput": "=== 7. Permisos al reanudar sesion ===\n  Sesion creada: sess_abc123\n    [Permission on Resume] Kind: execute\n      -> APROBADO\n  Handler disparado al reanudar: True",
+      "consoleOutput": "=== 7. Permisos al reanudar sesion ===\n    [Permission on Resume] Kind: execute -> APROBADO\n  Handler disparado al reanudar: True",
       "type": "code"
     },
     {
@@ -179,7 +179,7 @@
       "audioFile": "slide21.mp3",
       "durationFrames": 210,
       "narrationText": "Perfecto. Ya dominas el sistema de permisos. En el siguiente video veremos como pedirle informacion al usuario directamente desde el flujo de chat.",
-      "consoleOutput": "=== 7. Permisos al reanudar sesion ===\n  Sesion creada: sess_abc123\n    [Permission on Resume] Kind: execute\n      -> APROBADO\n  Handler disparado al reanudar: True",
+      "consoleOutput": "",
       "type": "ending",
       "cardData": {
         "title": "Siguiente: Demo 06",

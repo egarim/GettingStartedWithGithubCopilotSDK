@@ -26,7 +26,7 @@
       "audioFile": "slide02.mp3",
       "durationFrames": 210,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
-      "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n\n  Cliente iniciado.",
+      "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
@@ -34,7 +34,7 @@
       "audioFile": "slide03.mp3",
       "durationFrames": 210,
       "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
-      "consoleOutput": "=== 1. Entrada con opciones ===\n  Prompt: Ask me to choose between Option A\n    and Option B...\n    [AskUser] Pregunta: Which option?\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!\n  Solicitudes recibidas: 1",
+      "consoleOutput": "  Cliente iniciado.",
       "type": "code"
     },
     {
@@ -42,7 +42,7 @@
       "audioFile": "slide04.mp3",
       "durationFrames": 210,
       "narrationText": "Configuramos un handler que responde automaticamente cuando el modelo necesita entrada del usuario, seleccionando la primera opcion disponible.",
-      "consoleOutput": "=== 1. Entrada con opciones ===\n  Prompt: Ask me to choose between Option A\n    and Option B...\n    [AskUser] Pregunta: Which option?\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!\n  Solicitudes recibidas: 1",
+      "consoleOutput": "=== 1. Entrada con opciones ===\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!",
       "type": "code"
     },
     {
@@ -50,7 +50,7 @@
       "audioFile": "slide05.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con entrada con opciones.",
-      "consoleOutput": "=== 1. Entrada con opciones ===\n  Prompt: Ask me to choose between Option A\n    and Option B...\n    [AskUser] Pregunta: Which option?\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!\n  Solicitudes recibidas: 1",
+      "consoleOutput": "=== 1. Entrada con opciones ===\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!",
       "type": "code"
     },
     {
@@ -58,7 +58,7 @@
       "audioFile": "slide06.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con entrada con opciones.",
-      "consoleOutput": "=== 1. Entrada con opciones ===\n  Prompt: Ask me to choose between Option A\n    and Option B...\n    [AskUser] Pregunta: Which option?\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!\n  Solicitudes recibidas: 1",
+      "consoleOutput": "=== 1. Entrada con opciones ===\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!",
       "type": "code"
     },
     {
@@ -66,7 +66,7 @@
       "audioFile": "slide07.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con entrada con opciones.",
-      "consoleOutput": "=== 2. Verificar opciones ===\n  Prompt: Pick between 'Red' and 'Blue'\n    [AskUser] Pregunta: Which color?\n    [AskUser]   [1] Red\n    [AskUser]   [2] Blue\n  Respuesta: You selected Red.\n  Con opciones:          1",
+      "consoleOutput": "=== 1. Entrada con opciones ===\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!",
       "type": "code"
     },
     {
@@ -74,7 +74,7 @@
       "audioFile": "slide08.mp3",
       "durationFrames": 210,
       "narrationText": "Verificamos que las opciones presentadas por el modelo coinciden con lo esperado. Las opciones se enumeran para que el usuario elija.",
-      "consoleOutput": "=== 2. Verificar opciones ===\n  Prompt: Pick between 'Red' and 'Blue'\n    [AskUser] Pregunta: Which color?\n    [AskUser]   [1] Red\n    [AskUser]   [2] Blue\n  Respuesta: You selected Red.\n  Con opciones:          1",
+      "consoleOutput": "=== 2. Verificar opciones ===\n    [AskUser] [1] Red  [2] Blue\n  Respuesta: You selected Red.\n  Con opciones: 1",
       "type": "code"
     },
     {
@@ -82,7 +82,7 @@
       "audioFile": "slide09.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con verificar opciones.",
-      "consoleOutput": "=== 2. Verificar opciones ===\n  Prompt: Pick between 'Red' and 'Blue'\n    [AskUser] Pregunta: Which color?\n    [AskUser]   [1] Red\n    [AskUser]   [2] Blue\n  Respuesta: You selected Red.\n  Con opciones:          1",
+      "consoleOutput": "=== 2. Verificar opciones ===\n    [AskUser] [1] Red  [2] Blue\n  Respuesta: You selected Red.\n  Con opciones: 1",
       "type": "code"
     },
     {
@@ -90,7 +90,7 @@
       "audioFile": "slide10.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con verificar opciones.",
-      "consoleOutput": "=== 2. Verificar opciones ===\n  Prompt: Pick between 'Red' and 'Blue'\n    [AskUser] Pregunta: Which color?\n    [AskUser]   [1] Red\n    [AskUser]   [2] Blue\n  Respuesta: You selected Red.\n  Con opciones:          1",
+      "consoleOutput": "=== 2. Verificar opciones ===\n    [AskUser] [1] Red  [2] Blue\n  Respuesta: You selected Red.\n  Con opciones: 1",
       "type": "code"
     },
     {
@@ -98,7 +98,7 @@
       "audioFile": "slide11.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con verificar opciones.",
-      "consoleOutput": "=== 3. Entrada libre (WasFreeform = true) ===\n  Prompt: Ask me my favorite color\n    [AskUser] Pregunta: What is your\n      favorite color?\n    [AskUser] Respuesta libre:\n      \"My favorite color is emerald green,\n       a beautiful shade!\"\n  Respuesta: Your favorite color is\n    emerald green!\n  Solicitudes recibidas: 1",
+      "consoleOutput": "=== 2. Verificar opciones ===\n    [AskUser] [1] Red  [2] Blue\n  Respuesta: You selected Red.\n  Con opciones: 1",
       "type": "code"
     },
     {
@@ -106,7 +106,7 @@
       "audioFile": "slide12.mp3",
       "durationFrames": 210,
       "narrationText": "El modelo puede pedir texto libre, sin opciones predefinidas. Respondemos con una respuesta personalizada que el modelo incorpora.",
-      "consoleOutput": "=== 3. Entrada libre (WasFreeform = true) ===\n  Prompt: Ask me my favorite color\n    [AskUser] Pregunta: What is your\n      favorite color?\n    [AskUser] Respuesta libre:\n      \"My favorite color is emerald green,\n       a beautiful shade!\"\n  Respuesta: Your favorite color is\n    emerald green!\n  Solicitudes recibidas: 1",
+      "consoleOutput": "=== 3. Entrada libre (WasFreeform) ===\n    [AskUser] Respuesta libre: \"emerald green\"\n  Respuesta: Your favorite color is emerald green!",
       "type": "code"
     },
     {
@@ -114,7 +114,7 @@
       "audioFile": "slide13.mp3",
       "durationFrames": 210,
       "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
-      "consoleOutput": "=== 3. Entrada libre (WasFreeform = true) ===\n  Prompt: Ask me my favorite color\n    [AskUser] Pregunta: What is your\n      favorite color?\n    [AskUser] Respuesta libre:\n      \"My favorite color is emerald green,\n       a beautiful shade!\"\n  Respuesta: Your favorite color is\n    emerald green!\n  Solicitudes recibidas: 1",
+      "consoleOutput": "=== 3. Entrada libre (WasFreeform) ===\n    [AskUser] Respuesta libre: \"emerald green\"\n  Respuesta: Your favorite color is emerald green!",
       "type": "code"
     },
     {
@@ -122,7 +122,7 @@
       "audioFile": "slide14.mp3",
       "durationFrames": 210,
       "narrationText": "Muy bien. Ya sabes como interactuar con el usuario. En el siguiente video veremos la compactacion de contexto, esencial para conversaciones largas.",
-      "consoleOutput": "=== 3. Entrada libre (WasFreeform = true) ===\n  Prompt: Ask me my favorite color\n    [AskUser] Pregunta: What is your\n      favorite color?\n    [AskUser] Respuesta libre:\n      \"My favorite color is emerald green,\n       a beautiful shade!\"\n  Respuesta: Your favorite color is\n    emerald green!\n  Solicitudes recibidas: 1",
+      "consoleOutput": "",
       "type": "ending",
       "cardData": {
         "title": "Siguiente: Demo 07",

@@ -148,7 +148,7 @@ async function processDemo(
   }
 
   // 7. Get console outputs (pad for title/ending slides)
-  const consoleOutputs = getConsoleOutputs(demoNumber, slides.length);
+  const consoleOutputs = getConsoleOutputs(demoNumber, slides.length, slides);
 
   // 8. Build and write manifest
   console.log("\n  Building manifest...");

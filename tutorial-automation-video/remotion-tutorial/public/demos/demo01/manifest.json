@@ -43,7 +43,7 @@
       "audioFile": "slide04.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con helpers.",
-      "consoleOutput": "=== 1. Creando CopilotClient (UseLoggedInUser = true) ===\n  Estado inicial:        Disconnected",
+      "consoleOutput": "================================================================\n  01 - DEMO: Ciclo de vida y conexion del cliente\n================================================================",
       "type": "code"
     },
     {
@@ -51,7 +51,7 @@
       "audioFile": "slide05.mp3",
       "durationFrames": 210,
       "narrationText": "Continuamos con helpers.",
-      "consoleOutput": "=== 2. Iniciando cliente (StartAsync) ===\n  Estado tras iniciar:   Connected",
+      "consoleOutput": "================================================================\n  01 - DEMO: Ciclo de vida y conexion del cliente\n================================================================",
       "type": "code"
     },
     {
@@ -59,7 +59,7 @@
       "audioFile": "slide06.mp3",
       "durationFrames": 210,
       "narrationText": "Creamos una instancia del cliente de Copilot. En este momento el cliente existe pero aun no esta conectado al servidor.",
-      "consoleOutput": "=== 3. Ping ===\n  Enviado:               \"hello from demo!\"\n  Respuesta:             \"pong: hello from demo!\"\n  Timestamp:             1773687538485",
+      "consoleOutput": "=== 1. Creando CopilotClient (UseLoggedInUser = true) ===\n  Estado inicial:        Disconnected",
       "type": "code"
     },
     {
@@ -67,7 +67,7 @@
       "audioFile": "slide07.mp3",
       "durationFrames": 210,
       "narrationText": "Iniciamos la conexion con el servidor de Copilot. El estado cambia de desconectado a conectado, listo para recibir comandos.",
-      "consoleOutput": "=== 4. Estado (GetStatusAsync) ===\n  Version:               0.0.403\n  Version Protocolo:     2",
+      "consoleOutput": "=== 2. Iniciando cliente (StartAsync) ===\n  Estado tras iniciar:   Connected",
       "type": "code"
     },
     {
@@ -75,7 +75,7 @@
       "audioFile": "slide08.mp3",
       "durationFrames": 210,
       "narrationText": "Enviamos un ping al servidor para verificar que la conexion funciona. El servidor responde con un pong confirmando la comunicacion.",
-      "consoleOutput": "=== 5. Estado de autenticacion (GetAuthStatusAsync) ===\n  Autenticado:           True\n  Tipo:                  user\n  Mensaje:               ardilla91ai",
+      "consoleOutput": "=== 3. Ping ===\n  Enviado:               \"hello from demo!\"\n  Respuesta:             \"pong: hello from demo!\"\n  Timestamp:             1773687538485",
       "type": "code"
     },
     {
@@ -83,7 +83,7 @@
       "audioFile": "slide09.mp3",
       "durationFrames": 210,
       "narrationText": "Consultamos el estado del servidor para obtener la version y el protocolo que esta usando.",
-      "consoleOutput": "=== 6. Listar modelos disponibles (ListModelsAsync) ===\n  Se encontraron 13 modelo(s):\n  ID                                  Name                      Capabilities\n  --                                  ----                      ------------\n  claude-sonnet-4.5                   Claude Sonnet 4.5\n  claude-haiku-4.5                    Claude Haiku 4.5\n  claude-opus-4.5                     Claude Opus 4.5\n  claude-sonnet-4                     Claude Sonnet 4\n  gemini-3-pro-preview                Gemini 3 Pro (Preview)\n  gpt-5.2-codex                       GPT-5.2-Codex\n  gpt-5.2                             GPT-5.2\n  gpt-5.1-codex-max                   GPT-5.1-Codex-Max\n  gpt-5.1-codex                       GPT-5.1-Codex\n  gpt-5.1                             GPT-5.1\n  gpt-5.1-codex-mini                  GPT-5.1-Codex-Mini\n  gpt-5-mini                          GPT-5 mini\n  gpt-4.1                             GPT-4.1",
+      "consoleOutput": "=== 4. Estado (GetStatusAsync) ===\n  Version:               0.0.403\n  Version Protocolo:     2",
       "type": "code"
     },
     {
@@ -91,7 +91,7 @@
       "audioFile": "slide10.mp3",
       "durationFrames": 210,
       "narrationText": "Verificamos el estado de autenticacion. Podemos ver si el usuario esta autenticado, el tipo de cuenta y el nombre de usuario.",
-      "consoleOutput": "=== 7. Parada ordenada (StopAsync) ===\n  Estado tras parar:     Disconnected\n\n  Demo completado.",
+      "consoleOutput": "=== 5. Estado de autenticacion (GetAuthStatusAsync) ===\n  Autenticado:           True\n  Tipo:                  user\n  Mensaje:               ardilla91ai",
       "type": "code"
     },
     {
@@ -99,7 +99,7 @@
       "audioFile": "slide11.mp3",
       "durationFrames": 210,
       "narrationText": "Listamos todos los modelos de inteligencia artificial disponibles. Aqui podemos ver modelos de Claude, GPT, Gemini y otros.",
-      "consoleOutput": "=== 7. Parada ordenada (StopAsync) ===\n  Estado tras parar:     Disconnected\n\n  Demo completado.",
+      "consoleOutput": "=== 6. Listar modelos disponibles (ListModelsAsync) ===\n  Se encontraron 13 modelo(s):\n  claude-sonnet-4.5                   Claude Sonnet 4.5\n  claude-haiku-4.5                    Claude Haiku 4.5\n  claude-opus-4.5                     Claude Opus 4.5\n  claude-sonnet-4                     Claude Sonnet 4\n  gemini-3-pro-preview                Gemini 3 Pro (Preview)\n  gpt-5.2                             GPT-5.2\n  gpt-5.1                             GPT-5.1\n  gpt-4.1                             GPT-4.1\n  ...",
       "type": "code"
     },
     {
@@ -115,7 +115,7 @@
       "audioFile": "slide13.mp3",
       "durationFrames": 210,
       "narrationText": "Excelente. Ya conoces el ciclo de vida completo del cliente. En el siguiente video veremos como crear sesiones y mantener conversaciones multi-turno con el modelo.",
-      "consoleOutput": "=== 7. Parada ordenada (StopAsync) ===\n  Estado tras parar:     Disconnected\n\n  Demo completado.",
+      "consoleOutput": "",
       "type": "ending",
       "cardData": {
         "title": "Siguiente: Demo 02",
