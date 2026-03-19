@@ -71,14 +71,17 @@
     }
     .slide:hover { background: #161b22; }
     .slide.active { background: #161b22; border-color: #58a6ff; }
-    .slide.has-audio { border-left: 3px solid #3fb950; }
+    .slide.has-custom { border-left: 3px solid #3fb950; }
+    .slide.has-tts { border-left: 3px solid #d29922; }
     .slide.is-playing { background: #23863611; border-color: #238636; }
     .slide.is-recording { background: #f8514911; border-color: #f85149; }
     .slide-num { font-size: 12px; font-weight: 700; color: #8b949e; min-width: 22px; text-align: center; }
     .slide-title { font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .slide-badges { display: flex; gap: 3px; }
     .s-badge { font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 600; }
-    .s-badge-rec { background: #3fb95022; color: #3fb950; }
+    .s-badge-custom { background: #3fb95022; color: #3fb950; }
+    .s-badge-tts { background: #d2992222; color: #d29922; }
+    .s-badge-none { background: #f8514922; color: #f85149; }
     .slide-dur { font-size: 10px; color: #484f58; }
 
     .btn {
@@ -209,7 +212,7 @@
     let currentDemo = null, manifest = null, activeSlideIdx = 0;
     let mediaRecorder = null, recordingIdx = null, chunks = [];
     let currentAudio = null, playingSlideIdx = null, playAllMode = false, playAllAbort = false;
-    let audioCache = [];
+    let audioCache = [];   // { exists: bool, isCustom: bool }[]
 
     function openPreview() {
       const compId = currentDemo ? currentDemo.charAt(0).toUpperCase() + currentDemo.slice(1) : 'Demo01';
@@ -254,21 +257,28 @@
     function renderList() {
       const list = document.getElementById('slidesList');
       list.innerHTML = '';
-      let rec = 0;
+      let customCount = 0, ttsCount = 0;
       for (let i = 0; i < manifest.slides.length; i++) {
-        const s = manifest.slides[i], has = audioCache[i];
-        if (has) rec++;
+        const s = manifest.slides[i], info = audioCache[i] || {};
+        if (info.isCustom) customCount++;
+        else if (info.exists) ttsCount++;
+        const audioBadge = info.isCustom
+          ? '<span class="s-badge s-badge-custom">REC</span>'
+          : info.exists
+            ? '<span class="s-badge s-badge-tts">TTS</span>'
+            : '<span class="s-badge s-badge-none">NO AUDIO</span>';
         const div = document.createElement('div');
-        div.className = `slide${i===activeSlideIdx?' active':''}${has?' has-audio':''}`;
+        div.className = `slide${i===activeSlideIdx?' active':''}${info.isCustom?' has-custom':info.exists?' has-tts':''}`;
         div.id = `sl-${i}`;
         div.onclick = () => selectSlide(i);
         div.innerHTML = `<span class="slide-num">${i+1}</span>
           <span class="slide-title">${esc(s.cardData?.title||s.narrationText?.substring(0,45)||s.file)}</span>
-          <span class="slide-badges"><span class="s-badge badge-${s.type}">${s.type}</span>${has?'<span class="s-badge s-badge-rec">REC</span>':''}</span>
+          <span class="slide-badges"><span class="s-badge badge-${s.type}">${s.type}</span>${audioBadge}</span>
           <span class="slide-dur">${(s.durationFrames/30).toFixed(1)}s</span>`;
         list.appendChild(div);
       }
-      document.getElementById('statusText').innerHTML = `<span class="done">${rec}</span>/${manifest.slides.length} recorded · ${Math.round(manifest.totalFrames/30)}s`;
+      document.getElementById('statusText').innerHTML =
+        `<span class="done">${customCount}</span> recorded · <span style="color:#d29922">${ttsCount}</span> TTS · ${manifest.slides.length} total · ${Math.round(manifest.totalFrames/30)}s`;
     }
 
     async function showSlide(idx) {
@@ -279,16 +289,46 @@
       b.textContent = s.type; b.className = `preview-badge badge-${s.type}`;
       document.getElementById('pNarration').textContent = s.narrationText || '(no script)';
 
-      let code = '';
-      try { const r = await fetch(`${API}/api/slide/${currentDemo}/${s.file}`); if (r.ok) code = await r.text(); } catch {}
-      document.getElementById('pCode').textContent = code || '(no code)';
-      document.getElementById('pConsoleText').textContent = s.consoleOutput || '(no output)';
+      const codeEl = document.getElementById('pCode');
+      const consoleEl = document.getElementById('pConsole');
 
+      if (s.type === 'title' || s.type === 'ending') {
+        // Show styled card preview instead of raw code
+        const cd = s.cardData || {};
+        let html = `<div style="display:flex;flex-direction:column;justify-content:center;align-items:${s.type==='ending'?'center':'flex-start'};height:100%;padding:20px;">`;
+        html += `<div style="width:80px;height:3px;background:#58a6ff;border-radius:2px;margin-bottom:16px;"></div>`;
+        html += `<div style="font-size:24px;font-weight:700;color:#e6edf3;margin-bottom:8px;">${esc(cd.title||'')}</div>`;
+        if (cd.subtitle) html += `<div style="font-size:16px;color:#8b949e;margin-bottom:20px;">${esc(cd.subtitle)}</div>`;
+        if (cd.bullets) {
+          for (const bullet of cd.bullets) {
+            html += `<div style="font-size:14px;color:#c9d1d9;margin-bottom:6px;padding-left:12px;"><span style="color:#58a6ff;margin-right:8px;">-></span>${esc(bullet)}</div>`;
+          }
+        }
+        html += `</div>`;
+        codeEl.innerHTML = html;
+        codeEl.style.display = 'block';
+        consoleEl.style.display = 'none';
+      } else {
+        // Show code + console
+        let code = '';
+        try { const r = await fetch(`${API}/api/slide/${currentDemo}/${s.file}`); if (r.ok) code = await r.text(); } catch {}
+        codeEl.textContent = code || '(no code)';
+        codeEl.style.display = 'block';
+        consoleEl.style.display = 'block';
+        document.getElementById('pConsoleText').textContent = s.consoleOutput || '(no output)';
+      }
+
+      const info = audioCache[idx] || {};
       const pb = document.getElementById('pPlayBtn');
-      pb.disabled = !has;
+      pb.disabled = !info.exists;
       pb.textContent = playingSlideIdx === idx ? 'Stop' : 'Play';
       pb.className = `btn btn-play${playingSlideIdx===idx?' playing':''}`;
-      document.getElementById('pDur').textContent = has ? `${(s.durationFrames/30).toFixed(1)}s` : 'No recording';
+      const durText = info.isCustom
+        ? `${(s.durationFrames/30).toFixed(1)}s (recorded)`
+        : info.exists
+          ? `${(s.durationFrames/30).toFixed(1)}s (TTS)`
+          : 'No audio';
+      document.getElementById('pDur').textContent = durText;
     }
 
     function selectSlide(idx) {
@@ -300,7 +340,8 @@
     }
 
     async function checkAudio(f) {
-      try { return (await (await fetch(`${API}/api/audio-exists/${currentDemo}/${f}`)).json()).exists; } catch { return false; }
+      try { return await (await fetch(`${API}/api/audio-exists/${currentDemo}/${f}`)).json(); }
+      catch { return { exists: false, isCustom: false }; }
     }
 
     // ── Play ──
@@ -326,6 +367,13 @@
     // ── Record ──
     async function toggleRecord(idx) {
       if (recordingIdx!==null) { stopRecording(); return; }
+
+      // Confirm overwrite if custom recording exists
+      const info = audioCache[idx] || {};
+      if (info.isCustom) {
+        if (!confirm(`Slide ${idx+1} already has a recording. Overwrite it?`)) return;
+      }
+
       stopAllAudio();
       try {
         const stream = await navigator.mediaDevices.getUserMedia({audio:true});
@@ -340,7 +388,7 @@
           await fetch(`${API}/api/resync/${currentDemo}`, {method:'POST'});
           recordingIdx = null;
           manifest = await (await fetch(`${API}/api/manifest/${currentDemo}`)).json();
-          audioCache[idx] = true;
+          audioCache[idx] = { exists: true, isCustom: true };
           renderList(); selectSlide(idx);
         };
         mediaRecorder.start();

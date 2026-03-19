@@ -84,14 +84,17 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  // Check if audio exists for a slide
-  if (url.pathname.match(/^\/api\/audio-exists\/demo\d+\/slide\d+\.mp3$/)) {
+  // Check if audio exists for a slide (distinguishes TTS vs custom recording)
+  if (url.pathname.match(/^\/api\/audio-exists\/[^/]+\/slide\d+\.mp3$/)) {
     const parts = url.pathname.split("/");
     const demoId = parts[3];
     const audioFile = parts[4];
-    const filePath = join(PUBLIC_DIR, demoId, "audio", audioFile);
+    const mp3Path = join(PUBLIC_DIR, demoId, "audio", audioFile);
+    const webmPath = join(PUBLIC_DIR, demoId, "audio", audioFile.replace(".mp3", ".webm"));
+    const hasAudio = existsSync(mp3Path);
+    const isCustom = existsSync(webmPath); // .webm = recorded by user
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ exists: existsSync(filePath) }));
+    res.end(JSON.stringify({ exists: hasAudio, isCustom }));
     return;
   }
 
