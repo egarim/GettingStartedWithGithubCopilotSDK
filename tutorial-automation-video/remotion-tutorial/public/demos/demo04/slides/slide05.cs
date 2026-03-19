@@ -1,16 +1,10 @@
-// PostToolUse Hook
-var postToolUseInputs = new List<(string tool, string? result)>();
-var session = await client.CreateSessionAsync(new SessionConfig
-{
-    Tools = [lookupTool],
-    Hooks = new SessionHooks
-    {
-        OnPostToolUse = (input, invocation) =>
-        {
-            var resultStr = input.ToolResult?.ToString();
-            postToolUseInputs.Add((input.ToolName ?? "(unknown)", resultStr));
-            Console.WriteLine($"    [PostToolUse] Tool: {input.ToolName}");
-            Console.WriteLine($"    [PostToolUse] Result preview: {resultStr?.Substring(0, Math.Min(80, resultStr.Length))}");
-            return Task.FromResult<PostToolUseHookOutput?>(null);
-        }
-// ...
+// Paso 4: Ambos hooks Pre y Post juntos
+        OnPreToolUse = (input, invocation) =>
+            Console.WriteLine($"  [PRE]  -> {input.ToolName}");
+            return Task.FromResult<PreToolUseHookOutput?>(
+                new PreToolUseHookOutput { PermissionDecision = "allow" });
+        },
+            Console.WriteLine($"  [POST] <- {input.ToolName}: {input.ToolResult}");
+    new MessageOptions { Prompt = "Look up the price for 'Super Deluxe Widget'." });
+Console.WriteLine($"Respuesta: {answer?.Data.Content}"); // -> $199.00
+    { ["Widget Pro"] = 29.99m, ["Super Deluxe Widget"] = 199.00m };

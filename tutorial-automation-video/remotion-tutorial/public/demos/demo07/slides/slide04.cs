@@ -1,15 +1,8 @@
-// Compactacion activada
-Console.WriteLine("  (Umbrales bajos activan compactacion rapido para demostracion)\n");
-
-var compactionStartEvents = new List<SessionCompactionStartEvent>();
-var compactionCompleteEvents = new List<SessionCompactionCompleteEvent>();
-
-var session = await client.CreateSessionAsync(new SessionConfig
-{
-    InfiniteSessions = new InfiniteSessionConfig
-    {
-        Enabled = true,
-        BackgroundCompactionThreshold = 0.005,
-        BufferExhaustionThreshold = 0.01
-    }
-});
+// Paso 3: Compactacion desactivada - Sin eventos
+var compactionEvents = new List<SessionEvent>();
+    InfiniteSessions = new InfiniteSessionConfig { Enabled = false }
+    if (evt is SessionCompactionStartEvent or SessionCompactionCompleteEvent)
+        compactionEvents.Add(evt);
+var answer = await session.SendAndWaitAsync(new MessageOptions { Prompt = "What is 2+2?" });
+Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+Console.WriteLine($"  Eventos compactacion: {compactionEvents.Count}"); // Esperado: 0

@@ -1,4 +1,3 @@
-// Paso 0: Estructura base
 #:package GitHub.Copilot.SDK@0.1.23
 #:package Microsoft.Extensions.Logging.Console@*
 
@@ -9,5 +8,4 @@ using var loggerFactory = LoggerFactory.Create(b =>
     b.AddConsole().SetMinimumLevel(LogLevel.Warning));
 
 var logger = loggerFactory.CreateLogger<CopilotClient>();
-
-// dotnet run step01.cs
+Console.WriteLine("01 - DEMO: Ciclo de vida y conexion del cliente");

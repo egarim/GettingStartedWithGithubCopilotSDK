@@ -2,7 +2,7 @@
   "demoId": "demo08",
   "title": "08 - Skills: habilidades del SDK",
   "fps": 30,
-  "totalFrames": 2940,
+  "totalFrames": 1470,
   "slides": [
     {
       "file": "slide01.cs",
@@ -33,93 +33,37 @@
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
       "durationFrames": 210,
-      "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
-      "consoleOutput": "  Cliente iniciado.",
+      "narrationText": "Cargar y aplicar skill desde SkillDirectories.",
+      "consoleOutput": "================================================================\n  08 - DEMO: Carga y configuracion de habilidades\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
       "durationFrames": 210,
-      "narrationText": "Cargamos un skill desde un archivo que instruye al modelo a incluir un marcador especifico. Verificamos que el marcador aparece en la respuesta.",
-      "consoleOutput": "=== 1. Cargar y aplicar skill ===\n  Marcador: \"PINEAPPLE_COCONUT_42\"\n  Respuesta: Hello! PINEAPPLE_COCONUT_42\n  Contiene marcador: True\n  OK Skill aplicado exitosamente!",
+      "narrationText": "Desactivar skill via DisabledSkills.",
+      "consoleOutput": "================================================================\n  08 - DEMO: Carga y configuracion de habilidades\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
       "durationFrames": 210,
-      "narrationText": "Continuamos con cargar y aplicar skill.",
-      "consoleOutput": "=== 1. Cargar y aplicar skill ===\n  Marcador: \"PINEAPPLE_COCONUT_42\"\n  Respuesta: Hello! PINEAPPLE_COCONUT_42\n  Contiene marcador: True\n  OK Skill aplicado exitosamente!",
+      "narrationText": "Sin skill (comparacion de linea base).",
+      "consoleOutput": "================================================================\n  08 - DEMO: Carga y configuracion de habilidades\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
       "durationFrames": 210,
-      "narrationText": "Continuamos con cargar y aplicar skill.",
-      "consoleOutput": "=== 1. Cargar y aplicar skill ===\n  Marcador: \"PINEAPPLE_COCONUT_42\"\n  Respuesta: Hello! PINEAPPLE_COCONUT_42\n  Contiene marcador: True\n  OK Skill aplicado exitosamente!",
+      "narrationText": "Modo interactivo con skill personalizado.",
+      "consoleOutput": "================================================================\n  08 - DEMO: Carga y configuracion de habilidades\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con cargar y aplicar skill.",
-      "consoleOutput": "=== 1. Cargar y aplicar skill ===\n  Marcador: \"PINEAPPLE_COCONUT_42\"\n  Respuesta: Hello! PINEAPPLE_COCONUT_42\n  Contiene marcador: True\n  OK Skill aplicado exitosamente!",
-      "type": "code"
-    },
-    {
-      "file": "slide08.cs",
-      "audioFile": "slide08.mp3",
-      "durationFrames": 210,
-      "narrationText": "Desactivamos el skill por nombre. El modelo ya no sigue las instrucciones del skill y el marcador desaparece de las respuestas.",
-      "consoleOutput": "=== 2. Desactivar skill ===\n  DisabledSkills: [\"demo-skill\"]\n  Respuesta: Hello! How can I help?\n  Contiene marcador: False\n  OK Skill desactivado!",
-      "type": "code"
-    },
-    {
-      "file": "slide09.cs",
-      "audioFile": "slide09.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con desactivar skill.",
-      "consoleOutput": "=== 2. Desactivar skill ===\n  DisabledSkills: [\"demo-skill\"]\n  Respuesta: Hello! How can I help?\n  Contiene marcador: False\n  OK Skill desactivado!",
-      "type": "code"
-    },
-    {
-      "file": "slide10.cs",
-      "audioFile": "slide10.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con desactivar skill.",
-      "consoleOutput": "=== 2. Desactivar skill ===\n  DisabledSkills: [\"demo-skill\"]\n  Respuesta: Hello! How can I help?\n  Contiene marcador: False\n  OK Skill desactivado!",
-      "type": "code"
-    },
-    {
-      "file": "slide11.cs",
-      "audioFile": "slide11.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con desactivar skill.",
-      "consoleOutput": "=== 2. Desactivar skill ===\n  DisabledSkills: [\"demo-skill\"]\n  Respuesta: Hello! How can I help?\n  Contiene marcador: False\n  OK Skill desactivado!",
-      "type": "code"
-    },
-    {
-      "file": "slide12.cs",
-      "audioFile": "slide12.mp3",
-      "durationFrames": 210,
-      "narrationText": "Como comparacion, creamos una sesion sin ningun skill. El modelo responde normalmente sin incluir el marcador.",
-      "consoleOutput": "=== 3. Sin skill (linea base) ===\n  Respuesta: Hello there!\n  Contiene marcador: False",
-      "type": "code"
-    },
-    {
-      "file": "slide13.cs",
-      "audioFile": "slide13.mp3",
-      "durationFrames": 210,
-      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
-      "consoleOutput": "=== 3. Sin skill (linea base) ===\n  Respuesta: Hello there!\n  Contiene marcador: False",
-      "type": "code"
-    },
-    {
-      "file": "slide14.cs",
-      "audioFile": "slide14.mp3",
       "durationFrames": 210,
       "narrationText": "Excelente. Las skills aceleran tareas comunes de desarrollo. En el siguiente video veremos MCP Agents, una forma poderosa de conectar agentes externos.",
       "consoleOutput": "",

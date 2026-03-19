@@ -2,7 +2,7 @@
   "demoId": "demo11",
   "title": "11 - OpenRouter: modelos BYOK",
   "fps": 30,
-  "totalFrames": 2940,
+  "totalFrames": 2100,
   "slides": [
     {
       "file": "slide01.cs",
@@ -34,93 +34,61 @@
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
       "durationFrames": 210,
-      "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
-      "consoleOutput": "  Auth: True (user)  Fuente: VS Code login",
+      "narrationText": "Listar todos los modelos (built-in + BYOK).",
+      "consoleOutput": "================================================================\n  11 - DEMO: Bring Your Own Key (BYOK)\n================================================================",
       "type": "code"
     },
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
       "durationFrames": 210,
-      "narrationText": "Listamos todos los modelos de inteligencia artificial disponibles. Aqui podemos ver modelos de Claude, GPT, Gemini y otros.",
-      "consoleOutput": "=== 2. Listar modelos (built-in + BYOK) ===\n  Total modelos: 13\n  claude-sonnet-4.5, claude-haiku-4.5, claude-opus-4.5\n  claude-sonnet-4, gemini-3-pro-preview\n  gpt-5.2, gpt-5.1, gpt-4.1 ...",
+      "narrationText": "Chat con el modelo por defecto.",
+      "consoleOutput": "================================================================\n  11 - DEMO: Bring Your Own Key (BYOK)\n================================================================",
       "type": "code"
     },
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
       "durationFrames": 210,
-      "narrationText": "Enviamos un mensaje usando el modelo por defecto. El modelo se identifica al responder.",
-      "consoleOutput": "=== 3. Chat con modelo por defecto ===\n  R: I'm GitHub Copilot, powered by OpenAI.",
+      "narrationText": "Chat con un modelo especifico (BYOK o built-in).",
+      "consoleOutput": "================================================================\n  11 - DEMO: Bring Your Own Key (BYOK)\n================================================================",
       "type": "code"
     },
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
       "durationFrames": 210,
-      "narrationText": "Elegimos un modelo especifico para la sesion. Podemos usar cualquier modelo de la lista, incluyendo los BYOK.",
-      "consoleOutput": "=== 4. Chat con modelo especifico ===\n  Modelo: claude-sonnet-4\n  R: I'm Claude, made by Anthropic.",
+      "narrationText": "Comparar multiples modelos con el mismo prompt.",
+      "consoleOutput": "================================================================\n  11 - DEMO: Bring Your Own Key (BYOK)\n================================================================",
       "type": "code"
     },
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
       "durationFrames": 210,
-      "narrationText": "Hacemos la misma pregunta a diferentes modelos y comparamos sus respuestas. Cada uno tiene su propio estilo.",
-      "consoleOutput": "=== 5. Comparar modelos ===\n  claude-sonnet-4.5  -> Canberra is the capital.\n  gpt-5.2            -> The capital is Canberra.\n  gpt-4.1            -> Australia's capital is Canberra.",
+      "narrationText": "Modelo custom + herramientas (tools).",
+      "consoleOutput": "================================================================\n  11 - DEMO: Bring Your Own Key (BYOK)\n================================================================",
       "type": "code"
     },
     {
       "file": "slide08.cs",
       "audioFile": "slide08.mp3",
       "durationFrames": 210,
-      "narrationText": "Las herramientas personalizadas funcionan con cualquier modelo, incluyendo los modelos BYOK.",
-      "consoleOutput": "=== 6. Modelo + herramientas ===\n  [Tool:get_weather] city=Tokyo\n  [Tool:get_time] city=Tokyo\n  R: 22°C, partly cloudy. Time: 02:30 JST.",
+      "narrationText": "Streaming con modelo custom.",
+      "consoleOutput": "================================================================\n  11 - DEMO: Bring Your Own Key (BYOK)\n================================================================",
       "type": "code"
     },
     {
       "file": "slide09.cs",
       "audioFile": "slide09.mp3",
       "durationFrames": 210,
-      "narrationText": "El streaming funciona igual con modelos personalizados. Recibimos la respuesta caracter por caracter en tiempo real.",
-      "consoleOutput": "=== 7. Streaming con modelo custom ===\n  Why don't scientists trust atoms?\n  Because they make up everything!\n  Total chars: 65",
+      "narrationText": "Chat interactivo con modelo BYOK.",
+      "consoleOutput": "================================================================\n  11 - DEMO: Bring Your Own Key (BYOK)\n================================================================",
       "type": "code"
     },
     {
       "file": "slide10.cs",
       "audioFile": "slide10.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con streaming.",
-      "consoleOutput": "=== 7. Streaming con modelo custom ===\n  Why don't scientists trust atoms?\n  Because they make up everything!\n  Total chars: 65",
-      "type": "code"
-    },
-    {
-      "file": "slide11.cs",
-      "audioFile": "slide11.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con streaming.",
-      "consoleOutput": "=== 7. Streaming con modelo custom ===\n  Why don't scientists trust atoms?\n  Because they make up everything!\n  Total chars: 65",
-      "type": "code"
-    },
-    {
-      "file": "slide12.cs",
-      "audioFile": "slide12.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con streaming.",
-      "consoleOutput": "=== 7. Streaming con modelo custom ===\n  Why don't scientists trust atoms?\n  Because they make up everything!\n  Total chars: 65",
-      "type": "code"
-    },
-    {
-      "file": "slide13.cs",
-      "audioFile": "slide13.mp3",
-      "durationFrames": 210,
-      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
-      "consoleOutput": "=== 7. Streaming con modelo custom ===\n  Why don't scientists trust atoms?\n  Because they make up everything!\n  Total chars: 65",
-      "type": "code"
-    },
-    {
-      "file": "slide14.cs",
-      "audioFile": "slide14.mp3",
       "durationFrames": 210,
       "narrationText": "Felicidades. Has completado toda la serie del SDK de GitHub Copilot. Ahora tienes las herramientas para construir aplicaciones potentes con inteligencia artificial integrada. Hasta la proxima!",
       "consoleOutput": "",

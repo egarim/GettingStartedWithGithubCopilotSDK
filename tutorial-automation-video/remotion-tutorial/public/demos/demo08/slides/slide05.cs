@@ -1,11 +1,4 @@
-// ...
-Console.WriteLine($"  Session: {session.SessionId}");
-PrintProp("SkillDirectories:", $"[\"{skillsBaseDir}\"]");
-PrintProp("Marcador esperado:", $"\"{SkillMarker}\"");
-
-Console.WriteLine("  Prompt: Say hello briefly using the demo skill.");
-var answer = await session.SendAndWaitAsync(new MessageOptions
-{
-    Prompt = "Say hello briefly using the demo skill."
-});
-Console.WriteLine($"  Respuesta: {answer?.Data.Content}\n");
+// Paso 4: Sin skill (comparacion de linea base)
+var session = await client.CreateSessionAsync(new SessionConfig());  // sin SkillDirectories
+    Prompt = "Say hello briefly."
+Console.WriteLine($"  Respuesta (sin skill): {answer?.Data.Content}");

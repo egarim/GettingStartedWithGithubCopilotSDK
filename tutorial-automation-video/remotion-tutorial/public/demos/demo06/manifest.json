@@ -2,7 +2,7 @@
   "demoId": "demo06",
   "title": "06 - AskUser: interaccion con el usuario",
   "fps": 30,
-  "totalFrames": 2940,
+  "totalFrames": 1470,
   "slides": [
     {
       "file": "slide01.cs",
@@ -33,93 +33,37 @@
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
       "durationFrames": 210,
-      "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
-      "consoleOutput": "  Cliente iniciado.",
+      "narrationText": "Entrada con opciones (auto-responder primera opcion).",
+      "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
       "durationFrames": 210,
-      "narrationText": "Configuramos un handler que responde automaticamente cuando el modelo necesita entrada del usuario, seleccionando la primera opcion disponible.",
-      "consoleOutput": "=== 1. Entrada con opciones ===\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!",
+      "narrationText": "Verificar opciones en UserInputRequest.",
+      "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
       "durationFrames": 210,
-      "narrationText": "Continuamos con entrada con opciones.",
-      "consoleOutput": "=== 1. Entrada con opciones ===\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!",
+      "narrationText": "Entrada libre del usuario (WasFreeform = true).",
+      "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
       "durationFrames": 210,
-      "narrationText": "Continuamos con entrada con opciones.",
-      "consoleOutput": "=== 1. Entrada con opciones ===\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!",
+      "narrationText": "Chat interactivo - responder preguntas del modelo en vivo.",
+      "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con entrada con opciones.",
-      "consoleOutput": "=== 1. Entrada con opciones ===\n    [AskUser] Opciones: [Option A, Option B]\n    [AskUser] Auto-seleccionando: Option A\n  Respuesta: You chose Option A!",
-      "type": "code"
-    },
-    {
-      "file": "slide08.cs",
-      "audioFile": "slide08.mp3",
-      "durationFrames": 210,
-      "narrationText": "Verificamos que las opciones presentadas por el modelo coinciden con lo esperado. Las opciones se enumeran para que el usuario elija.",
-      "consoleOutput": "=== 2. Verificar opciones ===\n    [AskUser] [1] Red  [2] Blue\n  Respuesta: You selected Red.\n  Con opciones: 1",
-      "type": "code"
-    },
-    {
-      "file": "slide09.cs",
-      "audioFile": "slide09.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con verificar opciones.",
-      "consoleOutput": "=== 2. Verificar opciones ===\n    [AskUser] [1] Red  [2] Blue\n  Respuesta: You selected Red.\n  Con opciones: 1",
-      "type": "code"
-    },
-    {
-      "file": "slide10.cs",
-      "audioFile": "slide10.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con verificar opciones.",
-      "consoleOutput": "=== 2. Verificar opciones ===\n    [AskUser] [1] Red  [2] Blue\n  Respuesta: You selected Red.\n  Con opciones: 1",
-      "type": "code"
-    },
-    {
-      "file": "slide11.cs",
-      "audioFile": "slide11.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con verificar opciones.",
-      "consoleOutput": "=== 2. Verificar opciones ===\n    [AskUser] [1] Red  [2] Blue\n  Respuesta: You selected Red.\n  Con opciones: 1",
-      "type": "code"
-    },
-    {
-      "file": "slide12.cs",
-      "audioFile": "slide12.mp3",
-      "durationFrames": 210,
-      "narrationText": "El modelo puede pedir texto libre, sin opciones predefinidas. Respondemos con una respuesta personalizada que el modelo incorpora.",
-      "consoleOutput": "=== 3. Entrada libre (WasFreeform) ===\n    [AskUser] Respuesta libre: \"emerald green\"\n  Respuesta: Your favorite color is emerald green!",
-      "type": "code"
-    },
-    {
-      "file": "slide13.cs",
-      "audioFile": "slide13.mp3",
-      "durationFrames": 210,
-      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
-      "consoleOutput": "=== 3. Entrada libre (WasFreeform) ===\n    [AskUser] Respuesta libre: \"emerald green\"\n  Respuesta: Your favorite color is emerald green!",
-      "type": "code"
-    },
-    {
-      "file": "slide14.cs",
-      "audioFile": "slide14.mp3",
       "durationFrames": 210,
       "narrationText": "Muy bien. Ya sabes como interactuar con el usuario. En el siguiente video veremos la compactacion de contexto, esencial para conversaciones largas.",
       "consoleOutput": "",

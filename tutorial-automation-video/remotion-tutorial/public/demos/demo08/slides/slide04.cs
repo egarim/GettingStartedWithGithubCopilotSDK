@@ -1,5 +1,4 @@
-// Cargar y aplicar skill
-var session = await client.CreateSessionAsync(new SessionConfig
-{
-    SkillDirectories = [skillsBaseDir]
-});
+// Paso 3: Desactivar skill via DisabledSkills
+    SkillDirectories = [skillsBaseDir],
+    DisabledSkills = ["demo-skill"]  // desactiva por nombre
+Console.WriteLine($"  Contiene marcador: {containsMarker}"); // Esperado: False

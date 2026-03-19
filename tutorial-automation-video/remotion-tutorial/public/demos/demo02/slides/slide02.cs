@@ -1,7 +1,7 @@
-// Paso 0: Estructura base
 #:package GitHub.Copilot.SDK@0.1.23
 #:package Microsoft.Extensions.Logging.Console@*
 
+// Paso 1: Boilerplate - crear cliente y helpers
 using GitHub.Copilot.SDK;
 using Microsoft.Extensions.Logging;
 
@@ -10,4 +10,12 @@ using var loggerFactory = LoggerFactory.Create(b =>
 
 var logger = loggerFactory.CreateLogger<CopilotClient>();
 
-// dotnet run step01.cs
+var client = new CopilotClient(new CopilotClientOptions
+{
+    UseLoggedInUser = true,
+    Logger = logger
+});
+
+Console.WriteLine("02 - DEMO: Ciclo de vida, eventos y multi-turno");
+
+await client.DisposeAsync();

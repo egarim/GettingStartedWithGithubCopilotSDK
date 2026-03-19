@@ -1,16 +1,8 @@
-// Ambos hooks juntos
-var preTools = new List<string>();
-var postTools = new List<string>();
-
-var session = await client.CreateSessionAsync(new SessionConfig
-{
-    Tools = [lookupTool],
-    Hooks = new SessionHooks
-    {
-        OnPreToolUse = (input, invocation) =>
-        {
-            preTools.Add(input.ToolName ?? "?");
-            Console.WriteLine($"    [PRE]  -> {input.ToolName}");
-            return Task.FromResult<PreToolUseHookOutput?>(
-                new PreToolUseHookOutput { PermissionDecision = "allow" });
-// ...
+// Paso 5: Denegar ejecucion via PreToolUse
+            Console.WriteLine($"  [PreToolUse] DENEGANDO: {input.ToolName}");
+                new PreToolUseHookOutput { PermissionDecision = "deny" }); // bloquear
+var answer = await session.SendAndWaitAsync(new MessageOptions
+    Prompt = "Look up the price for 'Widget Pro'. If you can't, explain why."
+Console.WriteLine($"Respuesta: {answer?.Data.Content}");
+// -> El modelo explica que no pudo acceder a la herramienta
+    => $"Product: {productName}, Price: $29.99";

@@ -2,7 +2,7 @@
   "demoId": "demo04",
   "title": "04 - Hooks: pre y post ejecucion",
   "fps": 30,
-  "totalFrames": 1890,
+  "totalFrames": 1680,
   "slides": [
     {
       "file": "slide01.cs",
@@ -33,53 +33,45 @@
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
       "durationFrames": 210,
-      "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
-      "consoleOutput": "  Cliente iniciado.",
+      "narrationText": "Hook PreToolUse - Permitir ejecucion.",
+      "consoleOutput": "================================================================\n  04 - DEMO: Hooks Pre/Post uso de herramientas\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
       "durationFrames": 210,
-      "narrationText": "Registramos un hook que se ejecuta antes de cada herramienta. Aqui decidimos permitir la ejecucion y registramos la llamada.",
-      "consoleOutput": "=== 1. Hook Pre-uso - Permitir ===\n    [PreToolUse] Tool: lookup_price -> ALLOW\n    [Tool:lookup_price] productName=Widget Pro\n  Respuesta: Widget Pro costs $29.99.\n  Hooks disparados: 1",
+      "narrationText": "Hook PostToolUse - Inspeccionar resultado.",
+      "consoleOutput": "================================================================\n  04 - DEMO: Hooks Pre/Post uso de herramientas\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
       "durationFrames": 210,
-      "narrationText": "El hook post-uso nos permite inspeccionar el resultado de la herramienta despues de ejecutarse, util para auditoria.",
-      "consoleOutput": "=== 2. Hook Post-uso ===\n    [Tool:lookup_price] productName=Gadget X\n    [PostToolUse] Result: Gadget X, Price: $49.95\n  Respuesta: Gadget X costs $49.95.",
+      "narrationText": "Ambos hooks Pre y Post juntos.",
+      "consoleOutput": "================================================================\n  04 - DEMO: Hooks Pre/Post uso de herramientas\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
       "durationFrames": 210,
-      "narrationText": "Combinamos ambos hooks en la misma sesion. Primero se ejecuta el pre, luego la herramienta, y finalmente el post.",
-      "consoleOutput": "=== 3. Ambos hooks Pre y Post juntos ===\n    [PRE]  -> lookup_price\n    [Tool:lookup_price] Super Deluxe Widget\n    [POST] <- lookup_price\n  Respuesta: $199.00\n  Misma herramienta en ambos: True",
+      "narrationText": "Denegar ejecucion via PreToolUse.",
+      "consoleOutput": "================================================================\n  04 - DEMO: Hooks Pre/Post uso de herramientas\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
       "durationFrames": 210,
-      "narrationText": "Demostramos como bloquear una herramienta desde el hook. El modelo recibe un aviso de que no pudo acceder a la funcion.",
-      "consoleOutput": "=== 4. Denegar ejecucion via PreToolUse ===\n    [PreToolUse] DENEGANDO: lookup_price\n  Respuesta: Unable to look up the price.\n  Herramientas denegadas: 1",
+      "narrationText": "Chat interactivo con hooks (permitir/denegar por llamada).",
+      "consoleOutput": "================================================================\n  04 - DEMO: Hooks Pre/Post uso de herramientas\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide08.cs",
       "audioFile": "slide08.mp3",
-      "durationFrames": 210,
-      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
-      "consoleOutput": "=== 4. Denegar ejecucion via PreToolUse ===\n    [PreToolUse] DENEGANDO: lookup_price\n  Respuesta: Unable to look up the price.\n  Herramientas denegadas: 1",
-      "type": "code"
-    },
-    {
-      "file": "slide09.cs",
-      "audioFile": "slide09.mp3",
       "durationFrames": 210,
       "narrationText": "Excelente. Los hooks te dan control total sobre las herramientas. En el siguiente video exploraremos el sistema de permisos y autorizacion.",
       "consoleOutput": "",

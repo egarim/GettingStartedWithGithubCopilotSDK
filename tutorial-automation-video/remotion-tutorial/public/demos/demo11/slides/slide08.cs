@@ -1,16 +1,16 @@
-// Modelo + herramientas
-PrintProp("Modelo:", chosenModel);
-await using var session = await client.CreateSessionAsync(new SessionConfig
-{
-    Model = chosenModel,
-    Tools =
-    [
-        AIFunctionFactory.Create(GetWeather, "get_weather"),
-        AIFunctionFactory.Create(GetTime, "get_time"),
-    ]
-});
-
-var answer = await session.SendAndWaitAsync(
-    new MessageOptions { Prompt = "What's the weather in Tokyo and what time is it there?" });
-Console.WriteLine($"  P: What's the weather in Tokyo and what time is it there?");
-Console.WriteLine($"  R: {answer?.Data.Content}");
+// Paso 7: Streaming con modelo custom
+    Streaming = true  // habilitar streaming con modelo BYOK
+var sb = new StringBuilder();
+var idleTcs = new TaskCompletionSource<bool>();
+session.On(evt =>
+    if (evt is AssistantMessageDeltaEvent delta)
+    {
+        Console.Write(delta.Data.DeltaContent);
+        sb.Append(delta.Data.DeltaContent);
+    }
+    if (evt is SessionIdleEvent) idleTcs.TrySetResult(true);
+Console.Write("  Streaming: ");
+await session.SendAsync(
+    new MessageOptions { Prompt = "Tell me a very short joke (2 sentences max)." });
+await idleTcs.Task.WaitAsync(TimeSpan.FromMinutes(1));
+Console.WriteLine($"\n  Total chars: {sb.Length}");

@@ -1,12 +1,14 @@
-// Herramienta personalizada simple
-var session = await client.CreateSessionAsync(new SessionConfig
-{
-    Tools = [AIFunctionFactory.Create(EncryptString, "encrypt_string")]
-});
-
-var answer = await session.SendAndWaitAsync(
-    new MessageOptions { Prompt = "Use encrypt_string to encrypt this string: Hello World" });
-Console.WriteLine($"  Prompt:   Use encrypt_string to encrypt: Hello World");
-Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
-Console.WriteLine("  (La herramienta convierte a mayusculas — el modelo deberia incluir 'HELLO WORLD')");
-await session.DisposeAsync();
+// Paso 3: Multiples herramientas personalizadas
+    Tools =
+    [
+        AIFunctionFactory.Create(GetWeather, "get_weather"),
+        AIFunctionFactory.Create(GetTime, "get_time"),
+    ]
+    new MessageOptions { Prompt = "What's the weather in Madrid and what time is it there?" });
+Console.WriteLine($"Respuesta: {answer?.Data.Content}"); // -> usa ambas herramientas
+[Description("Gets the current weather for a city")]
+static string GetWeather([Description("City name")] string city)
+    => $"Weather in {city}: 22C, partly cloudy, humidity 65%";
+[Description("Gets the current time for a city/timezone")]
+static string GetTime([Description("City name")] string city)
+    => $"Current time in {city}: {DateTime.UtcNow:HH:mm} UTC";

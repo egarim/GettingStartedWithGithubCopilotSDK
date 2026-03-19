@@ -1,19 +1,20 @@
-// Helpers
-CopilotClient CreateClient() => new(new CopilotClientOptions
+// Paso 2: Cargar y aplicar skill desde SkillDirectories
+var client = new CopilotClient(new CopilotClientOptions
 {
     UseLoggedInUser = true,
-    Logger = logger
+    Logger = loggerFactory.CreateLogger<CopilotClient>()
 });
-
-static void PrintTitle(string title)
+await client.StartAsync();
+var session = await client.CreateSessionAsync(new SessionConfig
 {
-    Console.WriteLine("================================================================");
-    Console.WriteLine($"  {title}");
-    Console.WriteLine("================================================================\n");
-}
-
-static void PrintStep(int n, string text)
-    => Console.WriteLine($"=== {n}. {text} ===");
-
-static void PrintProp(string label, object? value)
-    => Console.WriteLine($"  {label,-22} {value}");
+    SkillDirectories = [skillsBaseDir]  // carga todos los SKILL.md del directorio
+});
+var answer = await session.SendAndWaitAsync(new MessageOptions
+{
+    Prompt = "Say hello briefly using the demo skill."
+});
+var containsMarker = answer?.Data.Content?.Contains("PINEAPPLE_COCONUT_42") ?? false;
+Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
+Console.WriteLine($"  Contiene marcador: {containsMarker}"); // Esperado: True
+await session.DisposeAsync();
+await client.StopAsync();

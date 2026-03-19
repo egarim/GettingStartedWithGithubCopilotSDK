@@ -1,6 +1,5 @@
-// Chat con modelo por defecto
-await using var session = await client.CreateSessionAsync();
-var answer = await session.SendAndWaitAsync(
-    new MessageOptions { Prompt = "What model are you? Answer in one short sentence." });
-Console.WriteLine($"  P: What model are you?");
-Console.WriteLine($"  R: {answer?.Data.Content}");
+// Paso 4: Chat con un modelo especifico (BYOK o built-in)
+var chosenModel = "gpt-4o";  // o cualquier modelo de ListModelsAsync()
+await using var session = await client.CreateSessionAsync(new SessionConfig
+    Model = chosenModel  // seleccionar modelo especifico
+Console.WriteLine($"  Modelo: {chosenModel}");

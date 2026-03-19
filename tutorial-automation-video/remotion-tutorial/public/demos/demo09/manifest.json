@@ -2,7 +2,7 @@
   "demoId": "demo09",
   "title": "09 - MCP Agents",
   "fps": 30,
-  "totalFrames": 5040,
+  "totalFrames": 2520,
   "slides": [
     {
       "file": "slide01.cs",
@@ -34,173 +34,77 @@
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
       "durationFrames": 210,
-      "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
-      "consoleOutput": "  Cliente iniciado.",
+      "narrationText": "Configuracion de un servidor MCP.",
+      "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
       "durationFrames": 210,
-      "narrationText": "Configuramos un servidor MCP local. El protocolo MCP permite conectar herramientas externas a la sesion de Copilot.",
-      "consoleOutput": "=== 1. Servidor MCP ===\n  McpServers: { \"test-server\": { Type: \"local\" } }\n  Sesion creada. Prompt: What is 2+2?\n  Respuesta: 4",
+      "narrationText": "Multiples servidores MCP en una sesion.",
+      "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
       "durationFrames": 210,
-      "narrationText": "Continuamos con servidor mcp simple.",
-      "consoleOutput": "=== 1. Servidor MCP ===\n  McpServers: { \"test-server\": { Type: \"local\" } }\n  Sesion creada. Prompt: What is 2+2?\n  Respuesta: 4",
+      "narrationText": "Configuracion de agente personalizado.",
+      "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
       "durationFrames": 210,
-      "narrationText": "Continuamos con servidor mcp simple.",
-      "consoleOutput": "=== 1. Servidor MCP ===\n  McpServers: { \"test-server\": { Type: \"local\" } }\n  Sesion creada. Prompt: What is 2+2?\n  Respuesta: 4",
+      "narrationText": "Agente con herramientas especificas.",
+      "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
       "durationFrames": 210,
-      "narrationText": "Continuamos con servidor mcp simple.",
-      "consoleOutput": "=== 1. Servidor MCP ===\n  McpServers: { \"test-server\": { Type: \"local\" } }\n  Sesion creada. Prompt: What is 2+2?\n  Respuesta: 4",
+      "narrationText": "Agente con sus propios servidores MCP.",
+      "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide08.cs",
       "audioFile": "slide08.mp3",
       "durationFrames": 210,
-      "narrationText": "Podemos agregar multiples servidores MCP a una sesion, cada uno proporcionando diferentes herramientas y capacidades.",
-      "consoleOutput": "=== 2. Multiples servidores MCP ===\n  Servidores: filesystem-server, database-server",
+      "narrationText": "Multiples agentes personalizados.",
+      "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide09.cs",
       "audioFile": "slide09.mp3",
       "durationFrames": 210,
-      "narrationText": "Creamos un agente personalizado con un prompt especifico. El modelo puede delegarle tareas segun su especializacion.",
-      "consoleOutput": "=== 3. Agente personalizado ===\n  Name: \"business-analyst\", Infer: true\n  Respuesta: 10",
+      "narrationText": "Combinacion - Servidores MCP + Agentes en la misma sesion.",
+      "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide10.cs",
       "audioFile": "slide10.mp3",
       "durationFrames": 210,
-      "narrationText": "Continuamos con agente personalizado.",
-      "consoleOutput": "=== 3. Agente personalizado ===\n  Name: \"business-analyst\", Infer: true\n  Respuesta: 10",
+      "narrationText": "MCP y Agentes al reanudar sesion (ResumeSessionAsync).",
+      "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide11.cs",
       "audioFile": "slide11.mp3",
       "durationFrames": 210,
-      "narrationText": "Continuamos con agente personalizado.",
-      "consoleOutput": "=== 3. Agente personalizado ===\n  Name: \"business-analyst\", Infer: true\n  Respuesta: 10",
+      "narrationText": "Modo interactivo con agente personalizado.",
+      "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
     },
     {
       "file": "slide12.cs",
       "audioFile": "slide12.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con agente personalizado.",
-      "consoleOutput": "=== 3. Agente personalizado ===\n  Name: \"business-analyst\", Infer: true\n  Respuesta: 10",
-      "type": "code"
-    },
-    {
-      "file": "slide13.cs",
-      "audioFile": "slide13.mp3",
-      "durationFrames": 210,
-      "narrationText": "Cada agente puede tener acceso restringido a herramientas especificas, limitando lo que puede hacer dentro de la sesion.",
-      "consoleOutput": "=== 4. Agente con herramientas ===\n  Agente: devops-agent\n  Herramientas: [\"bash\", \"edit\"]",
-      "type": "code"
-    },
-    {
-      "file": "slide14.cs",
-      "audioFile": "slide14.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con agente con herramientas.",
-      "consoleOutput": "=== 4. Agente con herramientas ===\n  Agente: devops-agent\n  Herramientas: [\"bash\", \"edit\"]",
-      "type": "code"
-    },
-    {
-      "file": "slide15.cs",
-      "audioFile": "slide15.mp3",
-      "durationFrames": 210,
-      "narrationText": "Un agente puede tener sus propios servidores MCP aislados, separados del resto de la sesion.",
-      "consoleOutput": "=== 5. Agente con MCP propio ===\n  Agente: data-agent\n  McpServers: { \"agent-db-server\" }",
-      "type": "code"
-    },
-    {
-      "file": "slide16.cs",
-      "audioFile": "slide16.mp3",
-      "durationFrames": 210,
-      "narrationText": "Configuramos varios agentes especializados en la misma sesion. Cada uno tiene su propio perfil y capacidades.",
-      "consoleOutput": "=== 6. Multiples agentes ===\n  frontend-agent (Infer: true)\n  backend-agent (Infer: False)",
-      "type": "code"
-    },
-    {
-      "file": "slide17.cs",
-      "audioFile": "slide17.mp3",
-      "durationFrames": 210,
-      "narrationText": "Combinamos servidores MCP compartidos con agentes personalizados en la misma sesion, una configuracion avanzada pero muy poderosa.",
-      "consoleOutput": "=== 7. Combinacion: MCP + Agentes ===\n  McpServers + CustomAgents en misma sesion\n  Respuesta: 7 + 7 = 14",
-      "type": "code"
-    },
-    {
-      "file": "slide18.cs",
-      "audioFile": "slide18.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con combinacion mcp + agentes.",
-      "consoleOutput": "=== 7. Combinacion: MCP + Agentes ===\n  McpServers + CustomAgents en misma sesion\n  Respuesta: 7 + 7 = 14",
-      "type": "code"
-    },
-    {
-      "file": "slide19.cs",
-      "audioFile": "slide19.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con combinacion mcp + agentes.",
-      "consoleOutput": "=== 7. Combinacion: MCP + Agentes ===\n  McpServers + CustomAgents en misma sesion\n  Respuesta: 7 + 7 = 14",
-      "type": "code"
-    },
-    {
-      "file": "slide20.cs",
-      "audioFile": "slide20.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con combinacion mcp + agentes.",
-      "consoleOutput": "=== 7. Combinacion: MCP + Agentes ===\n  McpServers + CustomAgents en misma sesion\n  Respuesta: 7 + 7 = 14",
-      "type": "code"
-    },
-    {
-      "file": "slide21.cs",
-      "audioFile": "slide21.mp3",
-      "durationFrames": 210,
-      "narrationText": "Al reanudar una sesion, podemos agregar nuevos servidores MCP y agentes que no existian en la sesion original.",
-      "consoleOutput": "=== 8. MCP y Agentes al reanudar ===\n  Sesion reanudada con nuevos MCP y agentes\n  Respuesta: 6",
-      "type": "code"
-    },
-    {
-      "file": "slide22.cs",
-      "audioFile": "slide22.mp3",
-      "durationFrames": 210,
-      "narrationText": "Continuamos con mcp y agentes al reanudar.",
-      "consoleOutput": "=== 8. MCP y Agentes al reanudar ===\n  Sesion reanudada con nuevos MCP y agentes\n  Respuesta: 6",
-      "type": "code"
-    },
-    {
-      "file": "slide23.cs",
-      "audioFile": "slide23.mp3",
-      "durationFrames": 210,
-      "narrationText": "El modo interactivo permite chatear libremente con el modelo directamente desde la terminal.",
-      "consoleOutput": "=== 8. MCP y Agentes al reanudar ===\n  Sesion reanudada con nuevos MCP y agentes\n  Respuesta: 6",
-      "type": "code"
-    },
-    {
-      "file": "slide24.cs",
-      "audioFile": "slide24.mp3",
       "durationFrames": 210,
       "narrationText": "Muy bien. MCP abre un mundo de posibilidades con agentes. En el ultimo video veremos como usar modelos personalizados con OpenRouter y el patron BYOK.",
       "consoleOutput": "",

@@ -1,16 +1,12 @@
-// Multiples servidores MCP
-var mcpServers = new Dictionary<string, object>
-{
-    ["filesystem-server"] = new McpLocalServerConfig
-    {
-        Type = "local",
-        Command = "echo",
-        Args = ["filesystem-server"],
-        Tools = ["*"]
-    },
-    ["database-server"] = new McpLocalServerConfig
-    {
-        Type = "local",
-        Command = "echo",
-        Args = ["database-server"],
-// ...
+// Paso 7: Multiples agentes personalizados
+            Name = "frontend-agent",
+            DisplayName = "Frontend Agent",
+            Description = "Specializes in React, CSS, and UI",
+            Prompt = "You are a frontend development expert."
+        },
+            Name = "backend-agent",
+            DisplayName = "Backend Agent",
+            Description = "Specializes in C#, .NET, and APIs",
+            Prompt = "You are a backend development expert.",
+            Infer = false  // solo se invoca explicitamente
+Console.WriteLine("  2 agentes configurados: frontend-agent, backend-agent");

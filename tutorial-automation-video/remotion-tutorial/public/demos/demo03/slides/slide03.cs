@@ -1,41 +1,11 @@
-// Helpers
-CopilotClient CreateClient() => new(new CopilotClientOptions
+// Paso 2: Herramienta personalizada simple (encrypt_string)
+await client.StartAsync();
+var session = await client.CreateSessionAsync(new SessionConfig
 {
-    UseLoggedInUser = true,
-    Logger = logger
+    Tools = [AIFunctionFactory.Create(EncryptString, "encrypt_string")]
 });
-
-static void PrintTitle(string title)
-{
-    Console.WriteLine("================================================================");
-    Console.WriteLine($"  {title}");
-    Console.WriteLine("================================================================\n");
-}
-
-static void PrintStep(int n, string text)
-    => Console.WriteLine($"=== {n}. {text} ===");
-
-static void PrintProp(string label, object? value)
-    => Console.WriteLine($"  {label,-22} {value}");
-
-static string EncryptString([Description("String to encrypt")] string input)
-    => input.ToUpperInvariant();
-
-[Description("Gets the current weather for a city")]
-static string GetWeather([Description("City name")] string city)
-{
-    Console.WriteLine($"    [Tool:get_weather] city={city}");
-    return $"Weather in {city}: 22°C, partly cloudy, humidity 65%";
-}
-
-static string GetWeather([Description("City name")] string city)
-{
-    Console.WriteLine($"    [Tool:get_weather] city={city}");
-    return $"Weather in {city}: 22°C, partly cloudy, humidity 65%";
-}
-
-static string GetTime([Description("City name")] string city)
-{
-    Console.WriteLine($"    [Tool:get_time] city={city}");
-    return $"Current time in {city}: {DateTime.UtcNow:HH:mm} UTC";
-}
+var answer = await session.SendAndWaitAsync(
+    new MessageOptions { Prompt = "Use encrypt_string to encrypt: Hello World" });
+Console.WriteLine($"Respuesta: {answer?.Data.Content}"); // -> HELLO WORLD
+await session.DisposeAsync();
+await client.StopAsync();
