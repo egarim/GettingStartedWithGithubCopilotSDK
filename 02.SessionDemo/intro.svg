@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#0d1117"/>
+  <rect x="120" y="370" width="80" height="3" fill="#58a6ff"/>
+  <text x="120" y="420" font-family="Segoe UI, Arial, sans-serif" font-size="40" font-weight="bold" fill="#ffffff">Demo 02 — Sesiones y conversaciones</text>
+  <text x="120" y="460" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#8b949e">Multi-turno, eventos y streaming</text>
+  <text x="140" y="530" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#58a6ff">-&gt; <tspan fill="#ffffff">Crear sesiones</tspan></text>
+  <text x="140" y="565" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#58a6ff">-&gt; <tspan fill="#ffffff">Multi-turno</tspan></text>
+  <text x="140" y="600" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#58a6ff">-&gt; <tspan fill="#ffffff">Eventos</tspan></text>
+  <text x="140" y="635" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#58a6ff">-&gt; <tspan fill="#ffffff">SendAsync vs SendAndWaitAsync</tspan></text>
+  <text x="140" y="670" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#58a6ff">-&gt; <tspan fill="#ffffff">Streaming</tspan></text>
+  <text x="1780" y="1040" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#8b949e" text-anchor="end">GitHub Copilot SDK</text>
+</svg>

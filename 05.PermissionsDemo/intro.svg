@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#0d1117"/>
+  <rect x="120" y="370" width="80" height="3" fill="#58a6ff"/>
+  <text x="120" y="420" font-family="Segoe UI, Arial, sans-serif" font-size="40" font-weight="bold" fill="#ffffff">Demo 05 — Permisos y autorizacion</text>
+  <text x="120" y="460" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#8b949e">Control de acceso</text>
+  <text x="140" y="530" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#58a6ff">-&gt; <tspan fill="#ffffff">Aprobar / Denegar</tspan></text>
+  <text x="140" y="565" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#58a6ff">-&gt; <tspan fill="#ffffff">Handler asincrono</tspan></text>
+  <text x="140" y="600" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#58a6ff">-&gt; <tspan fill="#ffffff">ToolCallId</tspan></text>
+  <text x="140" y="635" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#58a6ff">-&gt; <tspan fill="#ffffff">Error en handler</tspan></text>
+  <text x="140" y="670" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#58a6ff">-&gt; <tspan fill="#ffffff">Reanudar sesion</tspan></text>
+  <text x="1780" y="1040" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#8b949e" text-anchor="end">GitHub Copilot SDK</text>
+</svg>
