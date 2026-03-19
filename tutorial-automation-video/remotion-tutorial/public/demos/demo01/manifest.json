@@ -2,12 +2,12 @@
   "demoId": "demo01",
   "title": "01 - Ciclo de vida y conexion del cliente",
   "fps": 30,
-  "totalFrames": 2310,
+  "totalFrames": 3144,
   "slides": [
     {
       "file": "slide01.cs",
       "audioFile": "slide01.mp3",
-      "durationFrames": 210,
+      "durationFrames": 575,
       "narrationText": "Demo uno. Ciclo de vida y conexion del cliente. En este video aprenderemos a crear el cliente de Copilot, conectarnos al servidor, hacer consultas basicas como ping, listar modelos, y finalmente cerrar la conexion de forma ordenada.",
       "consoleOutput": "",
       "type": "title",
@@ -25,7 +25,7 @@
     {
       "file": "slide02.cs",
       "audioFile": "slide02.mp3",
-      "durationFrames": 210,
+      "durationFrames": 473,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
       "consoleOutput": "$ dotnet run\n================================================================\n  01 - DEMO: Ciclo de vida y conexion del cliente\n================================================================",
       "type": "code"
@@ -33,7 +33,7 @@
     {
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
-      "durationFrames": 210,
+      "durationFrames": 559,
       "narrationText": "Aqui definimos las funciones auxiliares. Creamos el cliente con las opciones de autenticacion y funciones para mostrar resultados en la consola.",
       "consoleOutput": "================================================================\n  01 - DEMO: Ciclo de vida y conexion del cliente\n================================================================\n\n  Funciones auxiliares definidas:\n  CreateClient, PrintTitle, PrintStep, PrintProp",
       "type": "code"
@@ -41,7 +41,7 @@
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
-      "durationFrames": 210,
+      "durationFrames": 359,
       "narrationText": "Creamos una instancia del cliente de Copilot. En este momento el cliente existe pero aun no esta conectado al servidor.",
       "consoleOutput": "=== 1. Creando CopilotClient (UseLoggedInUser = true) ===\n  Estado inicial:        Disconnected",
       "type": "code"
@@ -49,7 +49,7 @@
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
-      "durationFrames": 210,
+      "durationFrames": 118,
       "narrationText": "Iniciamos la conexion con el servidor de Copilot. El estado cambia de desconectado a conectado, listo para recibir comandos.",
       "consoleOutput": "=== 2. Iniciando cliente (StartAsync) ===\n  Estado tras iniciar:   Connected",
       "type": "code"
@@ -57,7 +57,7 @@
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
-      "durationFrames": 210,
+      "durationFrames": 199,
       "narrationText": "Enviamos un ping al servidor para verificar que la conexion funciona. El servidor responde con un pong confirmando la comunicacion.",
       "consoleOutput": "=== 3. Ping ===\n  Enviado:               \"hello from demo!\"\n  Respuesta:             \"pong: hello from demo!\"\n  Timestamp:             1773687538485",
       "type": "code"
@@ -65,7 +65,7 @@
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 210,
+      "durationFrames": 188,
       "narrationText": "Consultamos el estado del servidor para obtener la version y el protocolo que esta usando.",
       "consoleOutput": "=== 4. Estado (GetStatusAsync) ===\n  Version:               0.0.403\n  Version Protocolo:     2",
       "type": "code"
@@ -73,7 +73,7 @@
     {
       "file": "slide08.cs",
       "audioFile": "slide08.mp3",
-      "durationFrames": 210,
+      "durationFrames": 215,
       "narrationText": "Verificamos el estado de autenticacion. Podemos ver si el usuario esta autenticado, el tipo de cuenta y el nombre de usuario.",
       "consoleOutput": "=== 5. Estado de autenticacion (GetAuthStatusAsync) ===\n  Autenticado:           True\n  Tipo:                  user\n  Mensaje:               ardilla91ai",
       "type": "code"
@@ -81,7 +81,7 @@
     {
       "file": "slide09.cs",
       "audioFile": "slide09.mp3",
-      "durationFrames": 210,
+      "durationFrames": 107,
       "narrationText": "Listamos todos los modelos de inteligencia artificial disponibles. Aqui podemos ver modelos de Claude, GPT, Gemini y otros.",
       "consoleOutput": "=== 6. Listar modelos disponibles (ListModelsAsync) ===\n  Se encontraron 13 modelo(s):\n  claude-sonnet-4.5                   Claude Sonnet 4.5\n  claude-haiku-4.5                    Claude Haiku 4.5\n  claude-opus-4.5                     Claude Opus 4.5\n  claude-sonnet-4                     Claude Sonnet 4\n  gemini-3-pro-preview                Gemini 3 Pro (Preview)\n  gpt-5.2                             GPT-5.2\n  gpt-5.1                             GPT-5.1\n  gpt-4.1                             GPT-4.1\n  ...",
       "type": "code"
@@ -89,7 +89,7 @@
     {
       "file": "slide10.cs",
       "audioFile": "slide10.mp3",
-      "durationFrames": 210,
+      "durationFrames": 109,
       "narrationText": "Finalmente, detenemos el cliente de forma ordenada. El estado regresa a desconectado y liberamos los recursos.",
       "consoleOutput": "=== 7. Parada ordenada (StopAsync) ===\n  Estado tras parar:     Disconnected\n\n  Demo completado.",
       "type": "code"
@@ -97,7 +97,7 @@
     {
       "file": "slide11.cs",
       "audioFile": "slide11.mp3",
-      "durationFrames": 210,
+      "durationFrames": 242,
       "narrationText": "Excelente. Ya conoces el ciclo de vida completo del cliente. En el siguiente video veremos como crear sesiones y mantener conversaciones multi-turno con el modelo.",
       "consoleOutput": "",
       "type": "ending",
