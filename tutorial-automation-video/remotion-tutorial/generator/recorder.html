@@ -103,6 +103,28 @@
 
     /* Tabs */
     .tabs { display: flex; gap: 0; }
+    .tab { padding: 6px 14px; background: #21262d; border: 1px solid #30363d; color: #8b949e; font-size: 13px; cursor: pointer; font-weight: 600; }
+    .tab:first-child { border-radius: 6px 0 0 6px; }
+    .tab:last-child { border-radius: 0 6px 6px 0; }
+    .tab.active { background: #161b22; color: #58a6ff; border-bottom-color: #58a6ff; }
+    .content.hidden { display: none !important; }
+
+    /* Render panel */
+    .render-panel { padding: 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; grid-column: 1 / -1; }
+    .render-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 30px 40px; max-width: 500px; width: 100%; }
+    .render-card h2 { font-size: 18px; color: #58a6ff; margin-bottom: 16px; }
+    .render-card label { font-size: 13px; color: #8b949e; display: block; margin-bottom: 6px; }
+    .render-card input, .render-card select { width: 100%; padding: 8px 12px; background: #0d1117; border: 1px solid #30363d; color: #e6edf3; border-radius: 6px; font-size: 13px; margin-bottom: 16px; }
+    .render-card .render-btn { width: 100%; padding: 12px; background: #238636; border: none; color: white; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .render-card .render-btn:hover { background: #2ea043; }
+    .render-card .render-btn:disabled { background: #21262d; cursor: not-allowed; }
+    .render-msg { font-size: 13px; padding: 10px; border-radius: 6px; margin-top: 10px; }
+    .render-msg.ok { background: #23863622; color: #3fb950; }
+    .render-msg.err { background: #f8514922; color: #f85149; }
+    .render-hint { font-size: 12px; color: #484f58; text-align: center; max-width: 500px; line-height: 1.6; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 0; }
     .tab {
       padding: 6px 16px; background: #21262d; border: 1px solid #30363d;
       color: #8b949e; font-size: 13px; cursor: pointer; font-weight: 600;
@@ -125,7 +147,7 @@
       <h1>Studio</h1>
       <div class="tabs">
         <div class="tab active" id="tabRecord" onclick="switchTab('record')">Record</div>
-        <div class="tab" onclick="openPreview()">Preview & Render ↗</div>
+        <div class="tab" id="tabRender" onclick="switchTab('render')">Render</div>
       </div>
       <select id="demoSelect"></select>
       <button class="tb-btn tb-play" id="playAllBtn" onclick="togglePlayAll()">Play All</button>
@@ -158,6 +180,24 @@
         <div class="slides-list" id="slidesList"></div>
         <div class="key-hint">
           <kbd>R</kbd> Record/Stop <kbd>Space</kbd> Play/Stop <kbd>P</kbd> Play All <kbd>↑</kbd><kbd>↓</kbd> Nav <kbd>Esc</kbd> Stop
+        </div>
+      </div>
+    </div>
+    <div class="content hidden" id="contentRender" style="grid-template-columns:1fr">
+      <div class="render-panel">
+        <div class="render-card">
+          <h2>Render Video</h2>
+          <label>What to render</label>
+          <select id="renderTarget">
+            <option value="all">All demos</option>
+          </select>
+          <label>GitHub Personal Access Token</label>
+          <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" />
+          <button class="render-btn" id="renderBtn" onclick="startRender()">Render via GitHub Actions</button>
+          <div id="renderMsg"></div>
+        </div>
+        <div class="render-hint">
+          Rendering runs on GitHub Actions (Linux x64). You need a <a href="https://github.com/settings/tokens" target="_blank" style="color:#58a6ff">Personal Access Token</a> with <code>repo</code> and <code>workflow</code> scopes. Videos appear as artifacts in the Actions tab.
         </div>
       </div>
     </div>
@@ -342,6 +382,66 @@
     });
 
     function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    // Tab switching
+    function switchTab(tab) {
+      document.getElementById('tabRecord').classList.toggle('active', tab === 'record');
+      document.getElementById('tabRender').classList.toggle('active', tab === 'render');
+      document.getElementById('contentRecord').classList.toggle('hidden', tab !== 'record');
+      document.getElementById('contentRender').classList.toggle('hidden', tab !== 'render');
+      if (tab === 'render') populateRenderTargets();
+    }
+
+    function populateRenderTargets() {
+      const sel = document.getElementById('renderTarget');
+      const current = sel.value;
+      sel.innerHTML = '<option value="all">All demos</option>';
+      const demoSel = document.getElementById('demoSelect');
+      for (const opt of demoSel.options) {
+        const compId = opt.value.charAt(0).toUpperCase() + opt.value.slice(1);
+        const o = document.createElement('option');
+        o.value = compId;
+        o.textContent = opt.textContent;
+        sel.appendChild(o);
+      }
+      sel.value = current || 'all';
+    }
+
+    async function startRender() {
+      const token = document.getElementById('ghToken').value.trim();
+      const demo = document.getElementById('renderTarget').value;
+      const btn = document.getElementById('renderBtn');
+      const msg = document.getElementById('renderMsg');
+
+      if (!token) { msg.className = 'render-msg err'; msg.textContent = 'Enter your GitHub token'; return; }
+
+      btn.disabled = true; btn.textContent = 'Dispatching...';
+      try {
+        const res = await fetch(`${API}/api/render`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ demo, token }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          msg.className = 'render-msg ok';
+          msg.innerHTML = 'Workflow dispatched! <a href="https://github.com/egarim/GettingStartedWithGithubCopilotSDK/actions" target="_blank" style="color:#3fb950">Check progress</a>';
+          localStorage.setItem('gh-token', token);
+        } else {
+          msg.className = 'render-msg err';
+          msg.textContent = 'Error: ' + (data.error || 'Unknown');
+        }
+      } catch (e) {
+        msg.className = 'render-msg err'; msg.textContent = 'Network error';
+      }
+      btn.disabled = false; btn.textContent = 'Render via GitHub Actions';
+    }
+
+    // Restore saved token
+    setTimeout(() => {
+      const saved = localStorage.getItem('gh-token');
+      if (saved) document.getElementById('ghToken').value = saved;
+    }, 100);
+
     loadDemos();
   </script>
 </body>

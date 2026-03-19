@@ -229,6 +229,56 @@ const server = createServer(async (req, res) => {
     return;
   }
 
+  // Trigger GitHub Actions render workflow
+  if (req.method === "POST" && url.pathname === "/api/render") {
+    const chunks: Buffer[] = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", async () => {
+      try {
+        const body = JSON.parse(Buffer.concat(chunks).toString());
+        const demo = body.demo ?? "all";
+        const token = body.token;
+
+        if (!token) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "GitHub token required" }));
+          return;
+        }
+
+        // Dispatch the workflow via GitHub API
+        const response = await fetch(
+          "https://api.github.com/repos/egarim/GettingStartedWithGithubCopilotSDK/actions/workflows/render-videos.yml/dispatches",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/vnd.github.v3+json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ref: "master",
+              inputs: { demo },
+            }),
+          }
+        );
+
+        if (response.ok || response.status === 204) {
+          console.log(`  Render dispatched: ${demo}`);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: true, demo }));
+        } else {
+          const err = await response.text();
+          res.writeHead(response.status, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: err }));
+        }
+      } catch (err) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: (err as Error).message }));
+      }
+    });
+    return;
+  }
+
   // Proxy Remotion Studio (strips CSP header so iframe works)
   if (url.pathname.startsWith("/remotion/") || url.pathname === "/remotion") {
     const remotionPath = url.pathname.replace("/remotion", "") || "/";
