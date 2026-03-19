@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Copilot SDK - Audio Recorder Studio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #e6edf3; height: 100vh; overflow: hidden; }
@@ -45,9 +48,14 @@
     .preview-code {
       flex: 3; font-family: 'Cascadia Code', 'Fira Code', monospace;
       font-size: 14px; line-height: 1.6; color: #e6edf3;
-      background: #161b22; padding: 16px; border-radius: 8px;
-      overflow-y: auto; white-space: pre; tab-size: 4;
+      background: #161b22; padding: 0; border-radius: 8px;
+      overflow-y: auto; white-space: pre; tab-size: 4; margin: 0;
     }
+    .preview-code code {
+      padding: 16px; display: block; background: #161b22 !important;
+      border-radius: 8px;
+    }
+    .hljs { background: #161b22 !important; }
     .preview-console {
       flex: 2; font-family: 'Cascadia Code', 'Fira Code', monospace;
       font-size: 13px; line-height: 1.5; color: #a8e6a3;
@@ -168,7 +176,7 @@
         </div>
         <div class="preview-narration" id="pNarration">Script</div>
         <div class="preview-split">
-          <div class="preview-code" id="pCode"></div>
+          <pre class="preview-code" id="pCode"><code class="language-csharp" id="pCodeInner"></code></pre>
           <div class="preview-console" id="pConsole">
             <div class="preview-console-label"><span style="color:#50fa7b">●</span> Terminal</div>
             <div id="pConsoleText"></div>
@@ -310,14 +318,18 @@
           }
         }
         html += `</div>`;
-        codeEl.innerHTML = html;
+        document.getElementById('pCodeInner').textContent = '';
+        codeEl.innerHTML = `<code>${html}</code>`;
         codeEl.style.display = 'block';
         consoleEl.style.display = 'none';
       } else {
-        // Show code + console
+        // Show syntax-highlighted code + console
         let code = '';
         try { const r = await fetch(`${API}/api/slide/${currentDemo}/${s.file}`); if (r.ok) code = await r.text(); } catch {}
-        codeEl.textContent = code || '(no code)';
+        const codeInner = document.getElementById('pCodeInner');
+        codeInner.textContent = code || '(no code)';
+        codeInner.className = 'language-csharp';
+        hljs.highlightElement(codeInner);
         codeEl.style.display = 'block';
         consoleEl.style.display = 'block';
         document.getElementById('pConsoleText').textContent = s.consoleOutput || '(no output)';
