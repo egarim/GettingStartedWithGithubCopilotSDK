@@ -1,4 +1,7 @@
-// Print Title
-Console.WriteLine("================================================================");
-Console.WriteLine($"  {title}");
-Console.WriteLine("================================================================\n");
+// ...
+static void PrintTitle(string title)
+{
+    Console.WriteLine("================================================================");
+    Console.WriteLine($"  {title}");
+    Console.WriteLine("================================================================\n");
+}

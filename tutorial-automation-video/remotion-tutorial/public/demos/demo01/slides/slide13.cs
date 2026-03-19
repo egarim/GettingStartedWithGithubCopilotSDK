@@ -1,3 +1,2 @@
-// Parada ordenada
-await client.StopAsync();
-PrintProp("Estado tras parar:", client.State);
+// Siguiente: Demo 02
+// Sesiones y conversaciones

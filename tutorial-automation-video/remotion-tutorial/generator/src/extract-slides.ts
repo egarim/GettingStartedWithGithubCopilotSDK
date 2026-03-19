@@ -306,16 +306,13 @@ export function extractSlides(config: DemoConfig): SlideContent[] {
       (m) => !prevMethodNames.has(m.name) && !seenMethods.has(m.name)
     );
 
-    // Process new methods
-    for (const method of newMethods) {
-      // Skip RunAsync (orchestrator) - it just adds calls
-      if (method.name === "RunAsync") continue;
+    // Separate new methods into helpers vs step methods
+    const helperMethods: ParsedMethod[] = [];
+    const stepMethods: ParsedMethod[] = [];
 
-      // Skip interactive mode
-      if (
-        method.name === "RunInteractiveMode" ||
-        method.name.includes("Interactive")
-      ) {
+    for (const method of newMethods) {
+      if (method.name === "RunAsync") continue;
+      if (method.name === "RunInteractiveMode" || method.name.includes("Interactive")) {
         slides.push({
           slideNumber: slideNumber++,
           code: `// Modo interactivo\n// Mismo patron que Demo 01\n// (bucle de entrada del usuario)`,
@@ -327,7 +324,46 @@ export function extractSlides(config: DemoConfig): SlideContent[] {
         continue;
       }
 
-      // Extract the interesting part of the method
+      if (method.name.startsWith("Step")) {
+        stepMethods.push(method);
+      } else {
+        helperMethods.push(method);
+      }
+    }
+
+    // Combine helper methods into a single "Helpers" slide
+    if (helperMethods.length > 0) {
+      const helperCode = helperMethods
+        .map((h) => dedentBlock(h.fullLines))
+        .join("\n\n");
+      const code = `// Helpers\n${helperCode}`;
+      const nonEmpty = code.split("\n").filter((l) => l.trim() !== "").length;
+
+      if (nonEmpty > MAX_SLIDE_LINES) {
+        const subSlides = splitLongCode(code, "Helpers");
+        for (const sub of subSlides) {
+          slides.push({
+            slideNumber: slideNumber++,
+            code: sub.code,
+            comment: sub.comment,
+            isSubSlide: sub.isSubSlide,
+            type: "code",
+          });
+        }
+      } else {
+        slides.push({
+          slideNumber: slideNumber++,
+          code,
+          comment: "Helpers",
+          isSubSlide: false,
+          type: "code",
+        });
+      }
+      helperMethods.forEach((m) => seenMethods.add(m.name));
+    }
+
+    // Process step methods individually
+    for (const method of stepMethods) {
       const essence = extractMethodEssence(method);
       const dedented = dedentBlock(essence);
       const comment =
