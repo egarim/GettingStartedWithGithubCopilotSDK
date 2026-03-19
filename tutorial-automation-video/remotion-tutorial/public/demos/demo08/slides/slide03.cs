@@ -17,4 +17,3 @@ var containsMarker = answer?.Data.Content?.Contains("PINEAPPLE_COCONUT_42") ?? f
 Console.WriteLine($"  Respuesta: {answer?.Data.Content}");
 Console.WriteLine($"  Contiene marcador: {containsMarker}"); // Esperado: True
 await session.DisposeAsync();
-await client.StopAsync();

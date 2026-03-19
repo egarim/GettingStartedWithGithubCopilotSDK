@@ -17,4 +17,3 @@ var answer = await session.SendAndWaitAsync(new MessageOptions
 Console.WriteLine($"Contenido despues: \"{await File.ReadAllTextAsync(testFile)}\"");
 // -> "modified content"
 await session.DisposeAsync();
-await client.StopAsync();

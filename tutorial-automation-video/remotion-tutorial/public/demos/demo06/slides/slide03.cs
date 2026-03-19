@@ -28,4 +28,3 @@ var answer = await session.SendAndWaitAsync(new MessageOptions
 });
 Console.WriteLine($"Respuesta: {answer?.Data.Content}");
 await session.DisposeAsync();
-await client.StopAsync();

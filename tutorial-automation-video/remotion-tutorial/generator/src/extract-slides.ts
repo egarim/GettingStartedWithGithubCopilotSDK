@@ -20,126 +20,65 @@ export interface SlideContent {
 
 export interface DemoConfig {
   demoId: string;
-  demoNumber: string;
+  demoNumber: string; // empty for generic projects
   demoName: string;
   stepsDir: string;
   stepFiles: string[];
 }
 
-// Demo directory name mapping
-const DEMO_DIRS: Record<string, string> = {
-  "01": "01.ClientDemo",
-  "02": "02.SessionDemo",
-  "03": "03.ToolsDemo",
-  "04": "04.HooksDemo",
-  "05": "05.PermissionsDemo",
-  "06": "06.AskUserDemo",
-  "07": "07.CompactionDemo",
-  "08": "08.SkillsDemo",
-  "09": "09.McpAgentsDemo",
-  "11": "11.OpenRouterDemo",
-};
-
-const DEMO_TITLES: Record<string, string> = {
-  "01": "01 - Ciclo de vida y conexion del cliente",
-  "02": "02 - Sesiones y conversaciones multi-turno",
-  "03": "03 - Tools: funciones personalizadas",
-  "04": "04 - Hooks: pre y post ejecucion",
-  "05": "05 - Permisos y autorizacion",
-  "06": "06 - AskUser: interaccion con el usuario",
-  "07": "07 - Compactacion de contexto",
-  "08": "08 - Skills: habilidades del SDK",
-  "09": "09 - MCP Agents",
-  "11": "11 - OpenRouter: modelos BYOK",
-};
-
-export function getDemoTitle(demoNumber: string): string {
-  return DEMO_TITLES[demoNumber] ?? `Demo ${demoNumber}`;
-}
-
-export function getDemoConfig(
-  demoNumber: string,
-  repoRoot: string
-): DemoConfig {
-  const dirName = DEMO_DIRS[demoNumber];
-  if (!dirName) {
-    throw new Error(
-      `Unknown demo number: ${demoNumber}. Valid: ${Object.keys(DEMO_DIRS).join(", ")}`
-    );
-  }
-
-  // Step files are at the demo root (single-file apps)
-  const stepsDir = join(repoRoot, dirName);
-  const stepFiles = readdirSync(stepsDir)
-    .filter((f) => /^step\d+\.cs$/.test(f))
-    .sort();
-
-  return {
-    demoId: `demo${demoNumber}`,
-    demoNumber,
-    demoName: dirName.split(".")[1],
-    stepsDir,
-    stepFiles,
-  };
-}
-
-export function getAllDemoNumbers(): string[] {
-  return Object.keys(DEMO_DIRS).sort();
-}
-
 /**
- * Lines to strip from diffs (boilerplate that repeats in every step)
+ * Common boilerplate lines to ignore when diffing steps.
+ * These appear in every cumulative step file and aren't interesting.
  */
-const BOILERPLATE_LINES = new Set([
-  "#:package GitHub.Copilot.SDK@0.1.23",
-  "#:package Microsoft.Extensions.Logging.Console@*",
-  "#:package Microsoft.Extensions.AI@*",
-  "using GitHub.Copilot.SDK;",
-  "using Microsoft.Extensions.Logging;",
-  "using Microsoft.Extensions.AI;",
-  "using System.Text;",
-  "using System.ComponentModel;",
-  "using System.Text.Json;",
-  "using System.Text.Json.Serialization;",
-  "",
-  "using var loggerFactory = LoggerFactory.Create(b =>",
-  "b.AddConsole().SetMinimumLevel(LogLevel.Warning));",
-  "var logger = loggerFactory.CreateLogger<CopilotClient>();",
-  "await client.DisposeAsync();",
-]);
+const BOILERPLATE_PATTERNS = [
+  /^#:package\s/,
+  /^using\s+\w/,
+  /^using\s+var\s+loggerFactory/,
+  /^\s*b\.AddConsole\(\)/,
+  /^var\s+logger\s*=/,
+  /^await\s+client\.DisposeAsync/,
+  /^await\s+client\.StopAsync/,
+  /^\s*$/,
+];
 
 function isBoilerplate(line: string): boolean {
   const trimmed = line.trim();
-  return BOILERPLATE_LINES.has(trimmed);
+  if (trimmed === "") return true;
+  return BOILERPLATE_PATTERNS.some((p) => p.test(trimmed));
 }
 
 /**
- * Extract the comment from a code block (first // comment line)
+ * Extract the first comment from a code block.
+ * Supports // comments and # comments (Python, bash).
  */
 function extractComment(lines: string[]): string {
   for (const line of lines) {
-    const match = line.trim().match(/^\/\/\s*(?:Paso\s+\d+:\s*)?(.+)/);
-    if (match) return match[1].trim();
+    // C#/JS/Java/Go/Rust style
+    const slashMatch = line.trim().match(/^\/\/\s*(?:Paso\s+\d+:\s*|Step\s+\d+:\s*)?(.+)/);
+    if (slashMatch) return slashMatch[1].trim();
+    // Python/bash style
+    const hashMatch = line.trim().match(/^#\s*(?:Step\s+\d+:\s*)?(.+)/);
+    if (hashMatch && !line.trim().startsWith("#:")) return hashMatch[1].trim();
   }
   return "";
 }
 
 /**
- * Extract slides from single-file app step files.
- * Each step is a cumulative file — we diff consecutive steps
- * to find the new lines added.
+ * Extract slides from step files (any language).
+ * Each step is cumulative — we diff consecutive files to find new code.
  */
-export function extractSlides(config: DemoConfig): SlideContent[] {
+export function extractSlides(config: DemoConfig, title?: string): SlideContent[] {
   const slides: SlideContent[] = [];
   let slideNumber = 1;
 
   // === Title slide ===
-  const desc = DESCRIPTIONS[config.demoNumber];
+  const desc = config.demoNumber ? DESCRIPTIONS[config.demoNumber] : undefined;
+  const videoTitle = title ?? desc?.title ?? config.demoName;
+
   if (desc) {
-    const bulletText = desc.bullets.map((b) => `// - ${b}`).join("\n");
     slides.push({
       slideNumber: slideNumber++,
-      code: `// ${desc.title}\n// ${desc.subtitle}\n//\n${bulletText}`,
+      code: `// ${desc.title}\n// ${desc.subtitle}\n//\n${desc.bullets.map((b) => `// - ${b}`).join("\n")}`,
       comment: desc.title,
       isSubSlide: false,
       type: "title",
@@ -149,14 +88,27 @@ export function extractSlides(config: DemoConfig): SlideContent[] {
         bullets: desc.bullets,
       },
     });
+  } else {
+    // Generic title slide
+    slides.push({
+      slideNumber: slideNumber++,
+      code: `// ${videoTitle}`,
+      comment: videoTitle,
+      isSubSlide: false,
+      type: "title",
+      cardData: {
+        title: videoTitle,
+        subtitle: `${config.stepFiles.length} steps`,
+      },
+    });
   }
 
+  // === Code slides ===
   for (let i = 0; i < config.stepFiles.length; i++) {
     const currentPath = join(config.stepsDir, config.stepFiles[i]);
     const currentContent = readFileSync(currentPath, "utf-8");
 
     if (i === 0) {
-      // First step: use the file content directly (it's the base structure)
       slides.push({
         slideNumber: slideNumber++,
         code: currentContent.trim(),
@@ -167,28 +119,26 @@ export function extractSlides(config: DemoConfig): SlideContent[] {
       continue;
     }
 
-    // Diff against previous step to find new lines
+    // Diff against previous step
     const prevPath = join(config.stepsDir, config.stepFiles[i - 1]);
     const prevContent = readFileSync(prevPath, "utf-8");
     const prevLines = new Set(prevContent.split("\n").map((l) => l.trimEnd()));
 
-    const currentLines = currentContent.split("\n");
     const newLines: string[] = [];
-
-    for (const line of currentLines) {
+    for (const line of currentContent.split("\n")) {
       if (!prevLines.has(line.trimEnd()) && !isBoilerplate(line)) {
         newLines.push(line);
       }
     }
 
-    // Trim leading/trailing empty lines
+    // Trim empty edges
     while (newLines.length > 0 && newLines[0].trim() === "") newLines.shift();
     while (newLines.length > 0 && newLines[newLines.length - 1].trim() === "") newLines.pop();
 
     if (newLines.length === 0) continue;
 
     const code = newLines.join("\n");
-    const comment = extractComment(newLines) || `Paso ${i}`;
+    const comment = extractComment(newLines) || `Step ${i}`;
 
     slides.push({
       slideNumber: slideNumber++,
@@ -202,22 +152,24 @@ export function extractSlides(config: DemoConfig): SlideContent[] {
   // === Ending slide ===
   if (desc) {
     const next = getNextDemo(config.demoNumber);
-    const endingTitle = next
-      ? `Siguiente: Demo ${next.number}`
-      : "Serie completada!";
+    const endingTitle = next ? `Siguiente: Demo ${next.number}` : "Serie completada!";
     const endingSubtitle = next ? next.title : "GitHub Copilot SDK";
-
     slides.push({
       slideNumber: slideNumber++,
       code: `// ${endingTitle}\n// ${endingSubtitle}`,
       comment: endingTitle,
       isSubSlide: false,
       type: "ending",
-      cardData: {
-        title: endingTitle,
-        subtitle: endingSubtitle,
-        nextTitle: next?.title,
-      },
+      cardData: { title: endingTitle, subtitle: endingSubtitle, nextTitle: next?.title },
+    });
+  } else {
+    slides.push({
+      slideNumber: slideNumber++,
+      code: `// End`,
+      comment: "End",
+      isSubSlide: false,
+      type: "ending",
+      cardData: { title: "Done!", subtitle: videoTitle },
     });
   }
 

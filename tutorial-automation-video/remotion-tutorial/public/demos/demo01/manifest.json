@@ -1,6 +1,6 @@
 {
   "demoId": "demo01",
-  "title": "01 - Ciclo de vida y conexion del cliente",
+  "title": "01 - Ciclo de vida del cliente",
   "fps": 30,
   "totalFrames": 2310,
   "slides": [
@@ -34,7 +34,7 @@
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
       "durationFrames": 210,
-      "narrationText": "Paso 1.",
+      "narrationText": "Step 1.",
       "consoleOutput": "$ dotnet run\n================================================================\n  01 - DEMO: Ciclo de vida y conexion del cliente\n================================================================",
       "type": "code"
     },

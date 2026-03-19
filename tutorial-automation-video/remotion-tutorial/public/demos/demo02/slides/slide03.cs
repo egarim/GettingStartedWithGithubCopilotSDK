@@ -8,4 +8,3 @@ var messages = await session.GetMessagesAsync();
 Console.WriteLine($"Mensajes iniciales: {messages.Count}"); // -> 1 (sistema)
 await session.DisposeAsync(); // destruir sesion
 Console.WriteLine("Sesion destruida.");
-await client.StopAsync();

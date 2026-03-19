@@ -15,6 +15,5 @@ var answer = await session.SendAndWaitAsync(
     new MessageOptions { Prompt = "What is the price of 'Widget Pro'?" });
 Console.WriteLine($"Respuesta: {answer?.Data.Content}"); // -> $29.99
 await session.DisposeAsync();
-await client.StopAsync();
     { ["Widget Pro"] = 29.99m, ["Gadget X"] = 49.95m };
         ? $"Product: {productName}, Price: ${price}" : $"Not found.";

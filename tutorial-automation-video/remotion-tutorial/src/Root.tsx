@@ -1,29 +1,58 @@
 import { Composition } from "remotion";
+import { getStaticFiles } from "@remotion/studio";
 import { DemoVideo } from "./DemoVideo";
 
-// Demo configs: id + estimated duration (from manifest totalFrames)
-// DemoVideo loads its own data at render time via delayRender,
-// so Remotion Studio doesn't choke evaluating all compositions on startup.
-const DEMOS = [
-  { id: "demo01", frames: 3654 },
-  { id: "demo02", frames: 4959 },
-  { id: "demo03", frames: 3841 },
-  { id: "demo04", frames: 2449 },
-  { id: "demo05", frames: 4700 },
-  { id: "demo06", frames: 3135 },
-  { id: "demo07", frames: 3424 },
-  { id: "demo08", frames: 3137 },
-  { id: "demo09", frames: 5373 },
-  { id: "demo11", frames: 3506 },
-];
+/**
+ * Auto-discover demos from public/demos/ directory.
+ * Any folder with a manifest.json becomes a composition.
+ */
+function discoverDemos(): { id: string; frames: number }[] {
+  try {
+    const files = getStaticFiles();
+    const manifests = files.filter(
+      (f) => f.name.match(/^demos\/[^/]+\/manifest\.json$/)
+    );
+
+    return manifests.map((f) => {
+      const demoId = f.name.split("/")[1]; // e.g. "demo01"
+      // Default duration — actual duration comes from delayRender in DemoVideo
+      return { id: demoId, frames: 3000 };
+    }).sort((a, b) => a.id.localeCompare(b.id));
+  } catch {
+    // Fallback if getStaticFiles not available (e.g. during render)
+    return [];
+  }
+}
+
+// Capitalize first letter: "demo01" -> "Demo01"
+function toCompId(id: string): string {
+  return id.charAt(0).toUpperCase() + id.slice(1);
+}
 
 export const RemotionRoot = () => {
+  const demos = discoverDemos();
+
+  // If no demos discovered, register a placeholder
+  if (demos.length === 0) {
+    return (
+      <Composition
+        id="NoDemo"
+        component={DemoVideo}
+        defaultProps={{ demoId: "demo01" }}
+        fps={30}
+        width={1920}
+        height={1080}
+        durationInFrames={300}
+      />
+    );
+  }
+
   return (
     <>
-      {DEMOS.map(({ id, frames }) => (
+      {demos.map(({ id, frames }) => (
         <Composition
           key={id}
-          id={id.charAt(0).toUpperCase() + id.slice(1)}
+          id={toCompId(id)}
           component={DemoVideo}
           defaultProps={{ demoId: id }}
           fps={30}
