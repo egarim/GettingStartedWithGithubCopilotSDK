@@ -16,6 +16,12 @@ const OUTPUTS: Record<string, Record<string, string>> = {
 
   Funciones auxiliares definidas:
   CreateClient, PrintTitle, PrintStep, PrintProp`,
+    "Step 1": `================================================================
+  01 - DEMO: Ciclo de vida y conexion del cliente
+================================================================
+
+  Funciones auxiliares definidas:
+  CreateClient, PrintStep, PrintProp`,
     "Crear el cliente": `=== 1. Creando CopilotClient (UseLoggedInUser = true) ===
   Estado inicial:        Disconnected`,
     "Iniciar el cliente": `=== 2. Iniciando cliente (StartAsync) ===
@@ -24,14 +30,14 @@ const OUTPUTS: Record<string, Record<string, string>> = {
   Enviado:               "hello from demo!"
   Respuesta:             "pong: hello from demo!"
   Timestamp:             1773687538485`,
-    "Status del servidor": `=== 4. Estado (GetStatusAsync) ===
+    "Estado del servidor": `=== 4. Estado (GetStatusAsync) ===
   Version:               0.0.403
   Version Protocolo:     2`,
     "Estado de autenticacion": `=== 5. Estado de autenticacion (GetAuthStatusAsync) ===
   Autenticado:           True
   Tipo:                  user
   Mensaje:               ardilla91ai`,
-    "Listar modelos": `=== 6. Listar modelos disponibles (ListModelsAsync) ===
+    "Listar modelos disponibles": `=== 6. Listar modelos disponibles (ListModelsAsync) ===
   Se encontraron 13 modelo(s):
   claude-sonnet-4.5                   Claude Sonnet 4.5
   claude-haiku-4.5                    Claude Haiku 4.5

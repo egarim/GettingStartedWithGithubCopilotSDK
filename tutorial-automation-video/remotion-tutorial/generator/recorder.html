@@ -318,7 +318,6 @@
           }
         }
         html += `</div>`;
-        document.getElementById('pCodeInner').textContent = '';
         codeEl.innerHTML = `<code>${html}</code>`;
         codeEl.style.display = 'block';
         consoleEl.style.display = 'none';
@@ -326,10 +325,8 @@
         // Show syntax-highlighted code + console
         let code = '';
         try { const r = await fetch(`${API}/api/slide/${currentDemo}/${s.file}`); if (r.ok) code = await r.text(); } catch {}
-        const codeInner = document.getElementById('pCodeInner');
-        codeInner.textContent = code || '(no code)';
-        codeInner.className = 'language-csharp';
-        hljs.highlightElement(codeInner);
+        codeEl.innerHTML = `<code class="language-csharp">${esc(code || '(no code)')}</code>`;
+        hljs.highlightElement(codeEl.querySelector('code'));
         codeEl.style.display = 'block';
         consoleEl.style.display = 'block';
         document.getElementById('pConsoleText').textContent = s.consoleOutput || '(no output)';
