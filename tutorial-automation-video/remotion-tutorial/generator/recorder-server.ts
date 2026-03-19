@@ -229,6 +229,32 @@ const server = createServer(async (req, res) => {
     return;
   }
 
+  // Proxy Remotion Studio (strips CSP header so iframe works)
+  if (url.pathname.startsWith("/remotion/") || url.pathname === "/remotion") {
+    const remotionPath = url.pathname.replace("/remotion", "") || "/";
+    const remotionUrl = `http://localhost:${REMOTION_PORT}${remotionPath}${url.search}`;
+    try {
+      const { default: http } = await import("http");
+      const proxyReq = http.request(remotionUrl, (proxyRes) => {
+        const headers = { ...proxyRes.headers };
+        // Remove CSP so iframe embedding works
+        delete headers["content-security-policy"];
+        delete headers["x-frame-options"];
+        res.writeHead(proxyRes.statusCode ?? 200, headers);
+        proxyRes.pipe(res);
+      });
+      proxyReq.on("error", () => {
+        res.writeHead(502, { "Content-Type": "text/plain" });
+        res.end("Remotion Studio not running on port " + REMOTION_PORT);
+      });
+      req.pipe(proxyReq);
+    } catch {
+      res.writeHead(502);
+      res.end("Proxy error");
+    }
+    return;
+  }
+
   res.writeHead(404);
   res.end("Not found");
 });

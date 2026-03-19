@@ -1,0 +1,54 @@
+name: Render Tutorial Videos
+
+on:
+  workflow_dispatch:
+    inputs:
+      demo:
+        description: 'Demo to render (e.g. Demo01, or "all" for all demos)'
+        required: true
+        default: 'all'
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Remotion dependencies
+        working-directory: tutorial-automation-video/remotion-tutorial
+        run: npm install
+
+      - name: Install generator dependencies
+        working-directory: tutorial-automation-video/remotion-tutorial/generator
+        run: npm install
+
+      - name: Generate slides and audio
+        working-directory: tutorial-automation-video/remotion-tutorial/generator
+        run: npx tsx cli.ts --all
+
+      - name: Render videos
+        working-directory: tutorial-automation-video/remotion-tutorial
+        run: |
+          mkdir -p out
+          if [ "${{ github.event.inputs.demo }}" = "all" ]; then
+            for comp in Demo01 Demo02 Demo03 Demo04 Demo05 Demo06 Demo07 Demo08 Demo09 Demo11; do
+              echo "Rendering $comp..."
+              npx remotion render $comp --output=out/$comp.mp4 || echo "Failed: $comp"
+            done
+          else
+            echo "Rendering ${{ github.event.inputs.demo }}..."
+            npx remotion render ${{ github.event.inputs.demo }} --output=out/${{ github.event.inputs.demo }}.mp4
+          fi
+
+      - name: Upload rendered videos
+        uses: actions/upload-artifact@v4
+        with:
+          name: tutorial-videos
+          path: tutorial-automation-video/remotion-tutorial/out/*.mp4
+          retention-days: 30
