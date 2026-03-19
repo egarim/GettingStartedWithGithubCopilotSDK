@@ -1,5 +1,6 @@
-// Ping
-var pong = await client.PingAsync("hello from demo!");
-PrintProp("Enviado:", "\"hello from demo!\"");
-PrintProp("Respuesta:", $"\"{pong.Message}\"");
-PrintProp("Timestamp:", pong.Timestamp);
+// Estado de autenticacion
+var auth = await client.GetAuthStatusAsync();
+PrintProp("Autenticado:", auth.IsAuthenticated);
+PrintProp("Tipo:", auth.AuthType ?? "");
+PrintProp("Mensaje:", auth.StatusMessage ?? "");
+return auth.IsAuthenticated;

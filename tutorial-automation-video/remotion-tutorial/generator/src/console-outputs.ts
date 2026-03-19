@@ -12,7 +12,10 @@ const OUTPUTS: Record<string, Record<string, string>> = {
 ================================================================`,
     "Helpers": `================================================================
   01 - DEMO: Ciclo de vida y conexion del cliente
-================================================================`,
+================================================================
+
+  Funciones auxiliares definidas:
+  CreateClient, PrintTitle, PrintStep, PrintProp`,
     "Crear el cliente": `=== 1. Creando CopilotClient (UseLoggedInUser = true) ===
   Estado inicial:        Disconnected`,
     "Iniciar el cliente": `=== 2. Iniciando cliente (StartAsync) ===

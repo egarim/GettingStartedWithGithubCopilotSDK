@@ -1,7 +1,4 @@
-// ...
-static void PrintTitle(string title)
-{
-    Console.WriteLine("================================================================");
-    Console.WriteLine($"  {title}");
-    Console.WriteLine("================================================================\n");
-}
+// Crear el cliente
+var client = CreateClient();
+PrintProp("Estado inicial:", client.State);
+return client;

@@ -331,34 +331,18 @@ export function extractSlides(config: DemoConfig): SlideContent[] {
       }
     }
 
-    // Combine helper methods into a single "Helpers" slide
+    // Combine ALL helper methods into a single "Helpers" slide (never split)
     if (helperMethods.length > 0) {
       const helperCode = helperMethods
         .map((h) => dedentBlock(h.fullLines))
         .join("\n\n");
-      const code = `// Helpers\n${helperCode}`;
-      const nonEmpty = code.split("\n").filter((l) => l.trim() !== "").length;
-
-      if (nonEmpty > MAX_SLIDE_LINES) {
-        const subSlides = splitLongCode(code, "Helpers");
-        for (const sub of subSlides) {
-          slides.push({
-            slideNumber: slideNumber++,
-            code: sub.code,
-            comment: sub.comment,
-            isSubSlide: sub.isSubSlide,
-            type: "code",
-          });
-        }
-      } else {
-        slides.push({
-          slideNumber: slideNumber++,
-          code,
-          comment: "Helpers",
-          isSubSlide: false,
-          type: "code",
-        });
-      }
+      slides.push({
+        slideNumber: slideNumber++,
+        code: `// Helpers\n${helperCode}`,
+        comment: "Helpers",
+        isSubSlide: false,
+        type: "code",
+      });
       helperMethods.forEach((m) => seenMethods.add(m.name));
     }
 

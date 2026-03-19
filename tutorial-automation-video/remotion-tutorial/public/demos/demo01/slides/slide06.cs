@@ -1,4 +1,5 @@
-// Crear el cliente
-var client = CreateClient();
-PrintProp("Estado inicial:", client.State);
-return client;
+// Ping
+var pong = await client.PingAsync("hello from demo!");
+PrintProp("Enviado:", "\"hello from demo!\"");
+PrintProp("Respuesta:", $"\"{pong.Message}\"");
+PrintProp("Timestamp:", pong.Timestamp);

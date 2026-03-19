@@ -1,3 +1,4 @@
-// Iniciar el cliente
-await client.StartAsync();
-PrintProp("Estado tras iniciar:", client.State);
+// Status del servidor
+var s = await client.GetStatusAsync();
+PrintProp("Version:", s.Version);
+PrintProp("Version Protocolo:", s.ProtocolVersion);
