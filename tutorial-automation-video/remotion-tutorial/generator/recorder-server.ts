@@ -232,6 +232,36 @@ const server = createServer(async (req, res) => {
     return;
   }
 
+  // Save project progress
+  if (req.method === "POST" && url.pathname.match(/^\/api\/save-progress\/[^/]+$/)) {
+    const demoId = url.pathname.split("/").pop()!;
+    const chunks: Buffer[] = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => {
+      const data = JSON.parse(Buffer.concat(chunks).toString());
+      const progressPath = join(PUBLIC_DIR, demoId, "progress.json");
+      writeFileSync(progressPath, JSON.stringify(data, null, 2), "utf-8");
+      console.log(`  Saved progress: ${progressPath}`);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: true }));
+    });
+    return;
+  }
+
+  // Load project progress
+  if (url.pathname.match(/^\/api\/load-progress\/[^/]+$/)) {
+    const demoId = url.pathname.split("/").pop()!;
+    const progressPath = join(PUBLIC_DIR, demoId, "progress.json");
+    if (existsSync(progressPath)) {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(readFileSync(progressPath, "utf-8"));
+    } else {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(null));
+    }
+    return;
+  }
+
   // Trigger GitHub Actions render workflow
   if (req.method === "POST" && url.pathname === "/api/render") {
     const chunks: Buffer[] = [];

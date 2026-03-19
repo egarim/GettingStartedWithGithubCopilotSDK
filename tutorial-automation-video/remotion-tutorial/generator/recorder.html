@@ -155,6 +155,7 @@
       <select id="demoSelect"></select>
       <button class="tb-btn tb-play" id="playAllBtn" onclick="togglePlayAll()">Play All</button>
       <button class="tb-btn" id="syncBtn" onclick="syncDurations()">Re-sync</button>
+      <button class="tb-btn" id="saveBtn" onclick="saveProgress()" style="background:#238636;border-color:#238636;color:white">Save</button>
       <div class="spacer"></div>
       <div class="status" id="statusText"></div>
     </div>
@@ -173,6 +174,9 @@
             <div id="pConsoleText"></div>
           </div>
         </div>
+        <textarea id="pNotes" placeholder="Your notes for this slide..."
+          style="background:#161b22;border:1px solid #30363d;color:#c9d1d9;border-radius:6px;padding:8px 12px;font-size:13px;resize:vertical;min-height:40px;font-family:inherit;"
+          onchange="saveSlideNote(activeSlideIdx, this.value)"></textarea>
         <div class="preview-rec">
           <button class="btn btn-rec" id="pRecBtn" onclick="toggleRecord(activeSlideIdx)">Record</button>
           <button class="btn btn-play" id="pPlayBtn" onclick="togglePlaySlide(activeSlideIdx)" disabled>Play</button>
@@ -251,7 +255,8 @@
       audioCache = [];
       for (const s of manifest.slides) audioCache.push(await checkAudio(s.audioFile));
       renderList();
-      showSlide(0);
+      await loadProgress();
+      showSlide(projectProgress.lastSlide ?? 0);
     }
 
     function renderList() {
@@ -317,6 +322,9 @@
         consoleEl.style.display = 'block';
         document.getElementById('pConsoleText').textContent = s.consoleOutput || '(no output)';
       }
+
+      // Show saved notes
+      document.getElementById('pNotes').value = projectProgress.notes?.[idx] || '';
 
       const info = audioCache[idx] || {};
       const pb = document.getElementById('pPlayBtn');
@@ -390,6 +398,7 @@
           manifest = await (await fetch(`${API}/api/manifest/${currentDemo}`)).json();
           audioCache[idx] = { exists: true, isCustom: true };
           renderList(); selectSlide(idx);
+          saveProgress(); // auto-save after recording
         };
         mediaRecorder.start();
         recordingIdx = idx;
@@ -430,6 +439,51 @@
     });
 
     function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    // ── Progress save/load ──
+    let projectProgress = {}; // { notes: {slideIdx: "text"}, lastSlide: idx, savedAt: date }
+
+    async function saveProgress() {
+      projectProgress.lastSlide = activeSlideIdx;
+      projectProgress.savedAt = new Date().toISOString();
+      const btn = document.getElementById('saveBtn');
+      try {
+        await fetch(`${API}/api/save-progress/${currentDemo}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(projectProgress),
+        });
+        btn.textContent = 'Saved!';
+        setTimeout(() => { btn.textContent = 'Save'; }, 2000);
+      } catch {
+        btn.textContent = 'Error';
+        setTimeout(() => { btn.textContent = 'Save'; }, 2000);
+      }
+    }
+
+    async function loadProgress() {
+      try {
+        const res = await fetch(`${API}/api/load-progress/${currentDemo}`);
+        const data = await res.json();
+        if (data) {
+          projectProgress = data;
+          if (data.lastSlide !== undefined && data.lastSlide < manifest.slides.length) {
+            selectSlide(data.lastSlide);
+          }
+        } else {
+          projectProgress = { notes: {} };
+        }
+      } catch {
+        projectProgress = { notes: {} };
+      }
+    }
+
+    function saveSlideNote(idx, text) {
+      if (!projectProgress.notes) projectProgress.notes = {};
+      projectProgress.notes[idx] = text;
+      // Auto-save after note change
+      saveProgress();
+    }
+
     // Tab switching
     function switchTab(tab) {
       document.getElementById('tabRecord').classList.toggle('active', tab === 'record');

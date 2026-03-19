@@ -8,3 +8,6 @@ out
 
 # Generated/recorded audio (large files, regenerate with generator)
 public/demos/*/audio/
+
+# User progress files (session-specific)
+public/demos/*/progress.json
