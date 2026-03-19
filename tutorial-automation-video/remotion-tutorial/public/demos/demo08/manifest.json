@@ -2,12 +2,12 @@
   "demoId": "demo08",
   "title": "08 - Skills del SDK",
   "fps": 30,
-  "totalFrames": 1470,
+  "totalFrames": 1750,
   "slides": [
     {
       "file": "slide01.cs",
       "audioFile": "slide01.mp3",
-      "durationFrames": 210,
+      "durationFrames": 388,
       "narrationText": "Demo ocho. Skills del SDK. Aprenderemos a usar las habilidades predefinidas del SDK como explicacion de codigo, generacion de tests y mas.",
       "consoleOutput": "",
       "type": "title",
@@ -24,7 +24,7 @@
     {
       "file": "slide02.cs",
       "audioFile": "slide02.mp3",
-      "durationFrames": 210,
+      "durationFrames": 321,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
       "consoleOutput": "================================================================\n  08 - DEMO: Carga y configuracion de habilidades\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -32,7 +32,7 @@
     {
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
-      "durationFrames": 210,
+      "durationFrames": 165,
       "narrationText": "Cargar y aplicar skill desde SkillDirectories.",
       "consoleOutput": "================================================================\n  08 - DEMO: Carga y configuracion de habilidades\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -40,7 +40,7 @@
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
-      "durationFrames": 210,
+      "durationFrames": 161,
       "narrationText": "Desactivar skill via DisabledSkills.",
       "consoleOutput": "================================================================\n  08 - DEMO: Carga y configuracion de habilidades\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -48,7 +48,7 @@
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
-      "durationFrames": 210,
+      "durationFrames": 159,
       "narrationText": "Sin skill (comparacion de linea base).",
       "consoleOutput": "================================================================\n  08 - DEMO: Carga y configuracion de habilidades\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -56,7 +56,7 @@
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
-      "durationFrames": 210,
+      "durationFrames": 155,
       "narrationText": "Modo interactivo con skill personalizado.",
       "consoleOutput": "================================================================\n  08 - DEMO: Carga y configuracion de habilidades\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -64,7 +64,7 @@
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 210,
+      "durationFrames": 401,
       "narrationText": "Excelente. Las skills aceleran tareas comunes de desarrollo. En el siguiente video veremos MCP Agents, una forma poderosa de conectar agentes externos.",
       "consoleOutput": "",
       "type": "ending",

@@ -2,12 +2,12 @@
   "demoId": "demo03",
   "title": "03 - Tools: funciones personalizadas",
   "fps": 30,
-  "totalFrames": 1890,
+  "totalFrames": 2479,
   "slides": [
     {
       "file": "slide01.cs",
       "audioFile": "slide01.mp3",
-      "durationFrames": 210,
+      "durationFrames": 441,
       "narrationText": "Demo tres. Tools, funciones personalizadas. Veremos como definir herramientas que el modelo puede invocar, registrarlas en la sesion, y manejar tipos complejos de entrada y salida.",
       "consoleOutput": "",
       "type": "title",
@@ -25,7 +25,7 @@
     {
       "file": "slide02.cs",
       "audioFile": "slide02.mp3",
-      "durationFrames": 210,
+      "durationFrames": 321,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
       "consoleOutput": "================================================================\n  03 - DEMO: Herramientas personalizadas (AIFunction)\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -33,7 +33,7 @@
     {
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
-      "durationFrames": 210,
+      "durationFrames": 190,
       "narrationText": "Herramienta personalizada simple (encrypt_string).",
       "consoleOutput": "================================================================\n  03 - DEMO: Herramientas personalizadas (AIFunction)\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -41,7 +41,7 @@
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
-      "durationFrames": 210,
+      "durationFrames": 155,
       "narrationText": "Multiples herramientas personalizadas.",
       "consoleOutput": "================================================================\n  03 - DEMO: Herramientas personalizadas (AIFunction)\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -49,7 +49,7 @@
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
-      "durationFrames": 210,
+      "durationFrames": 211,
       "narrationText": "Tipos complejos de entrada/salida (records, arrays).",
       "consoleOutput": "================================================================\n  03 - DEMO: Herramientas personalizadas (AIFunction)\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -57,7 +57,7 @@
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
-      "durationFrames": 210,
+      "durationFrames": 313,
       "narrationText": "Demostramos que cuando una herramienta falla, el SDK protege la informacion sensible. El modelo no ve los detalles del error.",
       "consoleOutput": "=== 4. Manejo de errores ===\n  Herramienta lanzo excepcion con 'Melbourne'\n  Respuesta: Location unknown.\n  Contiene 'Melbourne': False",
       "type": "code"
@@ -65,7 +65,7 @@
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 210,
+      "durationFrames": 294,
       "narrationText": "Controlamos que herramientas estan disponibles para el modelo. Podemos permitir solo algunas o excluir las que no queremos.",
       "consoleOutput": "=== 5. Filtros AvailableTools/ExcludedTools ===\n  AvailableTools = [\"view\", \"edit\"]\n  Respuesta: I have view and edit tools.\n\n  ExcludedTools = [\"view\"]\n  Respuesta: I have edit, bash... (view excluded).",
       "type": "code"
@@ -73,7 +73,7 @@
     {
       "file": "slide08.cs",
       "audioFile": "slide08.mp3",
-      "durationFrames": 210,
+      "durationFrames": 141,
       "narrationText": "Chat interactivo con herramientas.",
       "consoleOutput": "=== 5. Filtros AvailableTools/ExcludedTools ===\n  AvailableTools = [\"view\", \"edit\"]\n  Respuesta: I have view and edit tools.\n\n  ExcludedTools = [\"view\"]\n  Respuesta: I have edit, bash... (view excluded).",
       "type": "code"
@@ -81,7 +81,7 @@
     {
       "file": "slide09.cs",
       "audioFile": "slide09.mp3",
-      "durationFrames": 210,
+      "durationFrames": 413,
       "narrationText": "Muy bien. Ya puedes crear herramientas personalizadas. En el siguiente video veremos los hooks, que te permiten interceptar la ejecucion de tools antes y despues de que ocurran.",
       "consoleOutput": "",
       "type": "ending",

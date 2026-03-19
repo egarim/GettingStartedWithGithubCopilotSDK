@@ -2,12 +2,12 @@
   "demoId": "demo02",
   "title": "02 - Sesiones y conversaciones",
   "fps": 30,
-  "totalFrames": 2940,
+  "totalFrames": 3564,
   "slides": [
     {
       "file": "slide01.cs",
       "audioFile": "slide01.mp3",
-      "durationFrames": 210,
+      "durationFrames": 459,
       "narrationText": "Demo dos. Sesiones y conversaciones multi-turno. Aprenderemos a crear sesiones, mantener el contexto entre mensajes, suscribirnos a eventos en tiempo real y reanudar conversaciones previas.",
       "consoleOutput": "",
       "type": "title",
@@ -25,7 +25,7 @@
     {
       "file": "slide02.cs",
       "audioFile": "slide02.mp3",
-      "durationFrames": 210,
+      "durationFrames": 321,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
       "consoleOutput": "================================================================\n  02 - DEMO: Ciclo de vida, eventos y multi-turno\n================================================================\n\n  Cliente iniciado.",
       "type": "code"
@@ -33,7 +33,7 @@
     {
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
-      "durationFrames": 210,
+      "durationFrames": 293,
       "narrationText": "Creamos una sesion de chat y verificamos su estado inicial. Luego la destruimos y confirmamos que ya no se puede usar.",
       "consoleOutput": "=== 1. Crear y destruir una sesion ===\n  Sesion creada:         cf7bb019-...\n  Mensajes iniciales:    1\n  Tipo primer evento:    SystemMessageEvent\n  Sesion destruida.\n  Error esperado:        Cannot read or write...",
       "type": "code"
@@ -41,7 +41,7 @@
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
-      "durationFrames": 210,
+      "durationFrames": 168,
       "narrationText": "Conversacion multi-turno con SendAndWaitAsync.",
       "consoleOutput": "=== 1. Crear y destruir una sesion ===\n  Sesion creada:         cf7bb019-...\n  Mensajes iniciales:    1\n  Tipo primer evento:    SystemMessageEvent\n  Sesion destruida.\n  Error esperado:        Cannot read or write...",
       "type": "code"
@@ -49,7 +49,7 @@
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
-      "durationFrames": 210,
+      "durationFrames": 156,
       "narrationText": "Suscripcion a eventos con session.On.",
       "consoleOutput": "=== 1. Crear y destruir una sesion ===\n  Sesion creada:         cf7bb019-...\n  Mensajes iniciales:    1\n  Tipo primer evento:    SystemMessageEvent\n  Sesion destruida.\n  Error esperado:        Cannot read or write...",
       "type": "code"
@@ -57,7 +57,7 @@
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
-      "durationFrames": 210,
+      "durationFrames": 194,
       "narrationText": "SendAsync (disparar y olvidar) - retorna ANTES de idle.",
       "consoleOutput": "=== 1. Crear y destruir una sesion ===\n  Sesion creada:         cf7bb019-...\n  Mensajes iniciales:    1\n  Tipo primer evento:    SystemMessageEvent\n  Sesion destruida.\n  Error esperado:        Cannot read or write...",
       "type": "code"
@@ -65,7 +65,7 @@
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 210,
+      "durationFrames": 320,
       "narrationText": "Enviamos un mensaje con send and wait, que bloquea hasta recibir la respuesta completa. Es la forma mas simple de obtener una respuesta.",
       "consoleOutput": "=== 5. SendAndWaitAsync (bloquea hasta idle) ===\n  Respuesta: 3 + 3 = 6\n  Eventos: assistant.message.delta, assistant.message, session.idle",
       "type": "code"
@@ -73,7 +73,7 @@
     {
       "file": "slide08.cs",
       "audioFile": "slide08.mp3",
-      "durationFrames": 210,
+      "durationFrames": 154,
       "narrationText": "Reanudar sesion con ResumeSessionAsync.",
       "consoleOutput": "=== 5. SendAndWaitAsync (bloquea hasta idle) ===\n  Respuesta: 3 + 3 = 6\n  Eventos: assistant.message.delta, assistant.message, session.idle",
       "type": "code"
@@ -81,7 +81,7 @@
     {
       "file": "slide09.cs",
       "audioFile": "slide09.mp3",
-      "durationFrames": 210,
+      "durationFrames": 182,
       "narrationText": "Reanudar sesion inexistente (manejo de errores).",
       "consoleOutput": "=== 5. SendAndWaitAsync (bloquea hasta idle) ===\n  Respuesta: 3 + 3 = 6\n  Eventos: assistant.message.delta, assistant.message, session.idle",
       "type": "code"
@@ -89,7 +89,7 @@
     {
       "file": "slide10.cs",
       "audioFile": "slide10.mp3",
-      "durationFrames": 210,
+      "durationFrames": 287,
       "narrationText": "Agregamos un mensaje de sistema en modo append. Esto añade instrucciones al prompt del sistema sin reemplazarlo.",
       "consoleOutput": "=== 8. Mensaje de sistema - Modo Append ===\n  Respuesta: I'm GitHub Copilot. Have a nice day!\n  Contiene 'Have a nice day!': True",
       "type": "code"
@@ -97,7 +97,7 @@
     {
       "file": "slide11.cs",
       "audioFile": "slide11.mp3",
-      "durationFrames": 210,
+      "durationFrames": 303,
       "narrationText": "Reemplazamos completamente el mensaje de sistema. Ahora el modelo responde con la identidad personalizada que definimos.",
       "consoleOutput": "=== 9. Mensaje de sistema - Modo Replace ===\n  Respuesta: I'm Testy McTestface.",
       "type": "code"
@@ -105,7 +105,7 @@
     {
       "file": "slide12.cs",
       "audioFile": "slide12.mp3",
-      "durationFrames": 210,
+      "durationFrames": 176,
       "narrationText": "Deltas en streaming (AssistantMessageDeltaEvent).",
       "consoleOutput": "=== 9. Mensaje de sistema - Modo Replace ===\n  Respuesta: I'm Testy McTestface.",
       "type": "code"
@@ -113,7 +113,7 @@
     {
       "file": "slide13.cs",
       "audioFile": "slide13.mp3",
-      "durationFrames": 210,
+      "durationFrames": 130,
       "narrationText": "Chat interactivo en streaming.",
       "consoleOutput": "=== 9. Mensaje de sistema - Modo Replace ===\n  Respuesta: I'm Testy McTestface.",
       "type": "code"
@@ -121,7 +121,7 @@
     {
       "file": "slide14.cs",
       "audioFile": "slide14.mp3",
-      "durationFrames": 210,
+      "durationFrames": 421,
       "narrationText": "Perfecto. Ya sabes como manejar sesiones completas. En el siguiente video aprenderemos a registrar herramientas personalizadas para que el modelo pueda ejecutar funciones de tu codigo.",
       "consoleOutput": "",
       "type": "ending",

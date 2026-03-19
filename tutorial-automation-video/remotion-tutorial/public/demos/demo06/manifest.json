@@ -2,12 +2,12 @@
   "demoId": "demo06",
   "title": "06 - AskUser: interaccion con el usuario",
   "fps": 30,
-  "totalFrames": 1470,
+  "totalFrames": 1792,
   "slides": [
     {
       "file": "slide01.cs",
       "audioFile": "slide01.mp3",
-      "durationFrames": 210,
+      "durationFrames": 400,
       "narrationText": "Demo seis. Ask User, interaccion con el usuario. Aprenderemos a configurar handlers que permiten al modelo solicitar informacion al usuario durante la conversacion.",
       "consoleOutput": "",
       "type": "title",
@@ -24,7 +24,7 @@
     {
       "file": "slide02.cs",
       "audioFile": "slide02.mp3",
-      "durationFrames": 210,
+      "durationFrames": 321,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
       "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -32,7 +32,7 @@
     {
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
-      "durationFrames": 210,
+      "durationFrames": 181,
       "narrationText": "Entrada con opciones (auto-responder primera opcion).",
       "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -40,7 +40,7 @@
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
-      "durationFrames": 210,
+      "durationFrames": 155,
       "narrationText": "Verificar opciones en UserInputRequest.",
       "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -48,7 +48,7 @@
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
-      "durationFrames": 210,
+      "durationFrames": 179,
       "narrationText": "Entrada libre del usuario (WasFreeform = true).",
       "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -56,7 +56,7 @@
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
-      "durationFrames": 210,
+      "durationFrames": 179,
       "narrationText": "Chat interactivo - responder preguntas del modelo en vivo.",
       "consoleOutput": "================================================================\n  06 - DEMO: Solicitudes de entrada del usuario\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -64,7 +64,7 @@
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 210,
+      "durationFrames": 377,
       "narrationText": "Muy bien. Ya sabes como interactuar con el usuario. En el siguiente video veremos la compactacion de contexto, esencial para conversaciones largas.",
       "consoleOutput": "",
       "type": "ending",

@@ -2,12 +2,12 @@
   "demoId": "demo09",
   "title": "09 - MCP Agents",
   "fps": 30,
-  "totalFrames": 2520,
+  "totalFrames": 2616,
   "slides": [
     {
       "file": "slide01.cs",
       "audioFile": "slide01.mp3",
-      "durationFrames": 210,
+      "durationFrames": 411,
       "narrationText": "Demo nueve. MCP Agents. Veremos como conectar agentes externos usando el protocolo MCP, registrar sus capacidades y combinarlos con herramientas locales.",
       "consoleOutput": "",
       "type": "title",
@@ -25,7 +25,7 @@
     {
       "file": "slide02.cs",
       "audioFile": "slide02.mp3",
-      "durationFrames": 210,
+      "durationFrames": 321,
       "narrationText": "Empezamos con la estructura base. Importamos el SDK de Copilot y configuramos el sistema de logging para ver mensajes importantes.",
       "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -33,7 +33,7 @@
     {
       "file": "slide03.cs",
       "audioFile": "slide03.mp3",
-      "durationFrames": 210,
+      "durationFrames": 153,
       "narrationText": "Configuracion de un servidor MCP.",
       "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -41,7 +41,7 @@
     {
       "file": "slide04.cs",
       "audioFile": "slide04.mp3",
-      "durationFrames": 210,
+      "durationFrames": 163,
       "narrationText": "Multiples servidores MCP en una sesion.",
       "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -49,7 +49,7 @@
     {
       "file": "slide05.cs",
       "audioFile": "slide05.mp3",
-      "durationFrames": 210,
+      "durationFrames": 153,
       "narrationText": "Configuracion de agente personalizado.",
       "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -57,7 +57,7 @@
     {
       "file": "slide06.cs",
       "audioFile": "slide06.mp3",
-      "durationFrames": 210,
+      "durationFrames": 153,
       "narrationText": "Agente con herramientas especificas.",
       "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -65,7 +65,7 @@
     {
       "file": "slide07.cs",
       "audioFile": "slide07.mp3",
-      "durationFrames": 210,
+      "durationFrames": 161,
       "narrationText": "Agente con sus propios servidores MCP.",
       "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -73,7 +73,7 @@
     {
       "file": "slide08.cs",
       "audioFile": "slide08.mp3",
-      "durationFrames": 210,
+      "durationFrames": 151,
       "narrationText": "Multiples agentes personalizados.",
       "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -81,7 +81,7 @@
     {
       "file": "slide09.cs",
       "audioFile": "slide09.mp3",
-      "durationFrames": 210,
+      "durationFrames": 198,
       "narrationText": "Combinacion - Servidores MCP + Agentes en la misma sesion.",
       "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -89,7 +89,7 @@
     {
       "file": "slide10.cs",
       "audioFile": "slide10.mp3",
-      "durationFrames": 210,
+      "durationFrames": 197,
       "narrationText": "MCP y Agentes al reanudar sesion (ResumeSessionAsync).",
       "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -97,7 +97,7 @@
     {
       "file": "slide11.cs",
       "audioFile": "slide11.mp3",
-      "durationFrames": 210,
+      "durationFrames": 158,
       "narrationText": "Modo interactivo con agente personalizado.",
       "consoleOutput": "================================================================\n  09 - DEMO: Servidores MCP y agentes personalizados\n================================================================\n  Cliente iniciado.",
       "type": "code"
@@ -105,7 +105,7 @@
     {
       "file": "slide12.cs",
       "audioFile": "slide12.mp3",
-      "durationFrames": 210,
+      "durationFrames": 397,
       "narrationText": "Muy bien. MCP abre un mundo de posibilidades con agentes. En el ultimo video veremos como usar modelos personalizados con OpenRouter y el patron BYOK.",
       "consoleOutput": "",
       "type": "ending",
