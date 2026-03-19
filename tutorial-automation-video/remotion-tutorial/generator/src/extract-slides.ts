@@ -37,7 +37,6 @@ const BOILERPLATE_PATTERNS = [
   /^\s*b\.AddConsole\(\)/,
   /^var\s+logger\s*=/,
   /^await\s+client\.DisposeAsync/,
-  /^await\s+client\.StopAsync/,
   /^\s*$/,
 ];
 
